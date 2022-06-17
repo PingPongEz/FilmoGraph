@@ -11,6 +11,7 @@ class Cell: UITableViewCell {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
+            
             gameName.text = self.viewModel.gameName
             gameType.text = self.viewModel.gameType
             gameCreator.text = self.viewModel.gameCreator
@@ -102,4 +103,9 @@ class Cell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+
+extension UIImageView {
+    
 }

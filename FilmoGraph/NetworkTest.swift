@@ -8,20 +8,12 @@
 import Foundation
 import UIKit
 
+
 class ImageLoader {
     
-    private var loadedImages = [URL: UIImage]()
-    private var runningRequests = [UUID: URLSessionDataTask]()
     
     func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
-        
-//        if let image = loadedImages[url] {
-//            completion(.success(image))
-//            print("Loaded")
-//            return nil
-//        }
-        
-        if let cacheImage = Cache.getCachedImage(from: url) {
+        if let cacheImage = Cached.shared.loadedImages.object(forKey: url.absoluteString as NSString) {
             completion(.success(cacheImage))
             print("GET")
             return nil
@@ -31,11 +23,8 @@ class ImageLoader {
         
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             
-            print(url)
-//            defer { self.runningRequests.removeValue(forKey: uuid) }
-            
-            if let data = data, let image = UIImage(data: data), let response = response {
-                Cache.cacheImage(with: data, response)
+            if let data = data, let image = UIImage(data: data) {
+                Cached.shared.loadedImages.setObject(image, forKey: url.absoluteString as NSString)
                 completion(.success(image))
                 return
             }
@@ -49,13 +38,13 @@ class ImageLoader {
         }
         task.resume()
         
-        runningRequests[uuid] = task
+        URLResquests.shared.runningRequests[uuid] = task
         return uuid
     }
     
     func cancelLoad(_ uuid: UUID) {
-        runningRequests[uuid]?.cancel()
-        runningRequests.removeValue(forKey: uuid)
+        URLResquests.shared.runningRequests[uuid]?.cancel()
+        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
     }
 }
 

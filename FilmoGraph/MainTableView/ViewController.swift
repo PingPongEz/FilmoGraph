@@ -32,15 +32,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 extension ViewController {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.games.value.count
+        20
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
         
+        if viewModel.games.value.isEmpty {
+            let cell = LoadingCell()
+            cell.awakeFromNib()
+            return cell
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
+    
         cell.viewModel = viewModel.cellForRowAt(indexPath)
-        cell.awakeFromNib()
         cell.prepareForReuse()
+        cell.awakeFromNib()
         
         return cell
     }

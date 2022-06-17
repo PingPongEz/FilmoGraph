@@ -26,7 +26,7 @@ class CellViewModel: CellViewModelProtocol {
     let loader = ImageLoader()
     
     var gamePic: Observable<UIImage?> {
-        let image = Observable<UIImage?>(UIImage(systemName: "person"))
+        let image = Observable<UIImage?>(nil)
         
         guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
         
@@ -37,20 +37,9 @@ class CellViewModel: CellViewModelProtocol {
                 DispatchQueue.main.async {
                     image.value = imageView
                 }
-                
             } catch {
-                print(error)
+                print(error.localizedDescription)
             }
-            
-//            switch result {
-//            case .success(let pic):
-//                print(self.game.backgroundImage)
-//                image.value = pic
-//                return
-//            case .failure(let error):
-//                print("AAAAAA")
-//                print(error.localizedDescription)
-//            }
             self.onReuse = {
                 if let tocken = tocken {
                     self.loader.cancelLoad(tocken)
