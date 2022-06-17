@@ -11,8 +11,6 @@ protocol MainTableViewModelProtocol {
     
     var games: Observable<[Game]> { get set }
     
-    
-    
     func fetchGames(completion: @escaping () -> Void)
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
 }
@@ -37,7 +35,6 @@ class MainTableViewModel : MainTableViewModelProtocol {
         
         return CellViewModel(game: game)
     }
-    
 }
 
 

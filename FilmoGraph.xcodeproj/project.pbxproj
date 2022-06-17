@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0921DF4F285B3A4B00EFDAF7 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* ViewController.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheImage.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 				096898402858DB5500E8874F /* AppDelegate.swift */,
 				096898422858DB5500E8874F /* SceneDelegate.swift */,
 				096898702858DCD800E8874F /* NetworkTest.swift */,
+				0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */,
 				096898742858FF3500E8874F /* Models */,
 				096898492858DB5600E8874F /* Assets.xcassets */,
 				0968984B2858DB5600E8874F /* LaunchScreen.storyboard */,
@@ -296,6 +299,7 @@
 				096898452858DB5500E8874F /* ViewController.swift in Sources */,
 				096898412858DB5500E8874F /* AppDelegate.swift in Sources */,
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
+				0921DF4F285B3A4B00EFDAF7 /* CacheImage.swift in Sources */,
 				0968987A285A319E00E8874F /* Cell.swift in Sources */,
 				096898712858DCD800E8874F /* NetworkTest.swift in Sources */,
 				096898432858DB5500E8874F /* SceneDelegate.swift in Sources */,

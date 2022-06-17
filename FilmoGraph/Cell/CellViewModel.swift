@@ -9,59 +9,55 @@ import Foundation
 import UIKit
 
 protocol CellViewModelProtocol: AnyObject {
-    var gamePic: Data { get }
+    var gamePic: Observable<UIImage?> { get }
     var gameName: String { get }
     var gameType: String { get }
     var platform: String { get }
     var gameCreator: String { get }
-    var cellChanged: ((CellViewModelProtocol) -> Void)? { get set }
+    var onReuse: () -> Void { get }
     init(game: Game)
 }
 
 class CellViewModel: CellViewModelProtocol {
-    
-    var cellChanged: ((CellViewModelProtocol) -> Void)?
+    var onReuse: () -> Void = {}
     
     private let game: Game!
     
-    var gamePic: Data {
-        
-        var dataPic = Data()
-        
-        guard let url = URL(string: game.backgroundImage ?? "") else { return Data() }
-        
-        if let cachedImage = getCachedImage(from: url) {
-            cellChanged?(self)
-            return cachedImage
-        }
-        
-        FetchSomeFilm.shared.fetchImageFrom(url: url) { data, response in
-            self.cacheImage(with: data, response)
-            dataPic = data
-        }
-        
-        cellChanged?(self)
-        return dataPic
-    }
+    let loader = ImageLoader()
     
-    private func cacheImage(with data: Data, _ response: URLResponse) {
-        guard let url = response.url else { return }
+    var gamePic: Observable<UIImage?> {
+        let image = Observable<UIImage?>(UIImage(systemName: "person"))
         
-        let request = URLRequest(url: url)
-        let response = CachedURLResponse(response: response, data: data)
-        print("Cached \(game.name)")
+        guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
         
-        URLCache.shared.storeCachedResponse(response, for: request)
-    }
-    
-    private func getCachedImage(from url: URL) -> Data? {
-        let request = URLRequest(url: url)
-        
-        if let cachedResponce = URLCache.shared.cachedResponse(for: request) {
-            return cachedResponce.data
+        let tocken = loader.loadImage(url) { result in
+            
+            do {
+                let imageView = try result.get()
+                DispatchQueue.main.async {
+                    image.value = imageView
+                }
+                
+            } catch {
+                print(error)
+            }
+            
+//            switch result {
+//            case .success(let pic):
+//                print(self.game.backgroundImage)
+//                image.value = pic
+//                return
+//            case .failure(let error):
+//                print("AAAAAA")
+//                print(error.localizedDescription)
+//            }
+            self.onReuse = {
+                if let tocken = tocken {
+                    self.loader.cancelLoad(tocken)
+                }
+            }
         }
-        
-        return nil
+        return image
     }
     
     var gameName: String {

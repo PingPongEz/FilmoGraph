@@ -9,31 +9,40 @@ import UIKit
 
 class Cell: UITableViewCell {
     
-    weak var viewModel: CellViewModelProtocol! {
+    var viewModel: CellViewModelProtocol! {
         didSet {
-            gamePic.image = UIImage(data: self.viewModel.gamePic)
             gameName.text = self.viewModel.gameName
             gameType.text = self.viewModel.gameType
             gameCreator.text = self.viewModel.gameCreator
             platform.text = self.viewModel.platform
-            viewModel.cellChanged = { view in
-                self.viewModel = view
-            }
         }
     }
     
-    private let gamePic = UIImageView()
+    private var gamePic = UIImageView()
     private let stackView = UIStackView()
     private let gameName = UILabel()
     private let gameType = UILabel()
     private let platform = UILabel()
     private let gameCreator = UILabel()
 
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.viewModel.onReuse()
+        self.gamePic.image = nil
+    }
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        
+        viewModel.gamePic.bind { image in
+            DispatchQueue.main.async {
+                self.gamePic.image = image
+            }
+        }
     }
 
+    
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setUI()
@@ -56,8 +65,6 @@ class Cell: UITableViewCell {
         gameCreator.font = .systemFont(ofSize: 12)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        
         
         gamePic.layer.cornerRadius = 13
         
@@ -95,5 +102,4 @@ class Cell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 }

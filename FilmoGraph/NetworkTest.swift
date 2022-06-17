@@ -6,24 +6,64 @@
 //
 
 import Foundation
+import UIKit
 
+class ImageLoader {
+    
+    private var loadedImages = [URL: UIImage]()
+    private var runningRequests = [UUID: URLSessionDataTask]()
+    
+    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
+        
+//        if let image = loadedImages[url] {
+//            completion(.success(image))
+//            print("Loaded")
+//            return nil
+//        }
+        
+        if let cacheImage = Cache.getCachedImage(from: url) {
+            completion(.success(cacheImage))
+            print("GET")
+            return nil
+        }
+        
+        let uuid = UUID()
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            
+            print(url)
+//            defer { self.runningRequests.removeValue(forKey: uuid) }
+            
+            if let data = data, let image = UIImage(data: data), let response = response {
+                Cache.cacheImage(with: data, response)
+                completion(.success(image))
+                return
+            }
+            
+            guard let error = error else { return }
+
+            guard (error as NSError).code == NSURLErrorCancelled else {
+                completion(.failure(error))
+                return
+            }
+        }
+        task.resume()
+        
+        runningRequests[uuid] = task
+        return uuid
+    }
+    
+    func cancelLoad(_ uuid: UUID) {
+        runningRequests[uuid]?.cancel()
+        runningRequests.removeValue(forKey: uuid)
+    }
+}
 
 struct FetchSomeFilm {
     
     static var shared = FetchSomeFilm()
     private init(){}
-    
-    func fetchImageFrom(url: URL, completion: @escaping(Data, URLResponse) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, response, _ in
-            guard let data = data, let response = response else { return }
-            
-            guard url == response.url else { return }
-            
-            DispatchQueue.main.async {
-                completion(data, response)
-            }
-        }.resume()
-    }
+
     
     func fetch(completion: @escaping(Result<Welcome, Error>) -> Void) {
         guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20") else { return }
@@ -61,9 +101,9 @@ struct FetchSomeFilm {
                     return decoder
                 }
                 let welcome = try decoder.decode(Welcome.self, from: data)
-                //                DispatchQueue.main.async {
-                completion(.success(welcome))
-                //                }
+                DispatchQueue.main.async {
+                    completion(.success(welcome))
+                }
                 
             } catch {
                 print(error.localizedDescription)

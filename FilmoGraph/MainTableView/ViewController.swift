@@ -39,6 +39,8 @@ extension ViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
         
         cell.viewModel = viewModel.cellForRowAt(indexPath)
+        cell.awakeFromNib()
+        cell.prepareForReuse()
         
         return cell
     }
