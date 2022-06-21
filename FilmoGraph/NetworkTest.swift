@@ -15,7 +15,6 @@ class ImageLoader {
     func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         if let cacheImage = Cached.shared.loadedImages.object(forKey: url.absoluteString as NSString) {
             completion(.success(cacheImage))
-            print("GET")
             return nil
         }
         
@@ -30,7 +29,7 @@ class ImageLoader {
             }
             
             guard let error = error else { return }
-
+            
             guard (error as NSError).code == NSURLErrorCancelled else {
                 completion(.failure(error))
                 return
@@ -48,11 +47,11 @@ class ImageLoader {
     }
 }
 
-struct FetchSomeFilm {
+class FetchSomeFilm {
     
     static var shared = FetchSomeFilm()
     private init(){}
-
+    
     
     func fetch(completion: @escaping(Result<Welcome, Error>) -> Void) {
         guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20") else { return }
@@ -65,30 +64,10 @@ struct FetchSomeFilm {
             "page_size" : "1"
         ]
         
-        let task = URLSession.shared.dataTask(with: request) { data, responce, error in
+        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, responce, error in
             guard let data = data else { return }
             
             do {
-                let formatter = DateFormatter()
-                var decoder: JSONDecoder {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    decoder.dateDecodingStrategy = .custom({ decoder -> Date in
-                        let container = try decoder.singleValueContainer()
-                        let dateString = try container.decode(String.self)
-                        
-                        formatter.dateFormat = "yyyy-MM-dd"
-                        if let date = formatter.date(from: dateString) {
-                            return date
-                        }
-                        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                        if let date = formatter.date(from: dateString) {
-                            return date
-                        }
-                        throw DecodingError.dataCorruptedError(in: container, debugDescription: ":(")
-                    })
-                    return decoder
-                }
                 let welcome = try decoder.decode(Welcome.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(welcome))
@@ -100,5 +79,32 @@ struct FetchSomeFilm {
         }
         task.resume()
     }
+}
+
+
+extension FetchSomeFilm {
     
+    var formatter: DateFormatter {
+        return DateFormatter()
+    }
+    
+    var decoder: JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .custom({ [unowned self] decoder -> Date in
+            let container = try decoder.singleValueContainer()
+            let dateString = try container.decode(String.self)
+            
+            formatter.dateFormat = "yyyy-MM-dd"
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            if let date = formatter.date(from: dateString) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: ":(")
+        })
+        return decoder
+    }
 }

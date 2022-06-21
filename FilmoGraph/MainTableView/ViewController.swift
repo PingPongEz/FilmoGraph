@@ -16,7 +16,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemMint
+        addNavBar()
         createTableView()
         
         viewModel.games.bind { [unowned self] _ in
@@ -30,6 +30,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 }
 
 extension ViewController {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+//        show(viewModel.cellDidTap(indexPath), sender: nil)
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         20
@@ -59,7 +65,7 @@ extension ViewController {
         
         tableView.sizeToFit()
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.rowHeight = 110
+        tableView.rowHeight = 220
         tableView.dataSource = self
         tableView.delegate = self
         
@@ -71,9 +77,34 @@ extension ViewController {
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
         
         self.tableView = tableView
     }
+}
+
+extension ViewController {
+    
+    private func addNavBar() {
+        title = "Some games"
+        let navbarapp = UINavigationBarAppearance()
+        
+        navbarapp.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+        navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Find game", style: .plain, target: self, action:  #selector(pressedRightBottom))
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.standardAppearance = navbarapp
+        navigationController?.navigationBar.scrollEdgeAppearance = navbarapp
+        
+    }
+    
+    @objc private func pressedRightBottom() {
+        print("Click")
+    }
+    
 }

@@ -22,7 +22,7 @@ struct Game: Codable {
     var released: Date?
     var tba: Bool?
     var backgroundImage: String?
-//    var rating: Int?
+    var rating: Float?
     var ratingTop: Int?
     var ratings: Ratings?
     var ratingsCount: Int?

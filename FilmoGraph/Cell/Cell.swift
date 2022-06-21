@@ -11,7 +11,6 @@ class Cell: UITableViewCell {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
-            
             gameName.text = self.viewModel.gameName
             gameType.text = self.viewModel.gameType
             gameCreator.text = self.viewModel.gameCreator
@@ -36,8 +35,8 @@ class Cell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         viewModel.gamePic.bind { image in
-            DispatchQueue.main.async {
-                self.gamePic.image = image
+            DispatchQueue.main.async { [unowned self] in
+                gamePic.image = image
             }
         }
     }
@@ -53,6 +52,9 @@ class Cell: UITableViewCell {
     private func setUI() {
         
         gamePic.translatesAutoresizingMaskIntoConstraints = false
+        gamePic.layer.masksToBounds = true
+        gamePic.layer.cornerRadius = 16
+        
         gameName.translatesAutoresizingMaskIntoConstraints = false
         gameName.font = .systemFont(ofSize: 12)
         
@@ -61,6 +63,7 @@ class Cell: UITableViewCell {
         
         platform.translatesAutoresizingMaskIntoConstraints = false
         platform.font = .systemFont(ofSize: 12)
+        platform.numberOfLines = 2
         
         gameCreator.translatesAutoresizingMaskIntoConstraints = false
         gameCreator.font = .systemFont(ofSize: 12)
@@ -73,9 +76,10 @@ class Cell: UITableViewCell {
         stackView.addArrangedSubview(gameType)
         stackView.addArrangedSubview(platform)
         stackView.addArrangedSubview(gameCreator)
-        
-        stackView.spacing = 20
         stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.distribution = .equalSpacing
+        
         
         addSubview(gamePic)
         addSubview(stackView)
@@ -85,17 +89,17 @@ class Cell: UITableViewCell {
     private func setConstr() {
         
         NSLayoutConstraint.activate([
-            gamePic.heightAnchor.constraint(equalToConstant: 100),
-            gamePic.widthAnchor.constraint(equalToConstant: 100),
-            gamePic.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            gamePic.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 5)
+            gamePic.heightAnchor.constraint(equalToConstant: 150),
+            gamePic.widthAnchor.constraint(equalToConstant: 150),
+            gamePic.centerYAnchor.constraint(equalTo: centerYAnchor),
+            gamePic.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
         ])
         
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 5),
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 5),
-            stackView.heightAnchor.constraint(equalToConstant: 100)
+            stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 10),
+            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 10),
+            stackView.heightAnchor.constraint(equalToConstant: 150)
         ])
         
     }

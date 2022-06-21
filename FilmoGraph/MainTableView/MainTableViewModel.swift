@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol MainTableViewModelProtocol {
     
@@ -13,6 +14,7 @@ protocol MainTableViewModelProtocol {
     
     func fetchGames(completion: @escaping () -> Void)
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
+//    func cellDidTap(_ indexPath: IndexPath) -> UIViewController
 }
 
 class MainTableViewModel : MainTableViewModelProtocol {
@@ -35,5 +37,10 @@ class MainTableViewModel : MainTableViewModelProtocol {
         
         return CellViewModel(game: game)
     }
+    
+//    func cellDidTap(_ indexPath: IndexPath) -> UIViewController {
+//
+//    }
+//
 }
 
