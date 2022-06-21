@@ -38,7 +38,7 @@ class CellViewModel: CellViewModelProtocol {
                     image.value = imageView
                 }
             } catch {
-                print(error.localizedDescription)
+                print(error)
             }
             self.onReuse = {
                 if let tocken = tocken {

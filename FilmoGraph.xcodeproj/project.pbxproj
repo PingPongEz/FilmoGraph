@@ -121,6 +121,15 @@
 			path = DetailGame;
 			sourceTree = "<group>";
 		};
+		0921DF602862427700EFDAF7 /* Others */ = {
+			isa = PBXGroup;
+			children = (
+				096898422858DB5500E8874F /* SceneDelegate.swift */,
+				096898402858DB5500E8874F /* AppDelegate.swift */,
+			);
+			path = Others;
+			sourceTree = "<group>";
+		};
 		096898342858DB5400E8874F = {
 			isa = PBXGroup;
 			children = (
@@ -144,12 +153,12 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				0921DF602862427700EFDAF7 /* Others */,
+				0921DF57285CE8A900EFDAF7 /* CustomImageView.swift */,
 				0921DF5B2860FF5600EFDAF7 /* DetailGame */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				09689878285A317E00E8874F /* Cell */,
 				09689877285A316D00E8874F /* MainTableView */,
-				096898402858DB5500E8874F /* AppDelegate.swift */,
-				096898422858DB5500E8874F /* SceneDelegate.swift */,
 				096898742858FF3500E8874F /* Models */,
 				096898492858DB5600E8874F /* Assets.xcassets */,
 				0968984B2858DB5600E8874F /* LaunchScreen.storyboard */,
@@ -197,7 +206,6 @@
 			children = (
 				0921DF55285CD31700EFDAF7 /* LoadingCell.swift */,
 				09689879285A319E00E8874F /* Cell.swift */,
-				0921DF57285CE8A900EFDAF7 /* CustomImageView.swift */,
 				0968987B285A31C900E8874F /* CellViewModel.swift */,
 			);
 			path = Cell;

@@ -14,10 +14,12 @@ protocol MainTableViewModelProtocol {
     
     func fetchGames(completion: @escaping () -> Void)
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
-//    func cellDidTap(_ indexPath: IndexPath) -> UIViewController
+    func cellDidTap(_ indexPath: IndexPath) -> String
 }
 
 class MainTableViewModel : MainTableViewModelProtocol {
+    
+    
     var games: Observable<[Game]> = Observable([])
     
     func fetchGames(completion: @escaping () -> Void) {
@@ -38,9 +40,9 @@ class MainTableViewModel : MainTableViewModelProtocol {
         return CellViewModel(game: game)
     }
     
-//    func cellDidTap(_ indexPath: IndexPath) -> UIViewController {
-//
-//    }
-//
+    func cellDidTap(_ indexPath: IndexPath) -> String {
+        guard let string = games.value[indexPath.row].id else { return "" }
+        return String("https://api.rawg.io/api/games/\(string)?key=7f01c67ed4d2433bb82f3dd38282088c")
+    }
 }
 

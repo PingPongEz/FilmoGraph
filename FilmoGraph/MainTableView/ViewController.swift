@@ -34,7 +34,11 @@ extension ViewController {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-//        show(viewModel.cellDidTap(indexPath), sender: nil)
+        let url = viewModel.cellDidTap(indexPath)
+        let detailsVC = DetailGameViewController()
+        detailsVC.urlForFetch = url
+        
+        show(detailsVC, sender: nil)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -105,6 +109,6 @@ extension ViewController {
     
     @objc private func pressedRightBottom() {
         print("Click")
+        
     }
-    
 }
