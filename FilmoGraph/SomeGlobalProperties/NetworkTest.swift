@@ -10,9 +10,7 @@ import UIKit
 
 
 class ImageLoader {
-    
-    
-    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
+        func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         if let cacheImage = Cached.shared.loadedImages.object(forKey: url.absoluteString as NSString) {
             completion(.success(cacheImage))
             return nil

@@ -103,6 +103,8 @@
 		0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */ = {
 			isa = PBXGroup;
 			children = (
+				0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */,
+				096898702858DCD800E8874F /* NetworkTest.swift */,
 				0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */,
 				0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */,
 			);
@@ -142,14 +144,12 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
-				0921DF55285CD31700EFDAF7 /* LoadingCell.swift */,
+				0921DF5B2860FF5600EFDAF7 /* DetailGame */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				09689878285A317E00E8874F /* Cell */,
 				09689877285A316D00E8874F /* MainTableView */,
 				096898402858DB5500E8874F /* AppDelegate.swift */,
 				096898422858DB5500E8874F /* SceneDelegate.swift */,
-				096898702858DCD800E8874F /* NetworkTest.swift */,
-				0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */,
 				096898742858FF3500E8874F /* Models */,
 				096898492858DB5600E8874F /* Assets.xcassets */,
 				0968984B2858DB5600E8874F /* LaunchScreen.storyboard */,
@@ -188,7 +188,6 @@
 			children = (
 				096898442858DB5500E8874F /* ViewController.swift */,
 				096898722858FBA300E8874F /* MainTableViewModel.swift */,
-				0921DF5B2860FF5600EFDAF7 /* DetailGame */,
 			);
 			path = MainTableView;
 			sourceTree = "<group>";
@@ -196,6 +195,7 @@
 		09689878285A317E00E8874F /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				0921DF55285CD31700EFDAF7 /* LoadingCell.swift */,
 				09689879285A319E00E8874F /* Cell.swift */,
 				0921DF57285CE8A900EFDAF7 /* CustomImageView.swift */,
 				0968987B285A31C900E8874F /* CellViewModel.swift */,
