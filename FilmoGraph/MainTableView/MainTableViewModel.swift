@@ -8,28 +8,39 @@
 import Foundation
 import UIKit
 
-protocol MainTableViewModelProtocol {
-    
-    var games: Observable<[Game]> { get set }
-    
-    func fetchGames(completion: @escaping () -> Void)
-    func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
-    func cellDidTap(_ indexPath: IndexPath) -> String
-}
 
 class MainTableViewModel : MainTableViewModelProtocol {
     
-    
+    var currentUUID = UUID()
     var games: Observable<[Game]> = Observable([])
     
     func fetchGames(completion: @escaping () -> Void) {
-        FetchSomeFilm.shared.fetch { result in
+        FetchSomeFilm.shared.fetch { [unowned self] result in
             switch result {
             case .success(let result):
-                self.games = Observable(result.results)
+                games = Observable(result.results)
                 completion()
             case .failure(let error):
-                print(error.localizedDescription)
+                print(error)
+            }
+        }
+    }
+    
+    func updateSearchResults(text: String, completion: @escaping () -> Void) {
+        
+        FetchSomeFilm.shared.cancelLoadAtUUID(uuid: currentUUID)
+        
+        DispatchQueue.global().async {
+            self.currentUUID = FetchSomeFilm.shared.findSomeGames(with: text) { [unowned self] result in
+                switch result {
+                case .success(let result):
+                    DispatchQueue.main.async {
+                        self.games = Observable(result.results)
+                        completion()
+                    }
+                case .failure(let error):
+                    print(error)
+                }
             }
         }
     }
@@ -43,6 +54,22 @@ class MainTableViewModel : MainTableViewModelProtocol {
     func cellDidTap(_ indexPath: IndexPath) -> String {
         guard let string = games.value[indexPath.row].id else { return "" }
         return String("https://api.rawg.io/api/games/\(string)?key=7f01c67ed4d2433bb82f3dd38282088c")
+    }
+    
+    func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
+        guard let urlForFetch = urlForFetch else { return }
+        DispatchQueue.global().async {
+            FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
+                do {
+                    let details = try result.get()
+                    DispatchQueue.main.async {
+                        completion(details)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
     }
 }
 

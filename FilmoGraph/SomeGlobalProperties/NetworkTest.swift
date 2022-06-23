@@ -13,7 +13,7 @@ class ImageLoader {
         func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         if let cacheImage = Cached.shared.loadedImages.object(forKey: url.absoluteString as NSString) {
             completion(.success(cacheImage))
-            return nil
+            return UUID()
         }
         
         let uuid = UUID()
@@ -52,15 +52,61 @@ class FetchSomeFilm {
     
     var formatter = DateFormatter()
     
-    func fetch(completion: @escaping(Result<Welcome, Error>) -> Void) {
-        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20") else { return }
+    func findSomeGames(with text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
+        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=1&search=\(text)") else { return UUID() }
+        print(url)
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         
         request.allHTTPHeaderFields = [
             "application/json" : "Content-Type",
-            "page_size" : "1"
+//            "page_size" : "1"
+        ]
+        
+        let uuid = UUID()
+        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, response, error in
+            guard let data = data else { return }
+            
+            do {
+                let welcome = try decoder.decode(Welcome.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(welcome))
+                }
+            } catch let DecodingError.dataCorrupted(context) {
+                print(context)
+            } catch let DecodingError.keyNotFound(key, context) {
+                print("Key '\(key)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.typeMismatch(type, context)  {
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch {
+                print("error: ", error)
+            }
+        }
+        task.resume()
+        URLResquests.shared.runningRequests[uuid] = task
+        return uuid
+    }
+    
+    func cancelLoadAtUUID(uuid: UUID) {
+        URLResquests.shared.runningRequests[uuid]?.cancel()
+        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
+    }
+    
+    func fetch(completion: @escaping(Result<Welcome, Error>) -> Void) {
+        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=1") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        request.allHTTPHeaderFields = [
+            "application/json" : "Content-Type",
+//            "page_size" : "1"
         ]
         
         let task = URLSession.shared.dataTask(with: request) { [unowned self] data, responce, error in

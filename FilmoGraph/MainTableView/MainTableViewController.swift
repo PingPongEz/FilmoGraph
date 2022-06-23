@@ -7,9 +7,34 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+protocol StopLoadingPic {
+    func stopWith(uuid: UUID?)
+}
+
+class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     
-    var viewModel = MainTableViewModel()
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        indicator.startAnimating()
+        viewModel.games.bind { [ unowned self ] _ in
+            self.viewModel.updateSearchResults(text: text) { [ unowned self ] in
+                DispatchQueue.main.async {
+                    indicator.stopAnimating()
+                    tableView.reloadData()
+                }
+            }
+        }
+    }
+    
+    let viewModel = MainTableViewModel()
+    let searchController = UISearchController(searchResultsController: nil)
+    
+    let indicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        return indicator
+    }()
     
     private var tableView: UITableView!
     
@@ -18,10 +43,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         addNavBar()
         createTableView()
+        createSearchBar()
         
         viewModel.games.bind { [unowned self] _ in
             viewModel.fetchGames() {
                 DispatchQueue.main.async {
+                    indicator.stopAnimating()
                     self.tableView.reloadData()
                 }
             }
@@ -29,29 +56,26 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 }
 
-extension ViewController {
+extension MainTableViewController {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
         let url = viewModel.cellDidTap(indexPath)
         let detailsVC = DetailGameViewController()
-        detailsVC.urlForFetch = url
+        detailsVC.delegate = self
+        viewModel.createDetailViewControllerModel(with: url) { gameDetails in
+            detailsVC.viewModel = DetailGameViewModel(game: gameDetails)
+        }
         
         show(detailsVC, sender: nil)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        20
+        viewModel.games.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        if viewModel.games.value.isEmpty {
-            let cell = LoadingCell()
-            cell.awakeFromNib()
-            return cell
-        }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
     
@@ -63,7 +87,7 @@ extension ViewController {
     }
 }
 
-extension ViewController {
+extension MainTableViewController {
     func createTableView() {
         let tableView = UITableView()
         
@@ -74,6 +98,7 @@ extension ViewController {
         tableView.delegate = self
         
         view.addSubview(tableView)
+        tableView.addSubview(indicator)
         
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
         
@@ -84,11 +109,25 @@ extension ViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
         
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        indicator.startAnimating()
         self.tableView = tableView
+    }
+    
+    func createSearchBar() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Find game"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
 }
 
-extension ViewController {
+extension MainTableViewController {
     
     private func addNavBar() {
         title = "Some games"
@@ -112,3 +151,13 @@ extension ViewController {
         
     }
 }
+
+extension MainTableViewController: StopLoadingPic {
+    func stopWith(uuid: UUID?) {
+        guard let uuid = uuid else { return }
+        URLResquests.shared.runningRequests[uuid]?.cancel()
+        print("stopped")
+        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
+    }
+}
+

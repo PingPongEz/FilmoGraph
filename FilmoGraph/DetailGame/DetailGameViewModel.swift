@@ -10,23 +10,23 @@ import UIKit
  
 class DetailGameViewModel: DetailGameViewModelProtocol {
     
-    private var game: Observable<GameDetais>?
+    var game: GameDetais?
     
     var gameName: String {
-        print(game?.value)
-        return game?.value.name ?? ""
+        return game?.name ?? ""
     }
     
+    var currentUUID: UUID?
+    
+    
     var gameDescription: String {
-        game?.value.description ?? ""
+        game?.description ?? ""
     }
     
     var gamePicture: Observable<UIImage?> {
         let image = Observable<UIImage?>(nil)
-        
-        guard let url = URL(string: game?.value.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person.filled")) }
-        
-            ImageLoader().loadImage(url) { result in
+        guard let url = URL(string: game?.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person.filled")) }
+           currentUUID = ImageLoader().loadImage(url) { result in
                 do {
                     let loadedImage = try result.get()
                     DispatchQueue.main.async {
@@ -40,15 +40,33 @@ class DetailGameViewModel: DetailGameViewModelProtocol {
     }
     
     var gamePlatforms: String {
-        let array = game?.value.platforms.compactMap { $0.name }
-        return (array?.joined(separator: ", ")) ?? "No platforms?"
+        guard let game = game else { return "" }
+        let array = game.platforms?.compactMap { $0.platform?.name }
+        guard let array = array else { return "" }
+        return (array.joined(separator: ", "))
     }
     
     var gameRate: String {
-        String("\(game?.value.rating) / \(game?.value.ratingTop)")
+        String("\(game?.rating) / \(game?.ratingTop)")
     }
     
-    init(game: Observable<GameDetais>?) {
+    func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
+        guard let urlForFetch = urlForFetch else { return }
+        DispatchQueue.global().async {
+            FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
+                do {
+                    let details = try result.get()
+                    DispatchQueue.main.async {
+                        completion(details)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    init(game: GameDetais?) {
         self.game = game
     }
 }
