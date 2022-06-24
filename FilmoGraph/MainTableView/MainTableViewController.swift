@@ -13,8 +13,6 @@ protocol StopLoadingPic {
 
 final class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
     
-    
-    
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         indicator.startAnimating()
@@ -30,7 +28,7 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
     
     private var currentPage = 1
     private let viewModel = MainTableViewModel()
-    private let searchController = UISearchController(searchResultsController: nil)
+    private var searchController: UISearchController!
     
     private let indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -45,8 +43,10 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
         super.viewDidLoad()
         
         addNavBar()
-        createTableView()
         createSearchBar()
+        
+        
+        createTableView()
         
         viewModel.games.bind { [unowned self] _ in
             viewModel.fetchGames(with: currentPage) {
@@ -94,8 +94,9 @@ extension MainTableViewController {
     private func createTableView() {
         let tableView = UITableView()
         
-        tableView.sizeToFit()
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        tableView.sizeToFit()
         tableView.rowHeight = 220
         tableView.dataSource = self
         tableView.delegate = self
@@ -122,11 +123,42 @@ extension MainTableViewController {
     }
     
     private func createSearchBar() {
+        let searchController = UISearchController(searchResultsController: nil)
+        
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Find game"
-        navigationItem.searchController = searchController
+        searchController.searchBar.searchTextField.backgroundColor = UIColor(white: 1, alpha: 0.7)
         definesPresentationContext = true
+        
+        let textField = searchController.searchBar.searchTextField
+        let searchBar = searchController.searchBar
+        
+        
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        
+        navigationItem.searchController = searchController
+        
+        
+        navigationItem.searchController?.searchBar.translatesAutoresizingMaskIntoConstraints = false
+        guard let navSearch = navigationItem.searchController?.searchBar else { return }
+        
+        NSLayoutConstraint.activate([
+            searchBar.widthAnchor.constraint(equalTo: navSearch.widthAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: navSearch.bounds.height * 0.8)
+        ])
+        
+        NSLayoutConstraint.activate([
+            textField.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor, constant: 16),
+            textField.centerYAnchor.constraint(equalTo: navSearch.centerYAnchor),
+            textField.widthAnchor.constraint(equalToConstant: navSearch.frame.width * 0.75),
+            textField.heightAnchor.constraint(equalTo: navSearch.heightAnchor)
+        ])
+        
+        self.searchController = searchController
+        navigationItem.searchController = self.searchController
+        
     }
 }
 
@@ -140,7 +172,19 @@ extension MainTableViewController {
         navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Find game", style: .plain, target: self, action:  #selector(pressedRightBottom))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Next page \u{203A}",
+            style: .plain,
+            target: self,
+            action: #selector(pressedRightBottom))
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            title: "\u{2039} Pervous page",
+            style: .plain,
+            target: self,
+            action: #selector(pressedRightBottom))
+        
+        navigationItem.leftBarButtonItem?.isEnabled = false
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .white
