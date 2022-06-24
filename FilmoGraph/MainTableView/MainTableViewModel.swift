@@ -14,8 +14,8 @@ class MainTableViewModel : MainTableViewModelProtocol {
     var currentUUID = UUID()
     var games: Observable<[Game]> = Observable([])
     
-    func fetchGames(completion: @escaping () -> Void) {
-        FetchSomeFilm.shared.fetch { [unowned self] result in
+    func fetchGames(with page: Int, completion: @escaping () -> Void) {
+        FetchSomeFilm.shared.fetch(with: page) { [unowned self] result in
             switch result {
             case .success(let result):
                 games = Observable(result.results)

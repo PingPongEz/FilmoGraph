@@ -98,8 +98,8 @@ class FetchSomeFilm {
         URLResquests.shared.runningRequests.removeValue(forKey: uuid)
     }
     
-    func fetch(completion: @escaping(Result<Welcome, Error>) -> Void) {
-        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=1") else { return }
+    func fetch(with string: Int, completion: @escaping(Result<Welcome, Error>) -> Void) {
+        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(string)&page_size=10") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"

@@ -11,14 +11,16 @@ protocol StopLoadingPic {
     func stopWith(uuid: UUID?)
 }
 
-class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+final class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+    
+    
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
         indicator.startAnimating()
         viewModel.games.bind { [ unowned self ] _ in
-            self.viewModel.updateSearchResults(text: text) { [ unowned self ] in
-                DispatchQueue.main.async {
+            viewModel.updateSearchResults(text: text) { [ unowned self ] in
+                DispatchQueue.main.async { [ unowned self ] in
                     indicator.stopAnimating()
                     tableView.reloadData()
                 }
@@ -26,10 +28,11 @@ class MainTableViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    let viewModel = MainTableViewModel()
-    let searchController = UISearchController(searchResultsController: nil)
+    private var currentPage = 1
+    private let viewModel = MainTableViewModel()
+    private let searchController = UISearchController(searchResultsController: nil)
     
-    let indicator: UIActivityIndicatorView = {
+    private let indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.translatesAutoresizingMaskIntoConstraints = false
         indicator.hidesWhenStopped = true
@@ -46,10 +49,10 @@ class MainTableViewController: UIViewController, UITableViewDelegate, UITableVie
         createSearchBar()
         
         viewModel.games.bind { [unowned self] _ in
-            viewModel.fetchGames() {
-                DispatchQueue.main.async {
+            viewModel.fetchGames(with: currentPage) {
+                DispatchQueue.main.async { [unowned self] in
                     indicator.stopAnimating()
-                    self.tableView.reloadData()
+                    tableView.reloadData()
                 }
             }
         }
@@ -88,7 +91,7 @@ extension MainTableViewController {
 }
 
 extension MainTableViewController {
-    func createTableView() {
+    private func createTableView() {
         let tableView = UITableView()
         
         tableView.sizeToFit()
@@ -118,7 +121,7 @@ extension MainTableViewController {
         self.tableView = tableView
     }
     
-    func createSearchBar() {
+    private func createSearchBar() {
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Find game"

@@ -11,7 +11,7 @@ protocol MainTableViewModelProtocol {
     
     var games: Observable<[Game]> { get set }
     
-    func fetchGames(completion: @escaping () -> Void)
+    func fetchGames(with page: Int, completion: @escaping () -> Void)
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
     func cellDidTap(_ indexPath: IndexPath) -> String
     func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void)
