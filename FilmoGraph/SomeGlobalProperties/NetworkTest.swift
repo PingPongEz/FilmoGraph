@@ -98,15 +98,17 @@ class FetchSomeFilm {
         URLResquests.shared.runningRequests.removeValue(forKey: uuid)
     }
     
-    func fetch(with string: Int, completion: @escaping(Result<Welcome, Error>) -> Void) {
-        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(string)&page_size=10") else { return }
+    func fetchWith(page: Int, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
+        let urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20"
         
-        var request = URLRequest(url: url)
+        guard let urlForFetch = URL(string: urlForFetch) else { return UUID() }
+        let uuid = UUID()
+        
+        var request = URLRequest(url: urlForFetch)
         request.httpMethod = "GET"
         
         request.allHTTPHeaderFields = [
-            "application/json" : "Content-Type",
-//            "page_size" : "1"
+            "application/json" : "Content-Type"
         ]
         
         let task = URLSession.shared.dataTask(with: request) { [unowned self] data, responce, error in
@@ -133,7 +135,9 @@ class FetchSomeFilm {
                 print("error: ", error)
             }
         }
+        URLResquests.shared.runningRequests[uuid] = task
         task.resume()
+        return uuid
     }
     
     
@@ -149,7 +153,6 @@ class FetchSomeFilm {
             print(url.absoluteString)
             do {
                 let gameDetails = try decoder.decode(GameDetais.self, from: data)
-                print(gameDetails.description)
                 DispatchQueue.main.async {
                     completion(.success(gameDetails))
                 }

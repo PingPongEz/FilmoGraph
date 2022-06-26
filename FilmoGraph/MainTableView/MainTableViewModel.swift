@@ -10,14 +10,36 @@ import UIKit
 
 
 class MainTableViewModel : MainTableViewModelProtocol {
-    
-    var currentUUID = UUID()
+    private var currentUUID = UUID()
+    private var currentPageUUID = UUID()
+    var currentPage = 1
+//    var nextPage: String?
+//    var prevPage: String?
     var games: Observable<[Game]> = Observable([])
     
-    func fetchGames(with page: Int, completion: @escaping () -> Void) {
-        FetchSomeFilm.shared.fetch(with: page) { [unowned self] result in
+    func firstLaunchFetch(completion: @escaping () -> Void) {
+        FetchSomeFilm.shared.cancelLoadAtUUID(uuid: currentPageUUID)
+        
+        self.currentPageUUID = FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in
             switch result {
             case .success(let result):
+                games = Observable(result.results)
+                completion()
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+    
+    func fetchGamesWith(completion: @escaping () -> Void) {
+        
+        FetchSomeFilm.shared.cancelLoadAtUUID(uuid: currentPageUUID)
+        
+        self.currentPageUUID = FetchSomeFilm.shared.fetchWith(page: currentPage) { [unowned self] result in
+            switch result {
+            case .success(let result):
+//                nextPage = result.next
+//                prevPage = result.previous
                 games = Observable(result.results)
                 completion()
             case .failure(let error):

@@ -17,18 +17,18 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
         guard let text = searchController.searchBar.text else { return }
         indicator.startAnimating()
         viewModel.games.bind { [ unowned self ] _ in
-            viewModel.updateSearchResults(text: text) { [ unowned self ] in
-                DispatchQueue.main.async { [ unowned self ] in
-                    indicator.stopAnimating()
-                    tableView.reloadData()
+            self.viewModel.updateSearchResults(text: text) {
+                DispatchQueue.main.async {
+                    self.indicator.stopAnimating()
+                    self.tableView.reloadData()
                 }
             }
         }
     }
     
-    private var currentPage = 1
     private let viewModel = MainTableViewModel()
     private var searchController: UISearchController!
+    private var currentPage = 1
     
     private let indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -45,20 +45,21 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
         addNavBar()
         createSearchBar()
         
-        
         createTableView()
         
         viewModel.games.bind { [unowned self] _ in
-            viewModel.fetchGames(with: currentPage) {
-                DispatchQueue.main.async { [unowned self] in
-                    indicator.stopAnimating()
-                    tableView.reloadData()
+            viewModel.currentPage = 1
+            viewModel.firstLaunchFetch {
+                DispatchQueue.main.async {
+                    self.indicator.stopAnimating()
+                    self.tableView.reloadData()
                 }
             }
         }
     }
 }
 
+//MARK: TableViewDelegate
 extension MainTableViewController {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -81,7 +82,7 @@ extension MainTableViewController {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
-    
+        
         cell.viewModel = viewModel.cellForRowAt(indexPath)
         cell.prepareForReuse()
         cell.awakeFromNib()
@@ -90,6 +91,7 @@ extension MainTableViewController {
     }
 }
 
+//MARK: UI Methods
 extension MainTableViewController {
     private func createTableView() {
         let tableView = UITableView()
@@ -162,6 +164,7 @@ extension MainTableViewController {
     }
 }
 
+//MARK: Bottom methods
 extension MainTableViewController {
     
     private func addNavBar() {
@@ -176,13 +179,13 @@ extension MainTableViewController {
             title: "Next page \u{203A}",
             style: .plain,
             target: self,
-            action: #selector(pressedRightBottom))
+            action: #selector(nextPageBottom))
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(
             title: "\u{2039} Pervous page",
             style: .plain,
             target: self,
-            action: #selector(pressedRightBottom))
+            action: #selector(pervPageBottom))
         
         navigationItem.leftBarButtonItem?.isEnabled = false
         
@@ -193,9 +196,39 @@ extension MainTableViewController {
         
     }
     
-    @objc private func pressedRightBottom() {
-        print("Click")
+    @objc private func nextPageBottom() {
+        indicator.startAnimating()
+        viewModel.currentPage += 1
+        navigationItem.leftBarButtonItem?.isEnabled = true
+        viewModel.games.bind { [unowned self] _ in
+            fetchGames(with: viewModel.currentPage)
+        }
+    }
+    
+    @objc private func pervPageBottom() {
+        indicator.startAnimating()
+        viewModel.currentPage -= 1
+        navigationItem.rightBarButtonItem?.isEnabled = true
+        viewModel.games.bind { [unowned self] _ in
+            fetchGames(with: viewModel.currentPage)
+        }
+    }
+}
+
+
+//MARK: Additional methods
+extension MainTableViewController {
+    
+    private func fetchGames(with page: Int? = nil) {
         
+        var urlString: String?
+        
+        viewModel.fetchGamesWith() { [unowned self] in
+            DispatchQueue.main.async {
+                self.indicator.stopAnimating()
+                self.tableView.reloadData()
+            }
+        }
     }
 }
 

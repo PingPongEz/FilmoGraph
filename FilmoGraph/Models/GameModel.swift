@@ -56,7 +56,7 @@ struct GameDetais: Codable {
 struct Welcome: Codable {
     var count: Int?
     var next: String?
-    var pervious: String?
+    var previous: String?
     var results: [Game]
 }
 
