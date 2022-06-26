@@ -70,7 +70,7 @@ extension MainTableViewController {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.games.value.count
+        return viewModel.games.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -194,22 +194,18 @@ extension MainTableViewController {
         indicator.startAnimating()
         currentPage += 1
         navigationItem.leftBarButtonItem?.isEnabled = true
-        viewModel.games.bind { [unowned self] _ in
-            fetchGames(with: viewModel.nextPage)
-            viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
-        }
+        fetchGames(with: viewModel.nextPage)
+        viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
     }
     
     @objc private func pervPageBottom() {
         indicator.startAnimating()
         currentPage -= 1
         navigationItem.rightBarButtonItem?.isEnabled = true
-        viewModel.games.bind { [unowned self] _ in
-            fetchGames(with: viewModel.prevPage)
-            viewModel.prevPage != nil
-            ? (navigationItem.leftBarButtonItem?.isEnabled = true)
-            : (navigationItem.leftBarButtonItem?.isEnabled = false)
-        }
+        fetchGames(with: viewModel.prevPage)
+        viewModel.prevPage != nil
+        ? (navigationItem.leftBarButtonItem?.isEnabled = true)
+        : (navigationItem.leftBarButtonItem?.isEnabled = false)
     }
 }
 
@@ -223,13 +219,15 @@ extension MainTableViewController {
     }
     
     private func fetchGames(with url: String? = nil) {
+        
         var urlString: String?
         
         if let url = url {
             urlString = url
         }
         
-        viewModel.games.value = []
+        
+        viewModel.games = Observable([])
         tableView.reloadData()
         
         viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) { [unowned self] in
