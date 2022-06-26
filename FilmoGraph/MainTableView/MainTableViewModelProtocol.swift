@@ -10,10 +10,10 @@ import Foundation
 protocol MainTableViewModelProtocol {
     
     var games: Observable<[Game]> { get set }
-//    var nextPage: String? { get set }
-//    var prevPage: String? { get set }
+    var nextPage: String? { get set }
+    var prevPage: String? { get set }
     
-    func fetchGamesWith(completion: @escaping () -> Void)
+    func fetchGamesWith(page: Int?, orUrl url: String?, completion: @escaping () -> Void)
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
     func cellDidTap(_ indexPath: IndexPath) -> String
     func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void)

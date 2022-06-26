@@ -98,10 +98,17 @@ class FetchSomeFilm {
         URLResquests.shared.runningRequests.removeValue(forKey: uuid)
     }
     
-    func fetchWith(page: Int, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
-        let urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20"
+    func fetchWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
+        var urlForFetch: String?
         
-        guard let urlForFetch = URL(string: urlForFetch) else { return UUID() }
+        if let url = url {
+            urlForFetch = url
+        } else {
+            guard let page = page else { return UUID() }
+            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20"
+        }
+        
+        guard let urlForFetch = URL(string: urlForFetch ?? "") else { return UUID() }
         let uuid = UUID()
         
         var request = URLRequest(url: urlForFetch)

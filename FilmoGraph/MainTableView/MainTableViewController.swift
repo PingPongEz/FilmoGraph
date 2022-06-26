@@ -48,13 +48,7 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
         createTableView()
         
         viewModel.games.bind { [unowned self] _ in
-            viewModel.currentPage = 1
-            viewModel.firstLaunchFetch {
-                DispatchQueue.main.async {
-                    self.indicator.stopAnimating()
-                    self.tableView.reloadData()
-                }
-            }
+            fetchGames()
         }
     }
 }
@@ -198,19 +192,23 @@ extension MainTableViewController {
     
     @objc private func nextPageBottom() {
         indicator.startAnimating()
-        viewModel.currentPage += 1
+        currentPage += 1
         navigationItem.leftBarButtonItem?.isEnabled = true
         viewModel.games.bind { [unowned self] _ in
-            fetchGames(with: viewModel.currentPage)
+            fetchGames(with: viewModel.nextPage)
+            viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
         }
     }
     
     @objc private func pervPageBottom() {
         indicator.startAnimating()
-        viewModel.currentPage -= 1
+        currentPage -= 1
         navigationItem.rightBarButtonItem?.isEnabled = true
         viewModel.games.bind { [unowned self] _ in
-            fetchGames(with: viewModel.currentPage)
+            fetchGames(with: viewModel.prevPage)
+            viewModel.prevPage != nil
+            ? (navigationItem.leftBarButtonItem?.isEnabled = true)
+            : (navigationItem.leftBarButtonItem?.isEnabled = false)
         }
     }
 }
@@ -219,11 +217,22 @@ extension MainTableViewController {
 //MARK: Additional methods
 extension MainTableViewController {
     
-    private func fetchGames(with page: Int? = nil) {
-        
+    private func checkButtonsConditions() {
+        viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
+        viewModel.prevPage != nil ? (navigationItem.leftBarButtonItem?.isEnabled = true) : (navigationItem.leftBarButtonItem?.isEnabled = false)
+    }
+    
+    private func fetchGames(with url: String? = nil) {
         var urlString: String?
         
-        viewModel.fetchGamesWith() { [unowned self] in
+        if let url = url {
+            urlString = url
+        }
+        
+        viewModel.games.value = []
+        tableView.reloadData()
+        
+        viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) { [unowned self] in
             DispatchQueue.main.async {
                 self.indicator.stopAnimating()
                 self.tableView.reloadData()
