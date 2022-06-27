@@ -8,7 +8,7 @@
 import UIKit
 
 protocol StopLoadingPic {
-    func stopWith(uuid: UUID?)
+    func stopWith(requests: [UUID?])
 }
 
 final class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
@@ -28,7 +28,7 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
     
     private let viewModel = MainTableViewModel()
     private var searchController: UISearchController!
-    private var currentPage = 1
+    private var tableView: UITableView!
     
     private let indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -36,8 +36,6 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
         indicator.hidesWhenStopped = true
         return indicator
     }()
-    
-    private var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,6 +60,7 @@ extension MainTableViewController {
         let url = viewModel.cellDidTap(indexPath)
         let detailsVC = DetailGameViewController()
         detailsVC.delegate = self
+        
         viewModel.createDetailViewControllerModel(with: url) { gameDetails in
             detailsVC.viewModel = DetailGameViewModel(game: gameDetails)
         }
@@ -156,10 +155,6 @@ extension MainTableViewController {
         navigationItem.searchController = self.searchController
         
     }
-}
-
-//MARK: Bottom methods
-extension MainTableViewController {
     
     private func addNavBar() {
         title = "Some games"
@@ -189,34 +184,33 @@ extension MainTableViewController {
         navigationController?.navigationBar.scrollEdgeAppearance = navbarapp
         
     }
+}
+
+//MARK: Bottom methods
+extension MainTableViewController {
     
     @objc private func nextPageBottom() {
+        viewModel.deleteRequests()
         indicator.startAnimating()
-        currentPage += 1
+        
         navigationItem.leftBarButtonItem?.isEnabled = true
         fetchGames(with: viewModel.nextPage)
         viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
     }
     
     @objc private func pervPageBottom() {
+        viewModel.deleteRequests()
         indicator.startAnimating()
-        currentPage -= 1
+        
         navigationItem.rightBarButtonItem?.isEnabled = true
         fetchGames(with: viewModel.prevPage)
-        viewModel.prevPage != nil
-        ? (navigationItem.leftBarButtonItem?.isEnabled = true)
-        : (navigationItem.leftBarButtonItem?.isEnabled = false)
+        viewModel.prevPage != nil ? (navigationItem.leftBarButtonItem?.isEnabled = true) : (navigationItem.leftBarButtonItem?.isEnabled = false)
     }
 }
 
 
 //MARK: Additional methods
 extension MainTableViewController {
-    
-    private func checkButtonsConditions() {
-        viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
-        viewModel.prevPage != nil ? (navigationItem.leftBarButtonItem?.isEnabled = true) : (navigationItem.leftBarButtonItem?.isEnabled = false)
-    }
     
     private func fetchGames(with url: String? = nil) {
         
@@ -240,11 +234,8 @@ extension MainTableViewController {
 }
 
 extension MainTableViewController: StopLoadingPic {
-    func stopWith(uuid: UUID?) {
-        guard let uuid = uuid else { return }
-        URLResquests.shared.runningRequests[uuid]?.cancel()
-        print("stopped")
-        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
+    func stopWith(requests: [UUID?]) {
+        URLResquests.shared.cancelRequests(requests: requests)
     }
 }
 

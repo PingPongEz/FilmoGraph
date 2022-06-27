@@ -10,30 +10,25 @@ import UIKit
 
 
 class CellViewModel: CellViewModelProtocol {
-    var onReuse: () -> Void = {}
     
     private let game: Game!
     
-    let loader = ImageLoader()
+    var onReuse: UUID?
     
     var gamePic: Observable<UIImage?> {
         let image = Observable<UIImage?>(nil)
         
         guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
-        
-        let tocken = loader.loadImage(url) { result in
-            
-            do {
-                let imageView = try result.get()
-                DispatchQueue.main.async {
-                    image.value = imageView
-                }
-            } catch {
-                print(error)
-            }
-            self.onReuse = {
-                if let tocken = tocken {
-                    self.loader.cancelLoad(tocken)
+        DispatchQueue.global().async { [unowned self] in
+            self.onReuse = ImageLoader.shared.loadImage(url) { result in
+                do {
+                    let imageView = try result.get()
+                    DispatchQueue.main.async {
+                        image.value = imageView
+                        URLResquests.shared.deleteOneRequest(request: self.onReuse)
+                    }
+                } catch {
+                    print(error)
                 }
             }
         }
@@ -56,6 +51,10 @@ class CellViewModel: CellViewModelProtocol {
     
     var gameCreator: String {
         "Some creator"
+    }
+    
+    func stopCellRequest() {
+        URLResquests.shared.deleteOneRequest(request: onReuse)
     }
     
     required init(game: Game) {

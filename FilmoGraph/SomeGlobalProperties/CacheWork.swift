@@ -20,5 +20,18 @@ class URLResquests {
     private init(){}
     static var shared = URLResquests()
     
-    var runningRequests = [UUID: URLSessionDataTask]()
+    var runningRequests = [UUID?: URLSessionDataTask]()
+    
+    func deleteOneRequest(request: UUID?) {
+        runningRequests[request]?.cancel()
+        runningRequests.removeValue(forKey: request)
+    }
+    
+    func cancelRequests(requests: [UUID?]) {
+        requests.forEach { request in
+            runningRequests[request]?.cancel()
+            runningRequests.removeValue(forKey: request)
+            print("\(runningRequests.keys) in CLOUD")
+        }
+    }
 }

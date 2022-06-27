@@ -11,43 +11,23 @@ import UIKit
 
 class MainTableViewModel : MainTableViewModelProtocol {
     
-    private var currentUUID = UUID()
-    private var currentPageUUID = UUID()
-    
     var currentPage: Int = 1
     var nextPage: String?
     var prevPage: String?
+    var currentRequest: UUID?
     
     var games: Observable<[Game]> = Observable([])
     
-    
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
-        
-        FetchSomeFilm.shared.cancelLoadAtUUID(uuid: currentPageUUID)
-        
-        self.currentPageUUID = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url) { [unowned self] result in
-            switch result {
-            case .success(let result):
-                nextPage = result.next
-                prevPage = result.previous
-                games = Observable(result.results)
-                completion()
-            case .failure(let error):
-                print(error)
-            }
-        }
-    }
-    
-    func updateSearchResults(text: String, completion: @escaping () -> Void) {
-        
-        FetchSomeFilm.shared.cancelLoadAtUUID(uuid: currentUUID)
-        
-        DispatchQueue.global().async {
-            self.currentUUID = FetchSomeFilm.shared.findSomeGames(with: text) { [unowned self] result in
+        DispatchQueue.global().async { [unowned self] in
+            currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url) {  result in
                 switch result {
                 case .success(let result):
                     DispatchQueue.main.async {
+                        self.nextPage = result.next
+                        self.prevPage = result.previous
                         self.games = Observable(result.results)
+                        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
                         completion()
                     }
                 case .failure(let error):
@@ -55,6 +35,28 @@ class MainTableViewModel : MainTableViewModelProtocol {
                 }
             }
         }
+    }
+    
+    func updateSearchResults(text: String, completion: @escaping () -> Void) {
+        DispatchQueue.global().async { [unowned self] in
+            currentRequest = FetchSomeFilm.shared.findSomeGames(with: text) { result in
+                self.deleteRequests()
+                switch result {
+                case .success(let result):
+                    DispatchQueue.main.async {
+                        self.games = Observable(result.results)
+                        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
+                        completion()
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    func deleteRequests() {
+        
     }
     
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
@@ -70,7 +72,7 @@ class MainTableViewModel : MainTableViewModelProtocol {
     
     func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
         guard let urlForFetch = urlForFetch else { return }
-        DispatchQueue.global().async {
+        GlobalGroup.shared.group.notify(queue: .global()) {
             FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
                 do {
                     let details = try result.get()

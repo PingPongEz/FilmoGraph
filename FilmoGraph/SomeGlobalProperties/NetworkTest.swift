@@ -9,8 +9,12 @@ import Foundation
 import UIKit
 
 
-class ImageLoader {
-        func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
+final class ImageLoader {
+    
+    private init(){}
+    static var shared = ImageLoader()
+    
+    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         if let cacheImage = Cached.shared.loadedImages.object(forKey: url.absoluteString as NSString) {
             completion(.success(cacheImage))
             return UUID()
@@ -34,18 +38,16 @@ class ImageLoader {
             }
         }
         task.resume()
-        
         URLResquests.shared.runningRequests[uuid] = task
         return uuid
     }
     
-    func cancelLoad(_ uuid: UUID) {
-        URLResquests.shared.runningRequests[uuid]?.cancel()
-        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
+    func cancelLoad(uuid: UUID?) {
+        URLResquests.shared.deleteOneRequest(request: uuid)
     }
 }
 
-class FetchSomeFilm {
+final class FetchSomeFilm {
     
     static var shared = FetchSomeFilm()
     private init(){}
@@ -60,8 +62,7 @@ class FetchSomeFilm {
         request.httpMethod = "GET"
         
         request.allHTTPHeaderFields = [
-            "application/json" : "Content-Type",
-//            "page_size" : "1"
+            "application/json" : "Content-Type"
         ]
         
         let uuid = UUID()
@@ -93,12 +94,49 @@ class FetchSomeFilm {
         return uuid
     }
     
-    func cancelLoadAtUUID(uuid: UUID) {
-        URLResquests.shared.runningRequests[uuid]?.cancel()
-        URLResquests.shared.runningRequests.removeValue(forKey: uuid)
+    func fetchScreenShots(with url: String, completion: @escaping(Result<ScreenShots, Error>) -> Void) -> UUID {
+        guard let url = URL(string: "https://api.rawg.io/api/games/\(url)/screenshots?key=7f01c67ed4d2433bb82f3dd38282088c") else { return UUID() }
+        
+        let uuid = UUID()
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = [
+            "application/json" : "Content-Type"
+        ]
+        
+        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, response, error in
+            guard let data = data else {
+                completion(.failure(error!))
+                return
+            }
+            
+            do {
+                let shots = try decoder.decode(ScreenShots.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(shots))
+                }
+            } catch let DecodingError.dataCorrupted(context) {
+                print(context)
+            } catch let DecodingError.keyNotFound(key, context) {
+                print("Key '\(key)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.typeMismatch(type, context)  {
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch {
+                print("error: ", error)
+            }
+        }
+        task.resume()
+        URLResquests.shared.runningRequests[uuid] = task
+        return uuid
     }
     
-    func fetchWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
+    func fetchWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
         var urlForFetch: String?
         
         if let url = url {
@@ -126,7 +164,6 @@ class FetchSomeFilm {
                 DispatchQueue.main.async {
                     completion(.success(welcome))
                 }
-                
             } catch let DecodingError.dataCorrupted(context) {
                 print(context)
             } catch let DecodingError.keyNotFound(key, context) {
@@ -142,8 +179,8 @@ class FetchSomeFilm {
                 print("error: ", error)
             }
         }
-        URLResquests.shared.runningRequests[uuid] = task
         task.resume()
+        URLResquests.shared.runningRequests[uuid] = task
         return uuid
     }
     
@@ -157,7 +194,7 @@ class FetchSomeFilm {
         
         URLSession.shared.dataTask(with: request) { [unowned self] data, _, error in
             guard let data = data else { completion(.failure(error!)); return }
-            print(url.absoluteString)
+            
             do {
                 let gameDetails = try decoder.decode(GameDetais.self, from: data)
                 DispatchQueue.main.async {

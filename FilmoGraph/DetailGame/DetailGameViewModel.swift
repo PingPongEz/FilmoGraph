@@ -7,36 +7,21 @@
 
 import Foundation
 import UIKit
- 
+
 class DetailGameViewModel: DetailGameViewModelProtocol {
     
     var game: GameDetais?
+    private var screenShots: [ScreenShotsResult]?
+    
+    var images: [UIImage] = []
+    var listOfRequests: [UUID?] = []
     
     var gameName: String {
         return game?.name ?? ""
     }
     
-    var currentUUID: UUID?
-    
-    
     var gameDescription: String {
         game?.description ?? ""
-    }
-    
-    var gamePicture: Observable<UIImage?> {
-        let image = Observable<UIImage?>(nil)
-        guard let url = URL(string: game?.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person.filled")) }
-           currentUUID = ImageLoader().loadImage(url) { result in
-                do {
-                    let loadedImage = try result.get()
-                    DispatchQueue.main.async {
-                        image.value = loadedImage
-                    }
-                } catch {
-                    print(error)
-                }
-            }
-        return image
     }
     
     var gamePlatforms: String {
@@ -50,18 +35,44 @@ class DetailGameViewModel: DetailGameViewModelProtocol {
         String("\(game?.rating) / \(game?.ratingTop)")
     }
     
-    func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
-        guard let urlForFetch = urlForFetch else { return }
-        DispatchQueue.global().async {
-            FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
+    func fetchScreenShots(completion: @escaping() -> Void) {
+        
+        DispatchQueue.global().async { [unowned self] in
+            let request = FetchSomeFilm.shared.fetchScreenShots(with: game?.slug ?? "") { result in
                 do {
-                    let details = try result.get()
+                    let images = try result.get()
                     DispatchQueue.main.async {
-                        completion(details)
+                        self.screenShots = images.results
+                        self.unpackScreenshots {
+                            completion()
+                        }
                     }
                 } catch {
                     print(error)
                 }
+            }
+            listOfRequests.append(request)
+        }
+    }
+    
+    private func unpackScreenshots(completion: @escaping () -> Void) {
+        DispatchQueue.global().async { [unowned self] in
+            screenShots?.forEach { url in
+                guard let url = URL(string: url.image ?? "") else { return }
+                let request = ImageLoader.shared.loadImage(url) { result in  //MARK: Make delete from requests with protocol
+                    do {
+                        let image = try result.get()
+                        DispatchQueue.main.async {
+                            self.images.append(image)
+                            if self.images.count == self.screenShots?.count {  //MARK: For only one completion call
+                                completion()
+                            }
+                        }
+                    } catch {
+                        print(error)
+                    }
+                }
+                listOfRequests.append(request)
             }
         }
     }

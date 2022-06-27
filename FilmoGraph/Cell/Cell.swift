@@ -19,17 +19,17 @@ class Cell: UITableViewCell {
     }
     
     private var gamePic = UIImageView()
-    private let stackView = UIStackView()
-    private let gameName = UILabel()
-    private let gameType = UILabel()
-    private let platform = UILabel()
-    private let gameCreator = UILabel()
+    private var stackView = UIStackView()
+    private var gameName = UILabel()
+    private var gameType = UILabel()
+    private var platform = UILabel()
+    private var gameCreator = UILabel()
 
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.viewModel.onReuse()
-        self.gamePic.image = nil
+        self.viewModel.stopCellRequest()
+        gamePic.image = nil
     }
     
     override func awakeFromNib() {
@@ -40,8 +40,6 @@ class Cell: UITableViewCell {
             }
         }
     }
-
-    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)

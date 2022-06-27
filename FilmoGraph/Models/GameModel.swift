@@ -126,3 +126,16 @@ struct MetacriticPlatform: Codable {
     let metascore: Int
     let url: String
 }
+
+// MARK: - Welcome
+struct ScreenShots: Codable {
+    let count: Int?
+    let next, previous: String?
+    let results: [ScreenShotsResult]?
+}
+
+// MARK: - Result
+struct ScreenShotsResult: Codable {
+    let image: String?
+    let hidden: Bool?
+}
