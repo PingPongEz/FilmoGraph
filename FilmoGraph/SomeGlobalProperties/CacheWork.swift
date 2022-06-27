@@ -31,7 +31,6 @@ class URLResquests {
         requests.forEach { request in
             runningRequests[request]?.cancel()
             runningRequests.removeValue(forKey: request)
-            print("\(runningRequests.keys) in CLOUD")
         }
     }
 }
