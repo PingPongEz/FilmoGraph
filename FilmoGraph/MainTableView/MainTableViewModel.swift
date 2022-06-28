@@ -12,15 +12,23 @@ import UIKit
 class MainTableViewModel : MainTableViewModelProtocol {
     
     var currentPage: Int = 1
+    var searchText: String = "" {
+        didSet {
+            URLResquests.shared.runningRequests.removeAll()
+            searchText = searchText.replacingOccurrences(of: " ", with: "")
+        }
+    }
+    
     var nextPage: String?
     var prevPage: String?
     var currentRequest: UUID?
+    
     
     var games: Observable<[Game]> = Observable([])
     
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         DispatchQueue.global().async { [unowned self] in
-            currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url) {  result in
+            currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url, search: searchText) {  result in
                 switch result {
                 case .success(let result):
                     DispatchQueue.main.async {
@@ -35,28 +43,6 @@ class MainTableViewModel : MainTableViewModelProtocol {
                 }
             }
         }
-    }
-    
-    func updateSearchResults(text: String, completion: @escaping () -> Void) {
-        DispatchQueue.global().async { [unowned self] in
-            currentRequest = FetchSomeFilm.shared.findSomeGames(with: text) { result in
-                self.deleteRequests()
-                switch result {
-                case .success(let result):
-                    DispatchQueue.main.async {
-                        self.games = Observable(result.results)
-                        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
-                        completion()
-                    }
-                case .failure(let error):
-                    print(error)
-                }
-            }
-        }
-    }
-    
-    func deleteRequests() {
-        
     }
     
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {

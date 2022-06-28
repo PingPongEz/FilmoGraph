@@ -15,9 +15,10 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
+        viewModel.searchText = text
         indicator.startAnimating()
         viewModel.games.bind { [ unowned self ] _ in
-            self.viewModel.updateSearchResults(text: text) {
+            self.viewModel.fetchGamesWith(page: 1) {
                 DispatchQueue.main.async {
                     self.indicator.stopAnimating()
                     self.tableView.reloadData()
@@ -77,8 +78,8 @@ extension MainTableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
         
         cell.viewModel = viewModel.cellForRowAt(indexPath)
-        cell.prepareForReuse()
         cell.awakeFromNib()
+        cell.prepareForReuse()
         
         return cell
     }
@@ -190,8 +191,10 @@ extension MainTableViewController {
 extension MainTableViewController {
     
     @objc private func nextPageBottom() {
-        viewModel.deleteRequests()
+        URLResquests.shared.runningRequests.removeAll()
         indicator.startAnimating()
+        
+        viewModel.currentPage += 1
         
         navigationItem.leftBarButtonItem?.isEnabled = true
         fetchGames(with: viewModel.nextPage)
@@ -199,8 +202,10 @@ extension MainTableViewController {
     }
     
     @objc private func pervPageBottom() {
-        viewModel.deleteRequests()
+        URLResquests.shared.runningRequests.removeAll()
         indicator.startAnimating()
+        
+        viewModel.currentPage -= 1
         
         navigationItem.rightBarButtonItem?.isEnabled = true
         fetchGames(with: viewModel.prevPage)
@@ -219,7 +224,6 @@ extension MainTableViewController {
         if let url = url {
             urlString = url
         }
-        
         
         viewModel.games = Observable([])
         tableView.reloadData()

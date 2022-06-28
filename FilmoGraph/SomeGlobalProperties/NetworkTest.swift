@@ -54,46 +54,6 @@ final class FetchSomeFilm {
     
     var formatter = DateFormatter()
     
-    func findSomeGames(with text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID {
-        guard let url = URL(string: "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=1&search=\(text)") else { return UUID() }
-        print(url)
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        
-        request.allHTTPHeaderFields = [
-            "application/json" : "Content-Type"
-        ]
-        
-        let uuid = UUID()
-        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, response, error in
-            guard let data = data else { return }
-            
-            do {
-                let welcome = try decoder.decode(Welcome.self, from: data)
-                DispatchQueue.main.async {
-                    completion(.success(welcome))
-                }
-            } catch let DecodingError.dataCorrupted(context) {
-                print(context)
-            } catch let DecodingError.keyNotFound(key, context) {
-                print("Key '\(key)' not found:", context.debugDescription)
-                print("codingPath:", context.codingPath)
-            } catch let DecodingError.valueNotFound(value, context) {
-                print("Value '\(value)' not found:", context.debugDescription)
-                print("codingPath:", context.codingPath)
-            } catch let DecodingError.typeMismatch(type, context)  {
-                print("Type '\(type)' mismatch:", context.debugDescription)
-                print("codingPath:", context.codingPath)
-            } catch {
-                print("error: ", error)
-            }
-        }
-        task.resume()
-        URLResquests.shared.runningRequests[uuid] = task
-        return uuid
-    }
-    
     func fetchScreenShots(with url: String, completion: @escaping(Result<ScreenShots, Error>) -> Void) -> UUID {
         guard let url = URL(string: "https://api.rawg.io/api/games/\(url)/screenshots?key=7f01c67ed4d2433bb82f3dd38282088c") else { return UUID() }
         
@@ -136,14 +96,14 @@ final class FetchSomeFilm {
         return uuid
     }
     
-    func fetchWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
+    func fetchWith(page: Int? = nil, orUrl url: String? = nil, search text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
         var urlForFetch: String?
         
         if let url = url {
             urlForFetch = url
         } else {
             guard let page = page else { return UUID() }
-            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20"
+            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&search=\(text)"
         }
         
         guard let urlForFetch = URL(string: urlForFetch ?? "") else { return UUID() }
