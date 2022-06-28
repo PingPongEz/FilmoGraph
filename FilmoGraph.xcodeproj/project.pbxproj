@@ -60,6 +60,7 @@
 		0921DF612863116A00EFDAF7 /* MainTableViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewModelProtocol.swift; sourceTree = "<group>"; };
 		0921DF63286311B400EFDAF7 /* CellViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModelProtocol.swift; sourceTree = "<group>"; };
 		0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQueueGroup.swift; sourceTree = "<group>"; };
+		0921DF67286BA86400EFDAF7 /* CheckMarks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CheckMarks.md; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -159,6 +160,7 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
 				0921DF5B2860FF5600EFDAF7 /* DetailGame */,

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-class CellViewModel: CellViewModelProtocol {
+final class CellViewModel: CellViewModelProtocol {
     
     private let game: Game!
     
@@ -25,7 +25,7 @@ class CellViewModel: CellViewModelProtocol {
                     let imageView = try result.get()
                     DispatchQueue.main.async {
                         image.value = imageView
-                        URLResquests.shared.deleteOneRequest(request: self.onReuse)
+                        self.stopCellRequest()
                     }
                 } catch {
                     print(error)
@@ -55,6 +55,10 @@ class CellViewModel: CellViewModelProtocol {
     
     func stopCellRequest() {
         URLResquests.shared.deleteOneRequest(request: onReuse)
+    }
+    
+    deinit {
+        stopCellRequest()
     }
     
     required init(game: Game) {

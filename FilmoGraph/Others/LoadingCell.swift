@@ -7,7 +7,7 @@
 
 import UIKit
 
-class LoadingCell: UITableViewCell {
+final class LoadingCell: UITableViewCell {
 
     lazy var indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()

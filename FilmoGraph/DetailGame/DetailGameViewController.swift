@@ -8,7 +8,7 @@
 import UIKit
 
 
-class DetailGameViewController: UIViewController {
+final class DetailGameViewController: UIViewController {
     
     var urlForFetch: String!
     
@@ -179,7 +179,6 @@ extension DetailGameViewController {
         
         scrollView.isUserInteractionEnabled = true
         scrollView.isScrollEnabled = true
-//        scrollView.isPagingEnabled = true
         
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)

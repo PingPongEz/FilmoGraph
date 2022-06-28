@@ -191,8 +191,8 @@ extension MainTableViewController {
 extension MainTableViewController {
     
     @objc private func nextPageBottom() {
-        URLResquests.shared.runningRequests.removeAll()
         indicator.startAnimating()
+        viewModel.stopRequest()
         
         viewModel.currentPage += 1
         
@@ -202,9 +202,9 @@ extension MainTableViewController {
     }
     
     @objc private func pervPageBottom() {
-        URLResquests.shared.runningRequests.removeAll()
         indicator.startAnimating()
-        
+        viewModel.stopRequest()
+
         viewModel.currentPage -= 1
         
         navigationItem.rightBarButtonItem?.isEnabled = true

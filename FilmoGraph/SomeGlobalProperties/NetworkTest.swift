@@ -22,6 +22,7 @@ final class ImageLoader {
         
         let uuid = UUID()
         
+        
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             
             if let data = data, let image = UIImage(data: data) {
@@ -38,7 +39,7 @@ final class ImageLoader {
             }
         }
         task.resume()
-        URLResquests.shared.runningRequests[uuid] = task
+        defer { URLResquests.shared.runningRequests[uuid] = task }
         return uuid
     }
     
@@ -92,19 +93,25 @@ final class FetchSomeFilm {
             }
         }
         task.resume()
-        URLResquests.shared.runningRequests[uuid] = task
+        defer { URLResquests.shared.runningRequests[uuid] = task }
         return uuid
     }
     
     func fetchWith(page: Int? = nil, orUrl url: String? = nil, search text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
         var urlForFetch: String?
         
-        if let url = url {
-            urlForFetch = url
-        } else {
-            guard let page = page else { return UUID() }
+        if let page = page {
             urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&search=\(text)"
+        } else {
+            urlForFetch = url
         }
+        
+//        if let url = url {
+//            urlForFetch = url
+//        } else {
+//            guard let page = page else { return UUID() }
+//            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&search=\(text)"
+//        }
         
         guard let urlForFetch = URL(string: urlForFetch ?? "") else { return UUID() }
         let uuid = UUID()
@@ -140,7 +147,7 @@ final class FetchSomeFilm {
             }
         }
         task.resume()
-        URLResquests.shared.runningRequests[uuid] = task
+        defer { URLResquests.shared.runningRequests[uuid] = task }
         return uuid
     }
     

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class Cell: UITableViewCell {
+final class Cell: UITableViewCell {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
@@ -25,6 +25,7 @@ class Cell: UITableViewCell {
     private var platform = UILabel()
     private var gameCreator = UILabel()
 
+    
     
     override func prepareForReuse() {
         super.prepareForReuse()

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class DetailGameViewModel: DetailGameViewModelProtocol {
+final class DetailGameViewModel: DetailGameViewModelProtocol {
     
     var game: GameDetais?
     private var screenShots: [ScreenShotsResult]?

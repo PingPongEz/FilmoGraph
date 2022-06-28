@@ -9,12 +9,18 @@ import Foundation
 import UIKit
 
 
-class MainTableViewModel : MainTableViewModelProtocol {
+final class MainTableViewModel : MainTableViewModelProtocol {
     
-    var currentPage: Int = 1
+    var currentPage: Int = 1 {
+        didSet {
+            if currentPage < 1 {
+                currentPage = 1
+                print(URLResquests.shared.runningRequests.count)
+            }
+        }
+    }
     var searchText: String = "" {
         didSet {
-            URLResquests.shared.runningRequests.removeAll()
             searchText = searchText.replacingOccurrences(of: " ", with: "")
         }
     }
@@ -22,7 +28,6 @@ class MainTableViewModel : MainTableViewModelProtocol {
     var nextPage: String?
     var prevPage: String?
     var currentRequest: UUID?
-    
     
     var games: Observable<[Game]> = Observable([])
     
@@ -35,7 +40,7 @@ class MainTableViewModel : MainTableViewModelProtocol {
                         self.nextPage = result.next
                         self.prevPage = result.previous
                         self.games = Observable(result.results)
-                        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
+                        self.stopRequest()
                         completion()
                     }
                 case .failure(let error):
@@ -70,6 +75,10 @@ class MainTableViewModel : MainTableViewModelProtocol {
                 }
             }
         }
+    }
+    
+    func stopRequest() {
+        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
     }
 }
 
