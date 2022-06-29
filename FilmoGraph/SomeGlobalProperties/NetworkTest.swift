@@ -106,13 +106,6 @@ final class FetchSomeFilm {
             urlForFetch = url
         }
         
-//        if let url = url {
-//            urlForFetch = url
-//        } else {
-//            guard let page = page else { return UUID() }
-//            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&search=\(text)"
-//        }
-        
         guard let urlForFetch = URL(string: urlForFetch ?? "") else { return UUID() }
         let uuid = UUID()
         
