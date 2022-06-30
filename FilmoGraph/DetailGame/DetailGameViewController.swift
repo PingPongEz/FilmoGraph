@@ -40,7 +40,6 @@ final class DetailGameViewController: UIViewController {
     private lazy var pageControll = UIPageControl()
     private lazy var picturePages = UIScrollView()
     private lazy var scrollView = UIScrollView()
-    private lazy var contentView = UIView()
     
     
     var viewModel: DetailGameViewModel? {
@@ -60,7 +59,6 @@ final class DetailGameViewController: UIViewController {
                         height: self.fullScreenConstraint
                     )
                     self.setImageForScrollView()
-                    
                 }
             }
         }
@@ -81,6 +79,9 @@ final class DetailGameViewController: UIViewController {
         gameDescription.isUserInteractionEnabled = true
         gameDescription.addGestureRecognizer(gesture)
         addIndicator()
+        
+
+        addScrollView()
     }
     
     override func viewWillLayoutSubviews() {
@@ -114,24 +115,24 @@ extension DetailGameViewController {
             picturePages.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             picturePages.heightAnchor.constraint(equalToConstant: fullScreenConstraint),
             picturePages.widthAnchor.constraint(equalToConstant: fullScreenConstraint),
-            picturePages.topAnchor.constraint(equalTo: contentView.topAnchor, constant: smallScreenConstraint / 2),
+            picturePages.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: smallScreenConstraint / 2),
         ])
         
         NSLayoutConstraint.activate([
             gameName.topAnchor.constraint(equalTo: picturePages.bottomAnchor, constant: smallScreenConstraint / 2),
-            gameName.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            gameName.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
         ])
         
         NSLayoutConstraint.activate([
             gameDescription.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 32),
             gameDescription.topAnchor.constraint(equalTo: gameName.bottomAnchor, constant: (smallScreenConstraint / 2) * 0.5),
-            gameDescription.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+            gameDescription.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
         ])
         
         NSLayoutConstraint.activate([
             gamePlatforms.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - 32),
             gamePlatforms.topAnchor.constraint(equalTo: gameDescription.bottomAnchor, constant: (smallScreenConstraint / 2) * 0.5),
-            gamePlatforms.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+            gamePlatforms.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor)
         ])
     }
     
@@ -175,13 +176,11 @@ extension DetailGameViewController {
     
     private func addScrollView() {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         
         scrollView.isUserInteractionEnabled = true
         scrollView.isScrollEnabled = true
         
         view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
         
         NSLayoutConstraint.activate([
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -191,24 +190,27 @@ extension DetailGameViewController {
         ])
         
         
-        NSLayoutConstraint.activate([
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
-        ])
+        addSubViews([pageControll, gameName, gameDescription, gamePlatforms, gameRate, picturePages])
         
         scrollView.contentSize = CGSize(width: view.frame.width, height: 1000)
         
-        addSubViews([pageControll, gameName, gameDescription, gamePlatforms, gameRate, picturePages])
-        
         addAllOthers()
+    }
+    
+    
+    
+    private func calculateHeight() -> CGFloat {
+        var height: CGFloat = 0
+        scrollView.subviews.forEach { view in
+            height += view.frame.height
+        }
+        return height
     }
     
     private func addSubViews(_ views: [UIView]) {
         views.forEach { [unowned self] subView in
             subView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.insertSubview(subView, belowSubview: contentView)
+            scrollView.insertSubview(subView, belowSubview: scrollView)
         }
     }
 }

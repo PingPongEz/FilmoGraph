@@ -17,6 +17,8 @@
 		0921DF622863116A00EFDAF7 /* MainTableViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF612863116A00EFDAF7 /* MainTableViewModelProtocol.swift */; };
 		0921DF64286311B400EFDAF7 /* CellViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF63286311B400EFDAF7 /* CellViewModelProtocol.swift */; };
 		0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */; };
+		094D7EAA286CBDD80087ED77 /* DynamicLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */; };
+		094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAB286E2D5F0087ED77 /* Mutex.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
@@ -61,6 +63,8 @@
 		0921DF63286311B400EFDAF7 /* CellViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModelProtocol.swift; sourceTree = "<group>"; };
 		0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalQueueGroup.swift; sourceTree = "<group>"; };
 		0921DF67286BA86400EFDAF7 /* CheckMarks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CheckMarks.md; sourceTree = "<group>"; };
+		094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicLayout.swift; sourceTree = "<group>"; };
+		094D7EAB286E2D5F0087ED77 /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -160,6 +164,8 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */,
+				094D7EAB286E2D5F0087ED77 /* Mutex.swift */,
 				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
@@ -354,7 +360,9 @@
 				0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */,
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
 				0921DF52285CD1EA00EFDAF7 /* CacheWork.swift in Sources */,
+				094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */,
 				0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */,
+				094D7EAA286CBDD80087ED77 /* DynamicLayout.swift in Sources */,
 				0921DF5F2860FF7900EFDAF7 /* DetailGameViewModelProtocol.swift in Sources */,
 				0921DF4F285B3A4B00EFDAF7 /* CacheImage.swift in Sources */,
 				0921DF56285CD31700EFDAF7 /* LoadingCell.swift in Sources */,

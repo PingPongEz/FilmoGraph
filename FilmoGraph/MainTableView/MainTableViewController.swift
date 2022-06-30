@@ -11,7 +11,8 @@ protocol StopLoadingPic {
     func stopWith(requests: [UUID?])
 }
 
-final class MainTableViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating {
+final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UISearchResultsUpdating, UICollectionViewDelegateFlowLayout {
+    
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let text = searchController.searchBar.text else { return }
@@ -21,7 +22,7 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
             self.viewModel.fetchGamesWith(page: 1) {
                 DispatchQueue.main.async {
                     self.indicator.stopAnimating()
-                    self.tableView.reloadData()
+                    self.collectionView.reloadData()
                 }
             }
         }
@@ -29,7 +30,22 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
     
     private let viewModel = MainTableViewModel()
     private var searchController: UISearchController!
-    private var tableView: UITableView!
+    
+    private var collectionView: UICollectionView = {
+        
+        let layout = UICollectionViewFlowLayout()
+        
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+        
+        
+        let collectionView = UICollectionView(
+            frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height),
+            collectionViewLayout: layout
+        )
+        
+        collectionView.register(Cell.self, forCellWithReuseIdentifier: "Cell")
+        return collectionView
+    }()
     
     private let indicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -50,32 +66,37 @@ final class MainTableViewController: UIViewController, UITableViewDelegate, UITa
             fetchGames()
         }
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.isShowAvailable = true
+    }
 }
 
 //MARK: TableViewDelegate
 extension MainTableViewController {
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        
-        let url = viewModel.cellDidTap(indexPath)
-        let detailsVC = DetailGameViewController()
-        detailsVC.delegate = self
-        
-        viewModel.createDetailViewControllerModel(with: url) { gameDetails in
-            detailsVC.viewModel = DetailGameViewModel(game: gameDetails)
-        }
-        
-        show(detailsVC, sender: nil)
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.games.value.count
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.games.value.count
     }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
+        let layout = UICollectionViewFlowLayout()
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
+        layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+        layout.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
+        let layout2 = UICollectionViewFlowLayout()
+        
+        layout2.sectionInset = UIEdgeInsets(top: 40, left: 32, bottom: 40, right: 32)
+        layout2.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 500)
+        
+        return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
+    }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
         
         cell.viewModel = viewModel.cellForRowAt(indexPath)
         cell.awakeFromNib()
@@ -83,30 +104,67 @@ extension MainTableViewController {
         
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! Cell
+        
+        UIView.animate(withDuration: 0.2) {
+            cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! Cell
+        
+        UIView.animate(withDuration: 0.2) {
+            cell.transform = .identity
+        }
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredVertically)
+        if viewModel.isShowAvailable {
+            viewModel.isShowAvailable = false
+            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
+                collectionView.deselectItem(at: indexPath, animated: true)
+                let url = viewModel.cellDidTap(indexPath)
+                let detailVC = DetailGameViewController()
+                detailVC.delegate = self
+                
+                viewModel.createDetailViewControllerModel(with: url) { details in
+                    detailVC.viewModel = DetailGameViewModel(game: details)
+                }
+                show(detailVC, sender: nil)
+            }
+        }
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+    }
 }
 
 //MARK: UI Methods
 extension MainTableViewController {
     private func createTableView() {
-        let tableView = UITableView()
         
-        tableView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        tableView.sizeToFit()
-        tableView.rowHeight = 220
-        tableView.dataSource = self
-        tableView.delegate = self
+        collectionView.sizeToFit()
+        collectionView.dataSource = self
+        collectionView.delegate = self
         
-        view.addSubview(tableView)
-        tableView.addSubview(indicator)
-        
-        tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
+        view.addSubview(collectionView)
+        collectionView.addSubview(indicator)
+        //        tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         ])
         
         NSLayoutConstraint.activate([
@@ -115,7 +173,7 @@ extension MainTableViewController {
         ])
         
         indicator.startAnimating()
-        self.tableView = tableView
+        
     }
     
     private func createSearchBar() {
@@ -204,7 +262,7 @@ extension MainTableViewController {
     @objc private func pervPageBottom() {
         indicator.startAnimating()
         viewModel.stopRequest()
-
+        
         viewModel.currentPage -= 1
         
         navigationItem.rightBarButtonItem?.isEnabled = true
@@ -226,12 +284,12 @@ extension MainTableViewController {
         }
         
         viewModel.games = Observable([])
-        tableView.reloadData()
+        collectionView.reloadData()
         
         viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) { [unowned self] in
             DispatchQueue.main.async {
                 self.indicator.stopAnimating()
-                self.tableView.reloadData()
+                self.collectionView.reloadData()
             }
         }
     }

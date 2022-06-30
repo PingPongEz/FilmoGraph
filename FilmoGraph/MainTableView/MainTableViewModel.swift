@@ -25,6 +25,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         }
     }
     
+    var isShowAvailable = true
     var nextPage: String?
     var prevPage: String?
     var currentRequest: UUID?
@@ -62,6 +63,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     }
     
     func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
+        isShowAvailable = false
         guard let urlForFetch = urlForFetch else { return }
         GlobalGroup.shared.group.notify(queue: .global()) {
             FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in

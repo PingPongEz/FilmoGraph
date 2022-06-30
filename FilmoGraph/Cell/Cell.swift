@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class Cell: UITableViewCell {
+final class Cell: UICollectionViewCell {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
@@ -42,10 +42,14 @@ final class Cell: UITableViewCell {
         }
     }
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setUI()
-        setConstr()
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.layer.borderWidth = 2
+        self.layer.borderColor = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
+        clipsToBounds = true
+//        setUI()
+//        setConstr()
+        self.backgroundColor = .red
     }
     
     private func setUI() {
