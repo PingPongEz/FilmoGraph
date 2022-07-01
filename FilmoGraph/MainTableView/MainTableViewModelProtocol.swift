@@ -13,6 +13,7 @@ protocol MainTableViewModelProtocol {
     var nextPage: String? { get set }
     var prevPage: String? { get set }
     var searchText: String { get set }
+    var isShowAvailable: Bool { get set }
     
     func fetchGamesWith(page: Int?, orUrl url: String?, completion: @escaping () -> Void)
     func cellDidTap(_ indexPath: IndexPath) -> String

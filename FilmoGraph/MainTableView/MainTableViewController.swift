@@ -14,20 +14,6 @@ protocol StopLoadingPic {
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UISearchResultsUpdating, UICollectionViewDelegateFlowLayout {
     
     
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let text = searchController.searchBar.text else { return }
-        viewModel.searchText = text
-        indicator.startAnimating()
-        viewModel.games.bind { [ unowned self ] _ in
-            self.viewModel.fetchGamesWith(page: 1) {
-                DispatchQueue.main.async {
-                    self.indicator.stopAnimating()
-                    self.collectionView.reloadData()
-                }
-            }
-        }
-    }
-    
     private let viewModel = MainTableViewModel()
     private var searchController: UISearchController!
     
@@ -71,18 +57,29 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         super.viewWillAppear(animated)
         viewModel.isShowAvailable = true
     }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let text = searchController.searchBar.text else { return }
+        viewModel.searchText = text
+        indicator.startAnimating()
+        viewModel.games.bind { [ unowned self ] _ in
+            self.viewModel.fetchGamesWith(page: 1) {
+                DispatchQueue.main.async {
+                    self.indicator.stopAnimating()
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
 }
 
-//MARK: TableViewDelegate
+//MARK: FlowLayoutDelegate
 extension MainTableViewController {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.games.value.count
-    }
     func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
         let layout = UICollectionViewFlowLayout()
         
@@ -95,6 +92,15 @@ extension MainTableViewController {
         
         return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
     }
+}
+    
+//MARK: TableViewDelegate
+extension MainTableViewController {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        viewModel.games.value.count
+    }
+    
+    //MARK: CellForItemAt
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
         
@@ -105,37 +111,36 @@ extension MainTableViewController {
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! Cell
-        
-        UIView.animate(withDuration: 0.2) {
-            cell.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-        }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! Cell
-        
-        UIView.animate(withDuration: 0.2) {
-            cell.transform = .identity
-        }
-    }
-    
-    
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    //MARK: Did Select Row
+     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredVertically)
         if viewModel.isShowAvailable {
             viewModel.isShowAvailable = false
-            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
-                collectionView.deselectItem(at: indexPath, animated: true)
+            Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { [unowned self] _ in
                 let url = viewModel.cellDidTap(indexPath)
                 let detailVC = DetailGameViewController()
                 detailVC.delegate = self
+                collectionView.deselectItem(at: indexPath, animated: true)
                 
-                viewModel.createDetailViewControllerModel(with: url) { details in
-                    detailVC.viewModel = DetailGameViewModel(game: details)
+                let threadOne = ConditionOne {
+                    self.viewModel.createDetailViewControllerModel(with: url) { details in
+                        detailVC.viewModel = DetailGameViewModel(game: details)
+                        Mutex.shared.available = true
+                        pthread_cond_signal(&Mutex.shared.condition)
+                    }
                 }
+                
+                let threadTwo = ConditionTwo {
+                    guard let slug = self.viewModel.games.value[indexPath.row].slug else { return }
+                    self.viewModel.fetchScreenShots(gameSlug: slug) { images in
+                        detailVC.viewModel?.images = images
+                        detailVC.setImages()
+                    }
+                }
+                
+                threadOne.start()
+                threadTwo.start()
+                
                 show(detailVC, sender: nil)
             }
         }

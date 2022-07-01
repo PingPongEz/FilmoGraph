@@ -47,9 +47,8 @@ final class Cell: UICollectionViewCell {
         self.layer.borderWidth = 2
         self.layer.borderColor = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
         clipsToBounds = true
-//        setUI()
-//        setConstr()
-        self.backgroundColor = .red
+        setUI()
+        setConstr()
     }
     
     private func setUI() {

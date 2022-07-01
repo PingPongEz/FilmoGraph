@@ -15,7 +15,7 @@ protocol CellViewModelProtocol: AnyObject {
     var gameType: String { get }
     var platform: String { get }
     var gameCreator: String { get }
-//    var onReuse: UUID? { get set }
+    
     func stopCellRequest()
     init(game: Game)
 }

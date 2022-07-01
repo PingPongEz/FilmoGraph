@@ -12,16 +12,16 @@ class Mutex {
     private init(){}
     static var shared = Mutex()
     
+    var available = false
+    
     var mutex = pthread_mutex_t()
     var condition = pthread_cond_t()
 }
 
 
-public class Condition: Thread {
+public class ConditionOne: Thread {
     
-    var available = true
     var method: () -> Void
-    
     
     init(completion: @escaping() -> Void) {
         pthread_cond_init(&Mutex.shared.condition, nil)
@@ -33,18 +33,37 @@ public class Condition: Thread {
         doSomethingMethod(completion: method)
     }
     
-    func turnItOn() {
-        available = true
-        pthread_cond_signal(&Mutex.shared.condition)
+    func doSomethingMethod(completion: () -> Void)  {
+        pthread_mutex_lock(&Mutex.shared.mutex)
+        
+        defer { pthread_mutex_unlock(&Mutex.shared.mutex) }
+        completion()
+    }
+}
+
+public class ConditionTwo: Thread {
+    
+    var method: () -> Void
+    
+    init(completion: @escaping() -> Void) {
+        pthread_cond_init(&Mutex.shared.condition, nil)
+        pthread_mutex_init(&Mutex.shared.mutex, nil)
+        self.method = completion
     }
     
-    func doSomethingMethod<R>(completion: () throws -> R) rethrows -> R {
+    public override func main() {
+        doSomethingMethod(completion: method)
+    }
+    
+    func doSomethingMethod(completion: () -> Void)  {
         pthread_mutex_lock(&Mutex.shared.mutex)
-        while (!available) {
+        
+        while (!Mutex.shared.available) {
             pthread_cond_wait(&Mutex.shared.condition, &Mutex.shared.mutex)
         }
-        available = false
+        
+        Mutex.shared.available = false
         defer { pthread_mutex_unlock(&Mutex.shared.mutex) }
-        return try completion()
+        completion()
     }
 }

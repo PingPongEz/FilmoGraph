@@ -33,7 +33,6 @@ final class DetailGameViewController: UIViewController {
         return title
     }()
     
-    
     private lazy var gameRate = UILabel()
     private lazy var indicator = UIActivityIndicatorView()
     private lazy var gesture = UITapGestureRecognizer(target: self, action: #selector(self.tapped(_:)))
@@ -52,20 +51,21 @@ final class DetailGameViewController: UIViewController {
             gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
             gameRate.text = viewModel.gameRate
             
-            viewModel.fetchScreenShots { [unowned self] in
-                DispatchQueue.main.async {
-                    self.picturePages.contentSize = CGSize(
-                        width: self.fullScreenConstraint * CGFloat(viewModel.images.count),
-                        height: self.fullScreenConstraint
-                    )
-                    self.setImageForScrollView()
-                }
-            }
         }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         delegate.stopWith(requests: viewModel?.listOfRequests ?? [])
+    }
+    
+    func setImages() {
+        DispatchQueue.main.async { [ unowned self ] in
+            self.picturePages.contentSize = CGSize(
+                width: self.fullScreenConstraint * CGFloat(viewModel?.images.count ?? 0),
+                height: self.fullScreenConstraint
+            )
+            self.setImageForScrollView()
+        }
     }
     
     override func viewDidLoad() {
@@ -80,8 +80,8 @@ final class DetailGameViewController: UIViewController {
         gameDescription.addGestureRecognizer(gesture)
         addIndicator()
         
-
         addScrollView()
+        
     }
     
     override func viewWillLayoutSubviews() {

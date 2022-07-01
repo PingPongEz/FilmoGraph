@@ -14,9 +14,9 @@
             filePath = "FilmoGraph/Cell/Cell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
-            landmarkName = "setConstr()"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "setUI()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -78,8 +78,8 @@
             filePath = "FilmoGraph/MainTableView/MainTableViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
             landmarkName = "fetchGamesWith(page:orUrl:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "FilmoGraph/MainTableView/MainTableViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "71"
-            endingLineNumber = "71"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
             landmarkName = "createDetailViewControllerModel(with:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -148,16 +148,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "ADB1E1E6-8636-484B-BE71-5975E115CECA"
+            uuid = "2BD70A75-F04D-42C5-A976-2D29A220D702"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "FilmoGraph/DetailGame/DetailGameViewController.swift"
+            filePath = "FilmoGraph/Mutex.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
-            landmarkName = "calculateHeight()"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
+            landmarkName = "doSomethingMethod(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
