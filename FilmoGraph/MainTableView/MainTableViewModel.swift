@@ -35,8 +35,6 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     private var currentRequest: UUID?
     private var listOfRequests = [UUID?]()
     private var screenShots: [ScreenShotsResult]?
-    private var images = [UIImage]()
-    
     
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         DispatchQueue.global().async { [unowned self] in
@@ -63,12 +61,47 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         return CellViewModel(game: game)
     }
     
-    func cellDidTap(_ indexPath: IndexPath) -> String {
+    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
+        let url = cellDidTap(indexPath)
+        
+        let detailVC = DetailGameViewController()
+        
+        let concurrentQueue = DispatchQueue(label: "Loading details", qos: .utility, attributes: .concurrent)
+        let dispatchGroup = DispatchGroup()
+        
+        dispatchGroup.enter()
+        concurrentQueue.async(group: GlobalGroup.shared.group) { [unowned self] in
+            
+            createDetailViewControllerModel(with: url) { details in
+                detailVC.viewModel = DetailGameViewModel(game: details)
+                dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.enter()
+        concurrentQueue.async(group: GlobalGroup.shared.group) { [unowned self] in
+            
+            guard let slug = games.value[indexPath.row].slug else { return }
+            fetchScreenShots(gameSlug: slug) { images in
+                detailVC.viewModel?.images = images
+                dispatchGroup.leave()
+            }
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            print(1123)
+            detailVC.notifyGroup()
+        }
+        
+        return detailVC
+    }
+    
+    private func cellDidTap(_ indexPath: IndexPath) -> String {
         guard let string = games.value[indexPath.row].id else { return "" }
         return String("https://api.rawg.io/api/games/\(string)?key=7f01c67ed4d2433bb82f3dd38282088c")
     }
     
-    func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
+    private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
         isShowAvailable = false
         guard let urlForFetch = urlForFetch else { return }
         GlobalGroup.shared.group.notify(queue: .global()) {
@@ -85,7 +118,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         }
     }
     
-    func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
+    private func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
         DispatchQueue.global().async { [unowned self] in
             let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
                 do {
@@ -105,6 +138,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     }
     
     private func unpackScreenshots(completion: @escaping ([UIImage]) -> Void) {
+        var loadedImages = [UIImage]()
         DispatchQueue.global().async { [unowned self] in
             screenShots?.forEach { url in
                 guard let url = URL(string: url.image ?? "") else { return }
@@ -112,10 +146,9 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                     do {
                         let image = try result.get()
                         DispatchQueue.main.async {
-                            self.images.append(image)
-                            if self.images.count == self.screenShots?.count {  //MARK: For only one completion call
-                                completion(self.images)
-                                self.images = []
+                            loadedImages.append(image)
+                            if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
+                                completion(loadedImages)
                             }
                         }
                     } catch {
@@ -126,6 +159,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             }
         }
     }
+    
+    
     
     func deleteRequests() {
         URLResquests.shared.cancelRequests(requests: listOfRequests)

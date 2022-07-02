@@ -16,8 +16,7 @@ protocol MainTableViewModelProtocol {
     var isShowAvailable: Bool { get set }
     
     func fetchGamesWith(page: Int?, orUrl url: String?, completion: @escaping () -> Void)
-    func cellDidTap(_ indexPath: IndexPath) -> String
+    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
-    func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void)
     
 }

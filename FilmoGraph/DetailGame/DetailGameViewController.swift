@@ -41,32 +41,12 @@ final class DetailGameViewController: UIViewController {
     private lazy var scrollView = UIScrollView()
     
     
-    var viewModel: DetailGameViewModel? {
-        didSet {
-            indicator.stopAnimating()
-            guard let viewModel = viewModel else { return }
-            
-            gameName.text = viewModel.gameName
-            gameDescription.text = "About game : \(viewModel.gameDescription)"
-            gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
-            gameRate.text = viewModel.gameRate
-            
-        }
-    }
+    var viewModel: DetailGameViewModel?
     
     override func viewDidDisappear(_ animated: Bool) {
         delegate.stopWith(requests: viewModel?.listOfRequests ?? [])
     }
     
-    func setImages() {
-        DispatchQueue.main.async { [ unowned self ] in
-            self.picturePages.contentSize = CGSize(
-                width: self.fullScreenConstraint * CGFloat(viewModel?.images.count ?? 0),
-                height: self.fullScreenConstraint
-            )
-            self.setImageForScrollView()
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -211,6 +191,28 @@ extension DetailGameViewController {
         views.forEach { [unowned self] subView in
             subView.translatesAutoresizingMaskIntoConstraints = false
             scrollView.insertSubview(subView, belowSubview: scrollView)
+        }
+    }
+    
+    func notifyGroup() {
+        DispatchQueue.main.async { [unowned self] in
+            indicator.stopAnimating()
+            
+            guard let viewModel = viewModel else { return }
+            
+            gameName.text = viewModel.gameName
+            gameDescription.text = "About game : \(viewModel.gameDescription)"
+            gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
+            gameRate.text = viewModel.gameRate
+            
+            
+            DispatchQueue.main.async { [ unowned self ] in
+                self.picturePages.contentSize = CGSize(
+                    width: self.fullScreenConstraint * CGFloat(viewModel.images.count),
+                    height: self.fullScreenConstraint
+                )
+                self.setImageForScrollView()
+            }
         }
     }
 }

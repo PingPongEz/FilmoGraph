@@ -11,5 +11,15 @@ class GlobalGroup {
     private init(){}
     static var shared = GlobalGroup()
     
-    let group = DispatchGroup()
+    func notifyMe(action: @escaping()-> Void, completeAction: @escaping() -> Void) {
+        
+        action()
+        
+        group.notify(queue: .main) {
+            completeAction()
+        }
+        
+    }
+    
+    var group = DispatchGroup()
 }

@@ -93,7 +93,7 @@ extension MainTableViewController {
         return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
     }
 }
-    
+
 //MARK: TableViewDelegate
 extension MainTableViewController {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -112,34 +112,15 @@ extension MainTableViewController {
     }
     
     //MARK: Did Select Row
-     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredVertically)
         if viewModel.isShowAvailable {
             viewModel.isShowAvailable = false
-            Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { [unowned self] _ in
-                let url = viewModel.cellDidTap(indexPath)
-                let detailVC = DetailGameViewController()
+            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
+                
+                let detailVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                
                 detailVC.delegate = self
-                collectionView.deselectItem(at: indexPath, animated: true)
-                
-                let threadOne = ConditionOne {
-                    self.viewModel.createDetailViewControllerModel(with: url) { details in
-                        detailVC.viewModel = DetailGameViewModel(game: details)
-                        Mutex.shared.available = true
-                        pthread_cond_signal(&Mutex.shared.condition)
-                    }
-                }
-                
-                let threadTwo = ConditionTwo {
-                    guard let slug = self.viewModel.games.value[indexPath.row].slug else { return }
-                    self.viewModel.fetchScreenShots(gameSlug: slug) { images in
-                        detailVC.viewModel?.images = images
-                        detailVC.setImages()
-                    }
-                }
-                
-                threadOne.start()
-                threadTwo.start()
                 
                 show(detailVC, sender: nil)
             }
