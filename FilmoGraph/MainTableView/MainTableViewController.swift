@@ -118,11 +118,11 @@ extension MainTableViewController {
             viewModel.isShowAvailable = false
             Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
                 
-                let detailVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                weak var detailVC = viewModel.downloadEveryThingForDetails(with: indexPath)
                 
-                detailVC.delegate = self
+                detailVC?.delegate = self
                 
-                show(detailVC, sender: nil)
+                show(detailVC!, sender: nil)
             }
         }
     }

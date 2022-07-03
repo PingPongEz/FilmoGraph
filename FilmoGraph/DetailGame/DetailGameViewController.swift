@@ -18,33 +18,34 @@ final class DetailGameViewController: UIViewController {
     private let smallScreenConstraint = min(UIScreen.main.bounds.width * 0.25, UIScreen.main.bounds.height * 0.25)
     private let largeScreenConstraint = min(UIScreen.main.bounds.width * 0.75, UIScreen.main.bounds.height * 0.75)
     
-    private let gameName = UILabel()
     
-    private let gameDescription: UILabel = {
+    private var gameDescription: UILabel = {
         let title = UILabel()
         title.numberOfLines = 1
         title.textColor = .gray
         return title
     }()
     
-    private let gamePlatforms: UILabel = {
+    private var gamePlatforms: UILabel = {
         let title = UILabel()
         title.numberOfLines = 0
         return title
     }()
     
-    private lazy var gameRate = UILabel()
-    private lazy var indicator = UIActivityIndicatorView()
+    private var gameName = UILabel()
+    private var gameRate = UILabel()
+    private var indicator = UIActivityIndicatorView()
+    private var picturePages = UIScrollView()
+    private var scrollView = UIScrollView()
     private lazy var gesture = UITapGestureRecognizer(target: self, action: #selector(self.tapped(_:)))
-    private lazy var pageControll = UIPageControl()
-    private lazy var picturePages = UIScrollView()
-    private lazy var scrollView = UIScrollView()
     
     
     var viewModel: DetailGameViewModel?
     
     override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         delegate.stopWith(requests: viewModel?.listOfRequests ?? [])
+        viewModel = nil
     }
     
     
@@ -58,14 +59,23 @@ final class DetailGameViewController: UIViewController {
         
         gameDescription.isUserInteractionEnabled = true
         gameDescription.addGestureRecognizer(gesture)
+        
         addIndicator()
         
-        addScrollView()
+        addSubViews([gameName, gameDescription, gamePlatforms, gameRate, picturePages])
+        
         
     }
     
     override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
         addScrollView()
+        calculateHeight()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
     }
 }
 
@@ -83,6 +93,62 @@ extension DetailGameViewController {
             indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
+    }
+    
+    @objc private func tapped(_ sender: UITapGestureRecognizer) {
+        if gesture.state == .ended {
+            if gameDescription.numberOfLines == 1 {
+                gameDescription.numberOfLines = 0
+                gameDescription.textColor = .black
+            } else {
+                gameDescription.numberOfLines = 1
+                gameDescription.textColor = .gray
+            }
+            uploadUI()
+        }
+    }
+    
+    private func setImageForScrollView() {
+        
+        var position: CGFloat = 0
+        
+        viewModel?.images.forEach { image in
+            let imageView = UIImageView()
+            imageView.contentMode = .scaleAspectFit
+            imageView.image = image
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            
+            imageView.frame = CGRect(x: 0, y: 0, width: fullScreenConstraint, height: fullScreenConstraint)
+            
+            picturePages.addSubview(imageView)
+            
+            NSLayoutConstraint.activate([
+                imageView.widthAnchor.constraint(equalToConstant: fullScreenConstraint),
+                imageView.heightAnchor.constraint(equalToConstant: fullScreenConstraint),
+                imageView.centerYAnchor.constraint(equalTo: picturePages.centerYAnchor),
+                imageView.leadingAnchor.constraint(equalTo: picturePages.leadingAnchor, constant: fullScreenConstraint * position)
+            ])
+            
+            position += 1
+        }
+    }
+    
+    private func addScrollView() {
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollView.isUserInteractionEnabled = true
+        scrollView.isScrollEnabled = true
+        
+        view.addSubview(scrollView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        addAllOthers()
     }
     
     private func addAllOthers() {
@@ -116,75 +182,12 @@ extension DetailGameViewController {
         ])
     }
     
-    @objc private func tapped(_ sender: UITapGestureRecognizer) {
-        if gesture.state == .ended {
-            if gameDescription.numberOfLines == 0 {
-                gameDescription.numberOfLines = 1
-                gameDescription.textColor = .gray
-            } else {
-                gameDescription.numberOfLines = 0
-                gameDescription.textColor = .black
-            }
-        }
-    }
-    
-    private func setImageForScrollView() {
+    private func calculateHeight() {
+       
+        scrollView.contentSize.height = scrollView.subviews.last?.bounds.maxY ?? 0
+//        print(scrollView.contentSize.height)
+//        print(scrollView.bounds.maxY)
         
-        var position: CGFloat = 0
-        
-        viewModel?.images.forEach { image in
-            let imageView = UIImageView()
-            imageView.contentMode = .scaleAspectFit
-            imageView.image = image
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            
-            imageView.frame = CGRect(x: 0, y: 0, width: fullScreenConstraint, height: fullScreenConstraint)
-            
-            picturePages.addSubview(imageView)
-            
-            NSLayoutConstraint.activate([
-                imageView.widthAnchor.constraint(equalToConstant: fullScreenConstraint),
-                imageView.heightAnchor.constraint(equalToConstant: fullScreenConstraint),
-                imageView.centerYAnchor.constraint(equalTo: picturePages.centerYAnchor),
-                imageView.leadingAnchor.constraint(equalTo: picturePages.leadingAnchor, constant: fullScreenConstraint * position)
-            ])
-            
-            position += 1
-        }
-        
-    }
-    
-    private func addScrollView() {
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        
-        scrollView.isUserInteractionEnabled = true
-        scrollView.isScrollEnabled = true
-        
-        view.addSubview(scrollView)
-        
-        NSLayoutConstraint.activate([
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
-        
-        
-        addSubViews([pageControll, gameName, gameDescription, gamePlatforms, gameRate, picturePages])
-        
-        scrollView.contentSize = CGSize(width: view.frame.width, height: 1000)
-        
-        addAllOthers()
-    }
-    
-    
-    
-    private func calculateHeight() -> CGFloat {
-        var height: CGFloat = 0
-        scrollView.subviews.forEach { view in
-            height += view.frame.height
-        }
-        return height
     }
     
     private func addSubViews(_ views: [UIView]) {
@@ -194,25 +197,28 @@ extension DetailGameViewController {
         }
     }
     
-    func notifyGroup() {
-        DispatchQueue.main.async { [unowned self] in
-            indicator.stopAnimating()
-            
-            guard let viewModel = viewModel else { return }
-            
-            gameName.text = viewModel.gameName
-            gameDescription.text = "About game : \(viewModel.gameDescription)"
-            gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
-            gameRate.text = viewModel.gameRate
-            
-            
-            DispatchQueue.main.async { [ unowned self ] in
-                self.picturePages.contentSize = CGSize(
-                    width: self.fullScreenConstraint * CGFloat(viewModel.images.count),
-                    height: self.fullScreenConstraint
-                )
-                self.setImageForScrollView()
-            }
-        }
+    func uploadUI() {
+        indicator.stopAnimating()
+        
+        addScrollView()
+        
+        guard let viewModel = viewModel else { return }
+        
+        gameName.text = viewModel.gameName
+        gameDescription.text = "About game : \(viewModel.gameDescription)"
+        gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
+        gameRate.text = viewModel.gameRate
+        
+        picturePages.contentSize = CGSize(
+            width: fullScreenConstraint * CGFloat(viewModel.images.count),
+            height: fullScreenConstraint
+        )
+        setImageForScrollView()
+        
+        scrollView.subviews.forEach  { print($0.frame.maxY) }
+        
+        calculateHeight()
+        
+        viewWillLayoutSubviews()
     }
 }

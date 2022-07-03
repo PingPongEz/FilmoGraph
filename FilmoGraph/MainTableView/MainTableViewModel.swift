@@ -76,6 +76,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                 detailVC.viewModel = DetailGameViewModel(game: details)
                 dispatchGroup.leave()
             }
+            
         }
         
         dispatchGroup.enter()
@@ -86,11 +87,11 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                 detailVC.viewModel?.images = images
                 dispatchGroup.leave()
             }
+            
         }
         
         dispatchGroup.notify(queue: .main) {
-            print(1123)
-            detailVC.notifyGroup()
+            detailVC.uploadUI()
         }
         
         return detailVC
@@ -103,8 +104,10 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     
     private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
         isShowAvailable = false
+        
         guard let urlForFetch = urlForFetch else { return }
         GlobalGroup.shared.group.notify(queue: .global()) {
+            
             FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
                 do {
                     let details = try result.get()
@@ -115,17 +118,21 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                     print(error)
                 }
             }
+            
         }
     }
     
     private func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
+        
         DispatchQueue.global().async { [unowned self] in
+            
             let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
                 do {
                     let images = try result.get()
                     DispatchQueue.main.async {
                         self.screenShots = images.results
                         self.unpackScreenshots { images in
+                            print(images.count)
                             completion(images)
                         }
                     }
@@ -139,7 +146,9 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     
     private func unpackScreenshots(completion: @escaping ([UIImage]) -> Void) {
         var loadedImages = [UIImage]()
+        
         DispatchQueue.global().async { [unowned self] in
+            
             screenShots?.forEach { url in
                 guard let url = URL(string: url.image ?? "") else { return }
                 let request = ImageLoader.shared.loadImage(url) { result in  //MARK: Make delete from requests with protocol
@@ -148,6 +157,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                         DispatchQueue.main.async {
                             loadedImages.append(image)
                             if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
+//                                print(url.absoluteString)
+//                                print(loadedImages.count)
                                 completion(loadedImages)
                             }
                         }
