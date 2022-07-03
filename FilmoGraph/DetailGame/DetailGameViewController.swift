@@ -60,6 +60,9 @@ final class DetailGameViewController: UIViewController {
         gameDescription.isUserInteractionEnabled = true
         gameDescription.addGestureRecognizer(gesture)
         
+        
+        view.addSubview(scrollView)
+        
         addIndicator()
         
     }
@@ -139,7 +142,6 @@ extension DetailGameViewController {
         scrollView.isUserInteractionEnabled = true
         scrollView.isScrollEnabled = true
         
-        view.addSubview(scrollView)
         
         NSLayoutConstraint.activate([
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -165,7 +167,12 @@ extension DetailGameViewController {
         ])
         
         NSLayoutConstraint.activate([
-            gameName.topAnchor.constraint(equalTo: picturePages.bottomAnchor, constant: smallScreenConstraint / 2),
+            gameRate.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            gameRate.topAnchor.constraint(equalTo: picturePages.bottomAnchor, constant: smallScreenConstraint / 2),
+        ])
+        
+        NSLayoutConstraint.activate([
+            gameName.topAnchor.constraint(equalTo: gameRate.bottomAnchor, constant: smallScreenConstraint / 4),
             gameName.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
         ])
         
@@ -214,10 +221,7 @@ extension DetailGameViewController {
             height: fullScreenConstraint
         )
         setImageForScrollView()
-        addScrollView()
         
-        calculateHeight()
-        
-        scrollView.updateConstraints()
+        viewWillLayoutSubviews()
     }
 }
