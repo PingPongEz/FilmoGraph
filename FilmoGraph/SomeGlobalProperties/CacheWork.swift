@@ -23,14 +23,18 @@ class URLResquests {
     var runningRequests = [UUID?: URLSessionDataTask]()
     
     func deleteOneRequest(request: UUID?) {
-        runningRequests[request]?.cancel()
-        runningRequests.removeValue(forKey: request)
+        if runningRequests[request] != nil {
+            runningRequests[request]?.cancel()
+            runningRequests.removeValue(forKey: request)
+        }
     }
     
     func cancelRequests(requests: [UUID?]) {
         requests.forEach { request in
-            runningRequests[request]?.cancel()
-            runningRequests.removeValue(forKey: request)
+            if runningRequests[request] != nil {
+                runningRequests[request]?.cancel()
+                runningRequests.removeValue(forKey: request)
+            }
         }
     }
 }
