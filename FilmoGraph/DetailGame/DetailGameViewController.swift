@@ -67,7 +67,7 @@ final class DetailGameViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         
-        addSubViews([gameName, gameDescription, gamePlatforms, gameRate, picturePages])
+        addSubViews([gameName, gameDescription, gameRate, picturePages, gamePlatforms])
         addScrollView()
         calculateHeight()
         
@@ -183,9 +183,13 @@ extension DetailGameViewController {
     }
     
     private func calculateHeight() {
-       
-        scrollView.contentSize = CGSize(width: view.frame.width, height:  scrollView.subviews.last?.frame.maxY ?? 0)
+        scrollView.layoutIfNeeded()
+        let height = (scrollView.subviews.last?.frame.maxY ?? 0) > (UIScreen.main.bounds.height)
+        ? (scrollView.subviews.last?.frame.maxY ?? 0)
+        : UIScreen.main.bounds.height
         
+        scrollView.contentSize = CGSize(width: view.frame.width, height: height)
+        print(scrollView.subviews.last?.frame.maxY)
     }
     
     private func addSubViews(_ views: [UIView]) {
@@ -210,9 +214,10 @@ extension DetailGameViewController {
             height: fullScreenConstraint
         )
         setImageForScrollView()
+        addScrollView()
         
-        viewWillLayoutSubviews()
+        calculateHeight()
         
-        viewLayoutMarginsDidChange()
+        scrollView.updateConstraints()
     }
 }
