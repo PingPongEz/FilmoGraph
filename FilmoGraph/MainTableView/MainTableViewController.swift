@@ -144,7 +144,6 @@ extension MainTableViewController {
         
         view.addSubview(collectionView)
         collectionView.addSubview(indicator)
-        //        tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),

@@ -41,7 +41,7 @@ public class ConditionOne: Thread {
     }
 }
 
-public class ConditionTwo: Thread {
+public class LockMutex: Thread {
     
     var method: () -> Void
     

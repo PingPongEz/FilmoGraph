@@ -70,22 +70,26 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         let dispatchGroup = DispatchGroup()
         
         dispatchGroup.enter()
-        concurrentQueue.async(group: GlobalGroup.shared.group) { [unowned self] in
-            
+        concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             createDetailViewControllerModel(with: url) { details in
                 detailVC.viewModel = DetailGameViewModel(game: details)
+                Mutex.shared.available = true
+                pthread_cond_signal(&Mutex.shared.condition)
+                print("DETails")
                 dispatchGroup.leave()
             }
-            
         }
         
+        
         dispatchGroup.enter()
-        concurrentQueue.async(group: GlobalGroup.shared.group) { [unowned self] in
+        concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             
             guard let slug = games.value[indexPath.row].slug else { return }
             fetchScreenShots(gameSlug: slug) { images in
-                detailVC.viewModel?.images = images
-                dispatchGroup.leave()
+                LockMutex {
+                    detailVC.viewModel?.images = images
+                    dispatchGroup.leave()
+                }.start()
             }
             
         }

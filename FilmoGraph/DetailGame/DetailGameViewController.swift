@@ -62,15 +62,15 @@ final class DetailGameViewController: UIViewController {
         
         addIndicator()
         
-        addSubViews([gameName, gameDescription, gamePlatforms, gameRate, picturePages])
-        
-        
     }
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        
+        addSubViews([gameName, gameDescription, gamePlatforms, gameRate, picturePages])
         addScrollView()
         calculateHeight()
+        
     }
     
     override func viewDidLayoutSubviews() {
@@ -184,23 +184,19 @@ extension DetailGameViewController {
     
     private func calculateHeight() {
        
-        scrollView.contentSize.height = scrollView.subviews.last?.bounds.maxY ?? 0
-//        print(scrollView.contentSize.height)
-//        print(scrollView.bounds.maxY)
+        scrollView.contentSize = CGSize(width: view.frame.width, height:  scrollView.subviews.last?.frame.maxY ?? 0)
         
     }
     
     private func addSubViews(_ views: [UIView]) {
         views.forEach { [unowned self] subView in
             subView.translatesAutoresizingMaskIntoConstraints = false
-            scrollView.insertSubview(subView, belowSubview: scrollView)
+            scrollView.insertSubview(subView, aboveSubview: scrollView)
         }
     }
     
     func uploadUI() {
         indicator.stopAnimating()
-        
-        addScrollView()
         
         guard let viewModel = viewModel else { return }
         
@@ -215,10 +211,8 @@ extension DetailGameViewController {
         )
         setImageForScrollView()
         
-        scrollView.subviews.forEach  { print($0.frame.maxY) }
-        
-        calculateHeight()
-        
         viewWillLayoutSubviews()
+        
+        viewLayoutMarginsDidChange()
     }
 }
