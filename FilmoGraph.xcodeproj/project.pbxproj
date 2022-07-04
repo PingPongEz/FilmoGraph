@@ -19,6 +19,7 @@
 		0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */; };
 		094D7EAA286CBDD80087ED77 /* DynamicLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */; };
 		094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAB286E2D5F0087ED77 /* Mutex.swift */; };
+		094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAD287365DD0087ED77 /* TabBar.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
@@ -65,6 +66,7 @@
 		0921DF67286BA86400EFDAF7 /* CheckMarks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CheckMarks.md; sourceTree = "<group>"; };
 		094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicLayout.swift; sourceTree = "<group>"; };
 		094D7EAB286E2D5F0087ED77 /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
+		094D7EAD287365DD0087ED77 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 			children = (
 				094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */,
 				094D7EAB286E2D5F0087ED77 /* Mutex.swift */,
+				094D7EAD287365DD0087ED77 /* TabBar.swift */,
 				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
@@ -361,6 +364,7 @@
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
 				0921DF52285CD1EA00EFDAF7 /* CacheWork.swift in Sources */,
 				094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */,
+				094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */,
 				0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */,
 				094D7EAA286CBDD80087ED77 /* DynamicLayout.swift in Sources */,
 				0921DF5F2860FF7900EFDAF7 /* DetailGameViewModelProtocol.swift in Sources */,

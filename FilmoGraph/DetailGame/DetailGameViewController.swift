@@ -146,7 +146,7 @@ extension DetailGameViewController {
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -(tabBarController?.tabBar.frame.height ?? 0))
         ])
         
         addAllOthers()
@@ -194,7 +194,7 @@ extension DetailGameViewController {
         ? (scrollView.subviews.last?.frame.maxY ?? 0)
         : UIScreen.main.bounds.height
         
-        scrollView.contentSize = CGSize(width: view.frame.width, height: height)
+        scrollView.contentSize = CGSize(width: view.frame.width, height: height + 20)
     }
     
     private func addSubViews(_ views: [UIView]) {

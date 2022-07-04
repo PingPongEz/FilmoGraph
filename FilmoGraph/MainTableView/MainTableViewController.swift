@@ -15,7 +15,7 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     
     
     private let viewModel = MainTableViewModel()
-    private var searchController: UISearchController!
+    private var searchController: UISearchController?
     
     private var collectionView: UICollectionView = {
         
@@ -43,14 +43,17 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addNavBar()
-        createSearchBar()
-        
         createTableView()
         
         viewModel.games.bind { [unowned self] _ in
             fetchGames()
         }
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -149,7 +152,7 @@ extension MainTableViewController {
             collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
         
         NSLayoutConstraint.activate([
@@ -198,16 +201,6 @@ extension MainTableViewController {
         self.searchController = searchController
         navigationItem.searchController = self.searchController
         
-    }
-    
-    private func addNavBar() {
-        title = "Some games"
-        let navbarapp = UINavigationBarAppearance()
-        
-        navbarapp.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
-        navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Next page \u{203A}",
             style: .plain,
@@ -219,14 +212,6 @@ extension MainTableViewController {
             style: .plain,
             target: self,
             action: #selector(pervPageBottom))
-        
-        navigationItem.leftBarButtonItem?.isEnabled = false
-        
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.tintColor = .white
-        navigationController?.navigationBar.standardAppearance = navbarapp
-        navigationController?.navigationBar.scrollEdgeAppearance = navbarapp
-        
     }
 }
 
@@ -272,7 +257,7 @@ extension MainTableViewController {
         viewModel.games = Observable([])
         collectionView.reloadData()
         
-        viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) { [unowned self] in
+        viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) {
             DispatchQueue.main.async {
                 self.indicator.stopAnimating()
                 self.collectionView.reloadData()

@@ -37,8 +37,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         deleteOneRequest()
-        DispatchQueue.global().async { [unowned self] in
-            currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url, search: searchText) {  result in
+        DispatchQueue.global().async {
+            self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url, search: self.searchText) {  result in
                 switch result {
                 case .success(let result):
                     DispatchQueue.main.async {
