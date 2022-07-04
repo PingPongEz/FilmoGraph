@@ -39,7 +39,7 @@ final class ImageLoader {
             }
         }
         task.resume()
-        defer { URLResquests.shared.runningRequests[uuid] = task }
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
         return uuid
     }
     
@@ -55,7 +55,7 @@ final class FetchSomeFilm {
     
     var formatter = DateFormatter()
     
-    func fetchScreenShots(with url: String, completion: @escaping(Result<ScreenShots, Error>) -> Void) -> UUID {
+    func fetchScreenShots(with url: String, completion: @escaping(Result<ScreenShots, Error>) -> Void) -> UUID? {
         guard let url = URL(string: "https://api.rawg.io/api/games/\(url)/screenshots?key=7f01c67ed4d2433bb82f3dd38282088c") else { return UUID() }
         
         let uuid = UUID()
@@ -93,7 +93,9 @@ final class FetchSomeFilm {
             }
         }
         task.resume()
-        defer { URLResquests.shared.runningRequests[uuid] = task }
+        
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
+        
         return uuid
     }
     
@@ -139,20 +141,23 @@ final class FetchSomeFilm {
                 print("error: ", error)
             }
         }
+        
         task.resume()
-        defer { URLResquests.shared.runningRequests[uuid] = task }
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
         return uuid
     }
     
     
-    func fetchGameDetails(with url: String, completion: @escaping(Result<GameDetais, Error>) -> Void) {
-        guard let url = URL(string: url) else { return }
+    func fetchGameDetails(with url: String, completion: @escaping(Result<GameDetais, Error>) -> Void) -> UUID? {
+        guard let url = URL(string: url) else { return UUID() }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.allHTTPHeaderFields = [ "application/json" : "Content-Type", "page_size" : "1" ]
         
-        URLSession.shared.dataTask(with: request) { [unowned self] data, _, error in
+        let uuid = UUID()
+        
+        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, _, error in
             guard let data = data else { completion(.failure(error!)); return }
             
             do {
@@ -174,7 +179,11 @@ final class FetchSomeFilm {
             } catch {
                 print("error: ", error)
             }
-        }.resume()
+        }
+        
+        task.resume()
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
+        return uuid
     }
 }
 

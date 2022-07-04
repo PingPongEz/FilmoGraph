@@ -45,7 +45,14 @@ final class Cell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.layer.borderWidth = 2
-        self.layer.borderColor = CGColor(red: 0, green: 1, blue: 0, alpha: 1)
+        self.layer.borderColor = CGColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+        self.layer.cornerRadius = 13
+//        
+//        self.layer.shadowColor = self.layer.borderColor
+//        self.layer.shadowOffset = CGSize(width: 1, height: 0)
+//        self.layer.shadowRadius = 2
+//        self.layer.shadowOpacity = 1
+        
         clipsToBounds = true
         setUI()
         setConstr()
@@ -65,14 +72,12 @@ final class Cell: UICollectionViewCell {
         
         platform.translatesAutoresizingMaskIntoConstraints = false
         platform.font = .systemFont(ofSize: 12)
-        platform.numberOfLines = 2
+        platform.numberOfLines = 0
         
         gameCreator.translatesAutoresizingMaskIntoConstraints = false
         gameCreator.font = .systemFont(ofSize: 12)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        
-        gamePic.layer.cornerRadius = 13
         
         stackView.addArrangedSubview(gameName)
         stackView.addArrangedSubview(gameType)
@@ -96,6 +101,14 @@ final class Cell: UICollectionViewCell {
             gamePic.centerYAnchor.constraint(equalTo: centerYAnchor),
             gamePic.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
         ])
+//        gamePic.layer.cornerRadius = 13
+//        gamePic.layer.shadowOpacity = 1
+//        gamePic.layer.shadowColor = UIColor.black.cgColor
+//        gamePic.layer.shadowRadius = 3
+//        gamePic.layer.shadowOffset = CGSize(width: 5, height: 5)
+//
+//        gamePic.layer.shadowPath = UIBezierPath(rect: gamePic.bounds).cgPath
+//        gamePic.layer.shouldRasterize = true
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 10),

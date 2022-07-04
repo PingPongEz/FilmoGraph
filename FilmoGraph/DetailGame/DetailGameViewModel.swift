@@ -10,8 +10,6 @@ import UIKit
 
 final class DetailGameViewModel: DetailGameViewModelProtocol {
     
-    var listOfRequests: [UUID?] = []
-    
     var game: GameDetais?
     
     var images: [UIImage] = []

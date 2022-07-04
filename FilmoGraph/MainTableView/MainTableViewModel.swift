@@ -17,7 +17,6 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         didSet {
             if currentPage < 1 {
                 currentPage = 1
-                print(URLResquests.shared.runningRequests.count)
             }
         }
     }
@@ -31,12 +30,13 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     var nextPage: String?
     var prevPage: String?
     var isShowAvailable = true
+    var listOfRequests = [UUID?]()
     
     private var currentRequest: UUID?
-    private var listOfRequests = [UUID?]()
     private var screenShots: [ScreenShotsResult]?
     
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
+        deleteOneRequest()
         DispatchQueue.global().async { [unowned self] in
             currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: url, search: searchText) {  result in
                 switch result {
@@ -45,7 +45,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                         self.nextPage = result.next
                         self.prevPage = result.previous
                         self.games = Observable(result.results)
-                        self.stopRequest()
+                        self.deleteOneRequest()
                         completion()
                     }
                 case .failure(let error):
@@ -73,9 +73,10 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             createDetailViewControllerModel(with: url) { details in
                 detailVC.viewModel = DetailGameViewModel(game: details)
+                
                 Mutex.shared.available = true
                 pthread_cond_signal(&Mutex.shared.condition)
-                print("DETails")
+                
                 dispatchGroup.leave()
             }
         }
@@ -88,6 +89,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             fetchScreenShots(gameSlug: slug) { images in
                 LockMutex {
                     detailVC.viewModel?.images = images
+                    self.deleteRequests()
                     dispatchGroup.leave()
                 }.start()
             }
@@ -110,9 +112,9 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         isShowAvailable = false
         
         guard let urlForFetch = urlForFetch else { return }
-        GlobalGroup.shared.group.notify(queue: .global()) {
+        GlobalGroup.shared.group.notify(queue: .global()) { [unowned self ] in
             
-            FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
+            let request = FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
                 do {
                     let details = try result.get()
                     DispatchQueue.main.async {
@@ -122,7 +124,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                     print(error)
                 }
             }
-            
+            self.listOfRequests.append(request)
         }
     }
     
@@ -136,7 +138,6 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                     DispatchQueue.main.async {
                         self.screenShots = images.results
                         self.unpackScreenshots { images in
-                            print(images.count)
                             completion(images)
                         }
                     }
@@ -144,7 +145,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                     print(error)
                 }
             }
-            listOfRequests.append(request)
+            self.listOfRequests.append(request)
         }
     }
     
@@ -155,14 +156,12 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             
             screenShots?.forEach { url in
                 guard let url = URL(string: url.image ?? "") else { return }
-                let request = ImageLoader.shared.loadImage(url) { result in  //MARK: Make delete from requests with protocol
+                let request = ImageLoader.shared.loadImage(url) { result in
                     do {
                         let image = try result.get()
                         DispatchQueue.main.async {
                             loadedImages.append(image)
                             if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
-//                                print(url.absoluteString)
-//                                print(loadedImages.count)
                                 completion(loadedImages)
                             }
                         }
@@ -170,18 +169,17 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                         print(error)
                     }
                 }
-                listOfRequests.append(request)
+                self.listOfRequests.append(request)
             }
         }
     }
     
-    
-    
     func deleteRequests() {
         URLResquests.shared.cancelRequests(requests: listOfRequests)
+        listOfRequests.removeAll()
     }
     
-    func stopRequest() {
+    func deleteOneRequest() {
         URLResquests.shared.deleteOneRequest(request: self.currentRequest)
     }
 }

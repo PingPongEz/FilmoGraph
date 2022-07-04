@@ -8,7 +8,7 @@
 import UIKit
 
 protocol StopLoadingPic {
-    func stopWith(requests: [UUID?])
+    func stopRequestsOnDisappear()
 }
 
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UISearchResultsUpdating, UICollectionViewDelegateFlowLayout {
@@ -235,7 +235,7 @@ extension MainTableViewController {
     
     @objc private func nextPageBottom() {
         indicator.startAnimating()
-        viewModel.stopRequest()
+        viewModel.deleteOneRequest()
         
         viewModel.currentPage += 1
         
@@ -244,9 +244,10 @@ extension MainTableViewController {
         viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
     }
     
+    
     @objc private func pervPageBottom() {
         indicator.startAnimating()
-        viewModel.stopRequest()
+        viewModel.deleteOneRequest()
         
         viewModel.currentPage -= 1
         
@@ -281,8 +282,9 @@ extension MainTableViewController {
 }
 
 extension MainTableViewController: StopLoadingPic {
-    func stopWith(requests: [UUID?]) {
-        URLResquests.shared.cancelRequests(requests: requests)
+    func stopRequestsOnDisappear() {
+        viewModel.deleteRequests()
+        print(URLResquests.shared.runningRequests.count)
     }
 }
 

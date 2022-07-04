@@ -44,8 +44,7 @@ final class DetailGameViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        delegate.stopWith(requests: viewModel?.listOfRequests ?? [])
-        viewModel = nil
+        delegate.stopRequestsOnDisappear()
     }
     
     
@@ -196,7 +195,6 @@ extension DetailGameViewController {
         : UIScreen.main.bounds.height
         
         scrollView.contentSize = CGSize(width: view.frame.width, height: height)
-        print(scrollView.subviews.last?.frame.maxY)
     }
     
     private func addSubViews(_ views: [UIView]) {
