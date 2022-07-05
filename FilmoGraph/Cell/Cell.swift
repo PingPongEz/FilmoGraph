@@ -29,7 +29,7 @@ final class Cell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.viewModel.stopCellRequest()
+//        self.viewModel.stopCellRequest()
         gamePic.image = nil
     }
     
@@ -118,6 +118,8 @@ final class Cell: UICollectionViewCell {
         ])
         
     }
+    
+    
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

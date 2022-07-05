@@ -16,8 +16,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "94"
             endingLineNumber = "94"
-            landmarkName = "setUI()"
-            landmarkType = "7">
+            landmarkName = "Cell"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -203,6 +203,22 @@
             startingLineNumber = "20"
             endingLineNumber = "20"
             landmarkName = "fetchGameListForMainView(completion:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "54028B71-E05A-4AFF-8EC4-340E66FDE2D7"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FilmoGraph/SomeGlobalProperties/CacheWork.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "cancelRequests(requests:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

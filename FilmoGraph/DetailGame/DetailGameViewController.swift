@@ -42,10 +42,7 @@ final class DetailGameViewController: UIViewController {
     
     var viewModel: DetailGameViewModel?
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        delegate.stopRequestsOnDisappear()
-    }
+    
     
     
     override func viewDidLoad() {
@@ -64,6 +61,11 @@ final class DetailGameViewController: UIViewController {
         
         addIndicator()
         
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        delegate.stopRequestsOnDisappear()
     }
     
     override func viewWillLayoutSubviews() {

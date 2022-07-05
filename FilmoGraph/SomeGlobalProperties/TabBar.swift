@@ -7,15 +7,24 @@
 
 import UIKit
 
-class TabBar: UITabBarController {
+class TabBar: UITabBarController, UITabBarControllerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.delegate = self
+        tabBar.isHidden = true
         view.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
         view.backgroundColor = .white
         UITabBar.appearance().barTintColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
         tabBar.tintColor = .white
+        
+        tabBar.unselectedItemTintColor = .green
+        
         setupVC()
+    }
+    
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        print(123123)
     }
     
     private func setupVC() {
@@ -27,6 +36,7 @@ class TabBar: UITabBarController {
                 addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
                 addNavBar(for: LoadingViewController(), title: "Red screen", image: UIImage(systemName: "person")!)
             ]
+            tabBar.isHidden = false
         }
     }
     
@@ -39,8 +49,6 @@ class TabBar: UITabBarController {
         navbarapp.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
         navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        
-//        navigationItem.leftBarButtonItem?.isEnabled = false
         
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = image

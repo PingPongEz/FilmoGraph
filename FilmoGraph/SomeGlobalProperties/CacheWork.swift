@@ -36,8 +36,10 @@ class URLResquests {
     func cancelRequests(requests: [UUID?]) {
         semaphore.wait()
         requests.forEach { request in
+            print(runningRequests.count)
             runningRequests[request]?.cancel()
             runningRequests.removeValue(forKey: request)
+            print(runningRequests.count)
         }
         semaphore.signal()
     }
