@@ -11,10 +11,10 @@ protocol StopLoadingPic {
     func stopRequestsOnDisappear()
 }
 
-final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UISearchResultsUpdating, UICollectionViewDelegateFlowLayout {
+final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     
-    private let viewModel = MainTableViewModel()
+    var viewModel = MainTableViewModel()
     private var searchController: UISearchController?
     
     private var collectionView: UICollectionView = {
@@ -33,21 +33,24 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         return collectionView
     }()
     
-    private let indicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView()
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.hidesWhenStopped = true
-        return indicator
-    }()
+//    private let indicator: UIActivityIndicatorView = {
+//        let indicator = UIActivityIndicatorView()
+//        indicator.translatesAutoresizingMaskIntoConstraints = false
+//        indicator.hidesWhenStopped = true
+//        return indicator
+//    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        navigationController?.navigationBar.isHidden = true
+//        navigationController?.tabBarController?.tabBar.isHidden = true
         createTableView()
+        collectionView.reloadData()
         
-        viewModel.games.bind { [unowned self] _ in
-            fetchGames()
-        }
+//        viewModel.games.bind { [unowned self] _ in
+//            fetchGames()
+//        }
         
     }
     
@@ -61,19 +64,19 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         viewModel.isShowAvailable = true
     }
     
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let text = searchController.searchBar.text else { return }
-        viewModel.searchText = text
-        indicator.startAnimating()
-        viewModel.games.bind { [ unowned self ] _ in
-            self.viewModel.fetchGamesWith(page: 1) {
-                DispatchQueue.main.async {
-                    self.indicator.stopAnimating()
-                    self.collectionView.reloadData()
-                }
-            }
-        }
-    }
+//    func updateSearchResults(for searchController: UISearchController) {
+//        guard let text = searchController.searchBar.text else { return }
+//        viewModel.searchText = text
+//        indicator.startAnimating()
+//        viewModel.games.bind { [ unowned self ] _ in
+//            self.viewModel.fetchGamesWith(page: 1) {
+//                DispatchQueue.main.async {
+//                    self.indicator.stopAnimating()
+//                    self.collectionView.reloadData()
+//                }
+//            }
+//        }
+//    }
 }
 
 //MARK: FlowLayoutDelegate
@@ -146,7 +149,7 @@ extension MainTableViewController {
         collectionView.delegate = self
         
         view.addSubview(collectionView)
-        collectionView.addSubview(indicator)
+//        collectionView.addSubview(indicator)
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
@@ -155,116 +158,121 @@ extension MainTableViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         ])
         
-        NSLayoutConstraint.activate([
-            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        
-        indicator.startAnimating()
+//        NSLayoutConstraint.activate([
+//            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+//        ])
+//
+//        indicator.startAnimating()
         
     }
     
-    private func createSearchBar() {
-        let searchController = UISearchController(searchResultsController: nil)
-        
-        searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
-        searchController.searchBar.placeholder = "Find game"
-        searchController.searchBar.searchTextField.backgroundColor = UIColor(white: 1, alpha: 0.7)
-        definesPresentationContext = true
-        
-        let textField = searchController.searchBar.searchTextField
-        let searchBar = searchController.searchBar
-        
-        
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        navigationItem.searchController = searchController
-        
-        
-        navigationItem.searchController?.searchBar.translatesAutoresizingMaskIntoConstraints = false
-        guard let navSearch = navigationItem.searchController?.searchBar else { return }
-        
-        NSLayoutConstraint.activate([
-            searchBar.widthAnchor.constraint(equalTo: navSearch.widthAnchor),
-            searchBar.heightAnchor.constraint(equalToConstant: navSearch.bounds.height * 0.8)
-        ])
-        
-        NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor, constant: 16),
-            textField.centerYAnchor.constraint(equalTo: navSearch.centerYAnchor),
-            textField.widthAnchor.constraint(equalToConstant: navSearch.frame.width * 0.75),
-            textField.heightAnchor.constraint(equalTo: navSearch.heightAnchor)
-        ])
-        
-        self.searchController = searchController
-        navigationItem.searchController = self.searchController
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "Next page \u{203A}",
-            style: .plain,
-            target: self,
-            action: #selector(nextPageBottom))
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: "\u{2039} Pervous page",
-            style: .plain,
-            target: self,
-            action: #selector(pervPageBottom))
-    }
+//    private func createSearchBar() {
+//        let searchController = UISearchController(searchResultsController: nil)
+//
+//        searchController.searchResultsUpdater = self
+//        searchController.obscuresBackgroundDuringPresentation = false
+//        searchController.searchBar.placeholder = "Find game"
+//        searchController.searchBar.searchTextField.backgroundColor = UIColor(white: 1, alpha: 0.7)
+//        definesPresentationContext = true
+//
+//        let textField = searchController.searchBar.searchTextField
+//        let searchBar = searchController.searchBar
+//
+//
+//        searchBar.translatesAutoresizingMaskIntoConstraints = false
+//        textField.translatesAutoresizingMaskIntoConstraints = false
+//
+//        navigationItem.searchController = searchController
+//
+//
+//        navigationItem.searchController?.searchBar.translatesAutoresizingMaskIntoConstraints = false
+//        guard let navSearch = navigationItem.searchController?.searchBar else { return }
+//
+//        NSLayoutConstraint.activate([
+//            searchBar.widthAnchor.constraint(equalTo: navSearch.widthAnchor),
+//            searchBar.heightAnchor.constraint(equalToConstant: navSearch.bounds.height * 0.8)
+//        ])
+//
+//        NSLayoutConstraint.activate([
+//            textField.leadingAnchor.constraint(equalTo: searchBar.leadingAnchor, constant: 16),
+//            textField.centerYAnchor.constraint(equalTo: navSearch.centerYAnchor),
+//            textField.widthAnchor.constraint(equalToConstant: navSearch.frame.width * 0.75),
+//            textField.heightAnchor.constraint(equalTo: navSearch.heightAnchor)
+//        ])
+//
+//        self.searchController = searchController
+//        navigationItem.searchController = self.searchController
+//
+//        navigationItem.rightBarButtonItem = UIBarButtonItem(
+//            title: "Next page \u{203A}",
+//            style: .plain,
+//            target: self,
+//            action: #selector(nextPageBottom))
+//
+//        navigationItem.leftBarButtonItem = UIBarButtonItem(
+//            title: "\u{2039} Pervous page",
+//            style: .plain,
+//            target: self,
+//            action: #selector(pervPageBottom))
+//    }
 }
 
 //MARK: Bottom methods
-extension MainTableViewController {
-    
-    @objc private func nextPageBottom() {
-        indicator.startAnimating()
-        viewModel.deleteOneRequest()
-        
-        viewModel.currentPage += 1
-        
-        navigationItem.leftBarButtonItem?.isEnabled = true
-        fetchGames(with: viewModel.nextPage)
-        viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
-    }
-    
-    
-    @objc private func pervPageBottom() {
-        indicator.startAnimating()
-        viewModel.deleteOneRequest()
-        
-        viewModel.currentPage -= 1
-        
-        navigationItem.rightBarButtonItem?.isEnabled = true
-        fetchGames(with: viewModel.prevPage)
-        viewModel.prevPage != nil ? (navigationItem.leftBarButtonItem?.isEnabled = true) : (navigationItem.leftBarButtonItem?.isEnabled = false)
-    }
-}
+//extension MainTableViewController {
+//
+//    @objc private func nextPageBottom() {
+//        indicator.startAnimating()
+//        viewModel.deleteOneRequest()
+//
+//        viewModel.currentPage += 1
+//
+//        navigationItem.leftBarButtonItem?.isEnabled = true
+//        fetchGames(with: viewModel.nextPage)
+//        viewModel.nextPage != nil ? (navigationItem.rightBarButtonItem?.isEnabled = true) : (navigationItem.rightBarButtonItem?.isEnabled = false)
+//    }
+//
+//
+//    @objc private func pervPageBottom() {
+//        indicator.startAnimating()
+//        viewModel.deleteOneRequest()
+//
+//        viewModel.currentPage -= 1
+//
+//        navigationItem.rightBarButtonItem?.isEnabled = true
+//        fetchGames(with: viewModel.prevPage)
+//        viewModel.prevPage != nil ? (navigationItem.leftBarButtonItem?.isEnabled = true) : (navigationItem.leftBarButtonItem?.isEnabled = false)
+//    }
+//}
+
+
 
 
 //MARK: Additional methods
-extension MainTableViewController {
-    
-    private func fetchGames(with url: String? = nil) {
-        
-        var urlString: String?
-        
-        if let url = url {
-            urlString = url
-        }
-        
-        viewModel.games = Observable([])
-        collectionView.reloadData()
-        
-        viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) {
-            DispatchQueue.main.async {
-                self.indicator.stopAnimating()
-                self.collectionView.reloadData()
-            }
-        }
-    }
-}
+//extension MainTableViewController {
+//
+//    func fetchGames(with url: String? = nil) {
+//
+//        var urlString: String?
+//
+//        if let url = url {
+//            urlString = url
+//        }
+//
+//        viewModel.games = Observable([])
+//        collectionView.reloadData()
+//
+//
+//        viewModel.fetchGamesWith(page: viewModel.currentPage, orUrl: urlString) {
+//            DispatchQueue.main.async { [unowned self] in
+//                indicator.stopAnimating()
+//                collectionView.reloadData()
+//                navigationController?.navigationBar.isHidden = false
+//                navigationController?.tabBarController?.tabBar.isHidden = false
+//            }
+//        }
+//    }
+//}
 
 extension MainTableViewController: StopLoadingPic {
     func stopRequestsOnDisappear() {

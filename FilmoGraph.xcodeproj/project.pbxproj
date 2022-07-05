@@ -20,6 +20,8 @@
 		094D7EAA286CBDD80087ED77 /* DynamicLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */; };
 		094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAB286E2D5F0087ED77 /* Mutex.swift */; };
 		094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAD287365DD0087ED77 /* TabBar.swift */; };
+		094D7EB0287460FF0087ED77 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAF287460FF0087ED77 /* LoadingViewController.swift */; };
+		094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
@@ -67,6 +69,8 @@
 		094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicLayout.swift; sourceTree = "<group>"; };
 		094D7EAB286E2D5F0087ED77 /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
 		094D7EAD287365DD0087ED77 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
+		094D7EAF287460FF0087ED77 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
+		094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAppFetches.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -166,9 +170,11 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				094D7EAF287460FF0087ED77 /* LoadingViewController.swift */,
 				094D7EA9286CBDD80087ED77 /* DynamicLayout.swift */,
 				094D7EAB286E2D5F0087ED77 /* Mutex.swift */,
 				094D7EAD287365DD0087ED77 /* TabBar.swift */,
+				094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */,
 				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
@@ -374,9 +380,11 @@
 				0921DF5D2860FF6D00EFDAF7 /* DetailGameViewModel.swift in Sources */,
 				0921DF64286311B400EFDAF7 /* CellViewModelProtocol.swift in Sources */,
 				096898712858DCD800E8874F /* NetworkTest.swift in Sources */,
+				094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */,
 				096898432858DB5500E8874F /* SceneDelegate.swift in Sources */,
 				0921DF622863116A00EFDAF7 /* MainTableViewModelProtocol.swift in Sources */,
 				0921DF5A285F587900EFDAF7 /* DetailGameViewController.swift in Sources */,
+				094D7EB0287460FF0087ED77 /* LoadingViewController.swift in Sources */,
 				096898732858FBA300E8874F /* MainTableViewModel.swift in Sources */,
 				096898762858FF4300E8874F /* GameModel.swift in Sources */,
 			);

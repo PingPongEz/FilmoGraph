@@ -177,22 +177,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "239720F0-E23F-44CC-B9E4-D03A7019F3C7"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FilmoGraph/MainTableView/MainTableViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
-            landmarkName = "updateSearchResults(for:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "74CA7FA1-4D40-4ABF-8BF6-D71754877FBC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -209,16 +193,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "0F0F5075-F5FF-4C4A-B616-D5C4909546E1"
+            uuid = "AB2AA8C5-6207-46EA-AED8-96B457ACB2E8"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "FilmoGraph/MainTableView/MainTableViewController.swift"
+            filePath = "FilmoGraph/StartAppFetches.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
-            landmarkName = "createTableView()"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "fetchGameListForMainView(completion:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
