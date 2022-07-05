@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0921DF4F285B3A4B00EFDAF7 /* CacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */; };
 		0921DF52285CD1EA00EFDAF7 /* CacheWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */; };
 		0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */; };
 		0921DF56285CD31700EFDAF7 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF55285CD31700EFDAF7 /* LoadingCell.swift */; };
@@ -29,7 +28,7 @@
 		096898582858DB5600E8874F /* FilmoGraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898572858DB5600E8874F /* FilmoGraphTests.swift */; };
 		096898622858DB5600E8874F /* FilmoGraphUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898612858DB5600E8874F /* FilmoGraphUITests.swift */; };
 		096898642858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898632858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift */; };
-		096898712858DCD800E8874F /* NetworkTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898702858DCD800E8874F /* NetworkTest.swift */; };
+		096898712858DCD800E8874F /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898702858DCD800E8874F /* NetworkManager.swift */; };
 		096898732858FBA300E8874F /* MainTableViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898722858FBA300E8874F /* MainTableViewModel.swift */; };
 		096898762858FF4300E8874F /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898752858FF4300E8874F /* GameModel.swift */; };
 		0968987A285A319E00E8874F /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09689879285A319E00E8874F /* Cell.swift */; };
@@ -54,7 +53,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheImage.swift; sourceTree = "<group>"; };
 		0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheWork.swift; sourceTree = "<group>"; };
 		0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableBox.swift; sourceTree = "<group>"; };
 		0921DF55285CD31700EFDAF7 /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
@@ -81,7 +79,7 @@
 		0968985D2858DB5600E8874F /* FilmoGraphUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FilmoGraphUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898612858DB5600E8874F /* FilmoGraphUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmoGraphUITests.swift; sourceTree = "<group>"; };
 		096898632858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmoGraphUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		096898702858DCD800E8874F /* NetworkTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTest.swift; sourceTree = "<group>"; };
+		096898702858DCD800E8874F /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		096898722858FBA300E8874F /* MainTableViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewModel.swift; sourceTree = "<group>"; };
 		096898752858FF4300E8874F /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		09689879285A319E00E8874F /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
@@ -120,8 +118,7 @@
 				094D7EAB286E2D5F0087ED77 /* Mutex.swift */,
 				094D7EAD287365DD0087ED77 /* TabBar.swift */,
 				094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */,
-				0921DF4E285B3A4B00EFDAF7 /* CacheImage.swift */,
-				096898702858DCD800E8874F /* NetworkTest.swift */,
+				096898702858DCD800E8874F /* NetworkManager.swift */,
 				0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */,
 				0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */,
 				0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */,
@@ -370,12 +367,11 @@
 				094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */,
 				0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */,
 				0921DF5F2860FF7900EFDAF7 /* DetailGameViewModelProtocol.swift in Sources */,
-				0921DF4F285B3A4B00EFDAF7 /* CacheImage.swift in Sources */,
 				0921DF56285CD31700EFDAF7 /* LoadingCell.swift in Sources */,
 				0968987A285A319E00E8874F /* Cell.swift in Sources */,
 				0921DF5D2860FF6D00EFDAF7 /* DetailGameViewModel.swift in Sources */,
 				0921DF64286311B400EFDAF7 /* CellViewModelProtocol.swift in Sources */,
-				096898712858DCD800E8874F /* NetworkTest.swift in Sources */,
+				096898712858DCD800E8874F /* NetworkManager.swift in Sources */,
 				094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */,
 				096898432858DB5500E8874F /* SceneDelegate.swift in Sources */,
 				0921DF622863116A00EFDAF7 /* MainTableViewModelProtocol.swift in Sources */,
@@ -563,7 +559,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraph;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraphh;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -590,7 +586,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraph;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraphh;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

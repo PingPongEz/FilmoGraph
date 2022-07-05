@@ -42,9 +42,6 @@ final class DetailGameViewController: UIViewController {
     
     var viewModel: DetailGameViewModel?
     
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
