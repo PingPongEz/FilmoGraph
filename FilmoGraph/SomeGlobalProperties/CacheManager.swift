@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class Cached {
+final class Cached {
     
     private init() {}
     static let shared = Cached()
@@ -16,7 +16,7 @@ class Cached {
     var loadedImages = NSCache<NSString, UIImage>()
 }
 
-class URLResquests {
+final class URLResquests {
     
     private init(){}
     static let shared = URLResquests()

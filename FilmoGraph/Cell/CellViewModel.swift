@@ -40,7 +40,9 @@ final class CellViewModel: CellViewModelProtocol {
     }
     
     var gameType: String {
-        game.slug ?? "No data"
+        let array = game.genres?.compactMap { $0.name }
+        guard let text = array?.joined(separator: ", ") else { return "" }
+        return text
     }
     
     var platform: String {

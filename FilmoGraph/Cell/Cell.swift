@@ -12,7 +12,7 @@ final class Cell: UICollectionViewCell {
     var viewModel: CellViewModelProtocol! {
         didSet {
             gameName.text = self.viewModel.gameName
-            gameType.text = self.viewModel.gameType
+            gameGenre.text = self.viewModel.gameType
             gameCreator.text = self.viewModel.gameCreator
             platform.text = self.viewModel.platform
         }
@@ -21,7 +21,7 @@ final class Cell: UICollectionViewCell {
     private var gamePic = UIImageView()
     private var stackView = UIStackView()
     private var gameName = UILabel()
-    private var gameType = UILabel()
+    private var gameGenre = UILabel()
     private var platform = UILabel()
     private var gameCreator = UILabel()
 
@@ -43,19 +43,16 @@ final class Cell: UICollectionViewCell {
     }
     
     override init(frame: CGRect) {
+        
         super.init(frame: frame)
         self.layer.borderWidth = 2
         self.layer.borderColor = CGColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
         self.layer.cornerRadius = 13
-//        
-//        self.layer.shadowColor = self.layer.borderColor
-//        self.layer.shadowOffset = CGSize(width: 1, height: 0)
-//        self.layer.shadowRadius = 2
-//        self.layer.shadowOpacity = 1
         
         clipsToBounds = true
         setUI()
         setConstr()
+        
     }
     
     private func setUI() {
@@ -66,9 +63,11 @@ final class Cell: UICollectionViewCell {
         
         gameName.translatesAutoresizingMaskIntoConstraints = false
         gameName.font = .systemFont(ofSize: 12)
+        gameName.numberOfLines = 0
         
-        gameType.translatesAutoresizingMaskIntoConstraints = false
-        gameType.font = .systemFont(ofSize: 12)
+        gameGenre.translatesAutoresizingMaskIntoConstraints = false
+        gameGenre.font = .systemFont(ofSize: 12)
+        gameGenre.numberOfLines = 0
         
         platform.translatesAutoresizingMaskIntoConstraints = false
         platform.font = .systemFont(ofSize: 12)
@@ -80,7 +79,7 @@ final class Cell: UICollectionViewCell {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
         stackView.addArrangedSubview(gameName)
-        stackView.addArrangedSubview(gameType)
+        stackView.addArrangedSubview(gameGenre)
         stackView.addArrangedSubview(platform)
         stackView.addArrangedSubview(gameCreator)
         stackView.axis = .vertical
@@ -112,8 +111,8 @@ final class Cell: UICollectionViewCell {
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 10),
-            stackView.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 10),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 10),
             stackView.heightAnchor.constraint(equalToConstant: 150)
         ])
         

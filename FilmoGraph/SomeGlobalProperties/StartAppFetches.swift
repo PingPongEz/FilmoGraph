@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StartFetch {
+final class StartFetch {
     private init(){}
     
     static let shared = StartFetch()

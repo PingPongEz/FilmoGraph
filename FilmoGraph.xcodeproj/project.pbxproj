@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0921DF52285CD1EA00EFDAF7 /* CacheWork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */; };
+		0921DF52285CD1EA00EFDAF7 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF51285CD1EA00EFDAF7 /* CacheManager.swift */; };
 		0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */; };
 		0921DF56285CD31700EFDAF7 /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF55285CD31700EFDAF7 /* LoadingCell.swift */; };
 		0921DF5A285F587900EFDAF7 /* DetailGameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF59285F587900EFDAF7 /* DetailGameViewController.swift */; };
@@ -18,8 +18,12 @@
 		0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */; };
 		094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAB286E2D5F0087ED77 /* Mutex.swift */; };
 		094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAD287365DD0087ED77 /* TabBar.swift */; };
-		094D7EB0287460FF0087ED77 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EAF287460FF0087ED77 /* LoadingViewController.swift */; };
 		094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */; };
+		094D7EB52876FB3F0087ED77 /* GlobalProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EB42876FB3F0087ED77 /* GlobalProperties.swift */; };
+		094D7EB928774A760087ED77 /* SearchScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EB828774A760087ED77 /* SearchScreenViewController.swift */; };
+		094D7EBB28774A820087ED77 /* SearchScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBA28774A820087ED77 /* SearchScreenViewModel.swift */; };
+		094D7EBD28774A900087ED77 /* SearchScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBC28774A900087ED77 /* SearchScreenViewModelProtocol.swift */; };
+		094D7EC028774B410087ED77 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBF28774B410087ED77 /* LoadingViewController.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
@@ -53,7 +57,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheWork.swift; sourceTree = "<group>"; };
+		0921DF51285CD1EA00EFDAF7 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableBox.swift; sourceTree = "<group>"; };
 		0921DF55285CD31700EFDAF7 /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
 		0921DF59285F587900EFDAF7 /* DetailGameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailGameViewController.swift; sourceTree = "<group>"; };
@@ -65,8 +69,12 @@
 		0921DF67286BA86400EFDAF7 /* CheckMarks.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CheckMarks.md; sourceTree = "<group>"; };
 		094D7EAB286E2D5F0087ED77 /* Mutex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
 		094D7EAD287365DD0087ED77 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
-		094D7EAF287460FF0087ED77 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
 		094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartAppFetches.swift; sourceTree = "<group>"; };
+		094D7EB42876FB3F0087ED77 /* GlobalProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
+		094D7EB828774A760087ED77 /* SearchScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewController.swift; sourceTree = "<group>"; };
+		094D7EBA28774A820087ED77 /* SearchScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewModel.swift; sourceTree = "<group>"; };
+		094D7EBC28774A900087ED77 /* SearchScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewModelProtocol.swift; sourceTree = "<group>"; };
+		094D7EBF28774B410087ED77 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -114,14 +122,13 @@
 		0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */ = {
 			isa = PBXGroup;
 			children = (
-				094D7EAF287460FF0087ED77 /* LoadingViewController.swift */,
 				094D7EAB286E2D5F0087ED77 /* Mutex.swift */,
-				094D7EAD287365DD0087ED77 /* TabBar.swift */,
 				094D7EB12874B0DA0087ED77 /* StartAppFetches.swift */,
 				096898702858DCD800E8874F /* NetworkManager.swift */,
-				0921DF51285CD1EA00EFDAF7 /* CacheWork.swift */,
+				0921DF51285CD1EA00EFDAF7 /* CacheManager.swift */,
 				0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */,
 				0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */,
+				094D7EB42876FB3F0087ED77 /* GlobalProperties.swift */,
 			);
 			path = SomeGlobalProperties;
 			sourceTree = "<group>";
@@ -144,6 +151,25 @@
 				096898402858DB5500E8874F /* AppDelegate.swift */,
 			);
 			path = Others;
+			sourceTree = "<group>";
+		};
+		094D7EB628774A510087ED77 /* SearchScreen */ = {
+			isa = PBXGroup;
+			children = (
+				094D7EB828774A760087ED77 /* SearchScreenViewController.swift */,
+				094D7EBA28774A820087ED77 /* SearchScreenViewModel.swift */,
+				094D7EBC28774A900087ED77 /* SearchScreenViewModelProtocol.swift */,
+			);
+			path = SearchScreen;
+			sourceTree = "<group>";
+		};
+		094D7EBE28774AEB0087ED77 /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				094D7EAD287365DD0087ED77 /* TabBar.swift */,
+				094D7EBF28774B410087ED77 /* LoadingViewController.swift */,
+			);
+			path = TabBar;
 			sourceTree = "<group>";
 		};
 		096898342858DB5400E8874F = {
@@ -169,6 +195,8 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				094D7EBE28774AEB0087ED77 /* TabBar */,
+				094D7EB628774A510087ED77 /* SearchScreen */,
 				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
@@ -358,25 +386,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				094D7EBB28774A820087ED77 /* SearchScreenViewModel.swift in Sources */,
 				096898452858DB5500E8874F /* MainTableViewController.swift in Sources */,
 				096898412858DB5500E8874F /* AppDelegate.swift in Sources */,
 				0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */,
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
-				0921DF52285CD1EA00EFDAF7 /* CacheWork.swift in Sources */,
+				0921DF52285CD1EA00EFDAF7 /* CacheManager.swift in Sources */,
 				094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */,
+				094D7EC028774B410087ED77 /* LoadingViewController.swift in Sources */,
 				094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */,
 				0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */,
+				094D7EB928774A760087ED77 /* SearchScreenViewController.swift in Sources */,
 				0921DF5F2860FF7900EFDAF7 /* DetailGameViewModelProtocol.swift in Sources */,
 				0921DF56285CD31700EFDAF7 /* LoadingCell.swift in Sources */,
 				0968987A285A319E00E8874F /* Cell.swift in Sources */,
 				0921DF5D2860FF6D00EFDAF7 /* DetailGameViewModel.swift in Sources */,
 				0921DF64286311B400EFDAF7 /* CellViewModelProtocol.swift in Sources */,
+				094D7EB52876FB3F0087ED77 /* GlobalProperties.swift in Sources */,
 				096898712858DCD800E8874F /* NetworkManager.swift in Sources */,
 				094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */,
+				094D7EBD28774A900087ED77 /* SearchScreenViewModelProtocol.swift in Sources */,
 				096898432858DB5500E8874F /* SceneDelegate.swift in Sources */,
 				0921DF622863116A00EFDAF7 /* MainTableViewModelProtocol.swift in Sources */,
 				0921DF5A285F587900EFDAF7 /* DetailGameViewController.swift in Sources */,
-				094D7EB0287460FF0087ED77 /* LoadingViewController.swift in Sources */,
 				096898732858FBA300E8874F /* MainTableViewModel.swift in Sources */,
 				096898762858FF4300E8874F /* GameModel.swift in Sources */,
 			);

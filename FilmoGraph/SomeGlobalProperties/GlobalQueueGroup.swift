@@ -9,7 +9,7 @@ import Foundation
 
 class GlobalGroup {
     private init(){}
-    static var shared = GlobalGroup()
+    static let shared = GlobalGroup()
     
     func notifyMe(action: @escaping()-> Void, completeAction: @escaping() -> Void) {
         

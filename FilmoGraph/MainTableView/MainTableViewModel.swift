@@ -63,7 +63,6 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     
     func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
         let url = cellDidTap(indexPath)
-        
         let detailVC = DetailGameViewController()
         
         let concurrentQueue = DispatchQueue(label: "Loading details", qos: .utility, attributes: .concurrent)

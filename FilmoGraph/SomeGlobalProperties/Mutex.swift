@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class Mutex {
+final class Mutex {
     
     private init(){}
     static var shared = Mutex()
@@ -18,7 +18,7 @@ public class Mutex {
     var condition = pthread_cond_t()
 }
 
-public class LockMutex: Thread {
+final class LockMutex: Thread {
     
     var method: () -> Void
     

@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-
+//MARK: ImageLoader
 final class ImageLoader {
     
     private init(){}
@@ -48,6 +48,7 @@ final class ImageLoader {
     }
 }
 
+
 final class FetchSomeFilm {
     
     static var shared = FetchSomeFilm()
@@ -55,6 +56,7 @@ final class FetchSomeFilm {
     
     var formatter = DateFormatter()
     
+    //MARK: Scrennshots
     func fetchScreenShots(with url: String, completion: @escaping(Result<ScreenShots, Error>) -> Void) -> UUID? {
         guard let url = URL(string: "https://api.rawg.io/api/games/\(url)/screenshots?key=7f01c67ed4d2433bb82f3dd38282088c") else { return UUID() }
         
@@ -73,10 +75,12 @@ final class FetchSomeFilm {
             }
             
             do {
+                
                 let shots = try decoder.decode(ScreenShots.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(shots))
                 }
+                
             } catch let DecodingError.dataCorrupted(context) {
                 print(context)
             } catch let DecodingError.keyNotFound(key, context) {
@@ -99,6 +103,7 @@ final class FetchSomeFilm {
         return uuid
     }
     
+    //MARK: Games
     func fetchWith(page: Int? = nil, orUrl url: String? = nil, search text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
         var urlForFetch: String?
         
@@ -122,10 +127,12 @@ final class FetchSomeFilm {
             guard let data = data else { return }
             
             do {
+                
                 let welcome = try decoder.decode(Welcome.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(welcome))
                 }
+                
             } catch let DecodingError.dataCorrupted(context) {
                 print(context)
             } catch let DecodingError.keyNotFound(key, context) {
@@ -148,12 +155,14 @@ final class FetchSomeFilm {
     }
     
     
+    
+    //MARK: Game details
     func fetchGameDetails(with url: String, completion: @escaping(Result<GameDetais, Error>) -> Void) -> UUID? {
         guard let url = URL(string: url) else { return UUID() }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.allHTTPHeaderFields = [ "application/json" : "Content-Type", "page_size" : "1" ]
+        request.allHTTPHeaderFields = [ "application/json" : "Content-Type" ]
         
         let uuid = UUID()
         
@@ -161,10 +170,12 @@ final class FetchSomeFilm {
             guard let data = data else { completion(.failure(error!)); return }
             
             do {
+                
                 let gameDetails = try decoder.decode(GameDetais.self, from: data)
                 DispatchQueue.main.async {
                     completion(.success(gameDetails))
                 }
+                
             } catch let DecodingError.dataCorrupted(context) {
                 print(context)
             } catch let DecodingError.keyNotFound(key, context) {
@@ -185,7 +196,90 @@ final class FetchSomeFilm {
         URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
         return uuid
     }
+    
+    //MARK: Fetch Genres
+    func fetchGenres(completion: @escaping () -> ()) {
+        guard let url = URL(string: "https://api.rawg.io/api/genres?key=7f01c67ed4d2433bb82f3dd38282088c") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = [ "application/json" : "Content-Type" ]
+        
+        URLSession.shared.dataTask(with: request) { [unowned self] data, _, error in
+            
+            guard let data = data else { return }
+            
+            do {
+                
+                guard let genres = try? decoder.decode(Genres.self, from: data) else { return }
+                
+                GlobalProperties.shared.genres = Observable(genres)
+                
+                completion()
+                
+            } catch let DecodingError.dataCorrupted(context) {
+                print(context)
+            } catch let DecodingError.keyNotFound(key, context) {
+                    print("Key '\(key)' not found:", context.debugDescription)
+                    print("codingPath:", context.codingPath)
+            } catch let DecodingError.typeMismatch(type, context) {
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch {
+                print(error)
+            }
+        }.resume()
+        
+    }
+    
+    
+    //MARK: Fetch Platforms
+    func fetchAllPlatforms(with url: String, completion: @escaping () -> ()) {
+        
+        guard let url = URL(string: url) else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = ["application/json" : "Content-Type"]
+        
+        URLSession.shared.dataTask(with: request) { [unowned self] data, _, error in
+            
+            guard let data = data else { return }
+            
+            do {
+                let plats = try decoder.decode(AllPlatforms.self, from: data)
+                GlobalProperties.shared.platforms.value += plats.results ?? []
+                
+                if let nextUrl = plats.next {
+                    DispatchQueue.global().async {
+                        self.fetchAllPlatforms(with: nextUrl) {}
+                    }
+                }
+                
+                completion()
+                
+            } catch let DecodingError.dataCorrupted(context) {
+                print(context)
+            } catch let DecodingError.keyNotFound(key, context) {
+                    print("Key '\(key)' not found:", context.debugDescription)
+                    print("codingPath:", context.codingPath)
+            } catch let DecodingError.typeMismatch(type, context) {
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch {
+                print(error)
+            }
+        }.resume()
+    }
 }
+
+
 
 //MARK: Decoder
 extension FetchSomeFilm {

@@ -9,7 +9,7 @@ import UIKit
 
 class TabBar: UITabBarController, UITabBarControllerDelegate {
     
-    var selectedInd = 1
+    var selectedInd = 2
     
     lazy var selectionView: UIView = {
         let view = UIView()
@@ -24,14 +24,15 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+        
+        view.backgroundColor = .white
+        
         tabBar.addSubview(selectionView)
         tabBar.isHidden = true
-        view.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
-        view.backgroundColor = .white
-        UITabBar.appearance().barTintColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
-        tabBar.tintColor = .white
-        tabBar.unselectedItemTintColor = .white
         
+        tabBarAppearence()
+        
+        tabBar.tintColor = .white
         
         setupVC()
     }
@@ -46,11 +47,38 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     private func setupVC() {
         
         let mainTableVC = MainTableViewController()
-        StartFetch.shared.fetchGameListForMainView() { [unowned self] viewModel in
-            mainTableVC.viewModel = viewModel
+        let platformsUrl = "https://api.rawg.io/api/platforms?key=7f01c67ed4d2433bb82f3dd38282088c&page=1"
+        
+        let queue = DispatchQueue(label: "Concurrent Queue", qos: .utility, attributes: .concurrent)
+        let group = DispatchGroup()
+        
+        group.enter()
+        queue.async(group: group) {
+            StartFetch.shared.fetchGameListForMainView() { viewModel in
+                mainTableVC.viewModel = viewModel
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        queue.async(group: group) {
+            FetchSomeFilm.shared.fetchGenres() {
+                group.leave()
+            }
+        }
+        
+        group.enter()
+        queue.async(group: group) {
+            FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) {
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) { [unowned self] in
             viewControllers = [
                 addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
-                addNavBar(for: LoadingViewController(), title: "Red screen", image: UIImage(systemName: "person")!)
+                addNavBar(for: LoadingViewController(), title: "Red screen", image: UIImage(systemName: "person")!),
+                addNavBar(for: SearchScreenViewController(), title: "Search", image: UIImage(systemName: "magnifyingglass")!)
             ]
             tabBar.isHidden = false
             addSomethings()
@@ -63,7 +91,6 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) { [unowned self] in
             selectionView.frame.origin.x = tabBar.frame.width * (CGFloat(selectedIndex) / CGFloat(viewControllers?.count ?? 0))
         }
-
     }
     
     private func addNavBar(for rootVC: UIViewController, title: String, image: UIImage) -> UIViewController {
@@ -86,5 +113,19 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         navigationController.navigationBar.scrollEdgeAppearance = navbarapp
         
         return navigationController
+    }
+    
+    private func tabBarAppearence() {
+        let appearence = UITabBarAppearance()
+        
+        appearence.configureWithDefaultBackground()
+        appearence.stackedLayoutAppearance.focused.badgeBackgroundColor = .white
+        appearence.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+        appearence.shadowColor = .black
+        appearence.stackedLayoutAppearance.normal.iconColor = UIColor.black
+        appearence.stackedLayoutAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        
+        tabBar.standardAppearance = appearence
+        tabBar.scrollEdgeAppearance = appearence
     }
 }
