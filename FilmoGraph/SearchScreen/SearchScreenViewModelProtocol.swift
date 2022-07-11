@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol SearchScreenViewModelProtocol {
     
@@ -14,6 +15,10 @@ protocol SearchScreenViewModelProtocol {
     
     func platformSelectedButtonPressed()
     func ganreSelectedButtonPressed()
-    func startSearchButtonPressed()
+    func numberOfRowsInSection(section: Int, tableVieewType: TableViewType?) -> Int
+    func cellForRowAt(_ tableView: UITableView, at indexPath: IndexPath, tableViewType: TableViewType?) -> UITableViewCell
+    func didSelectRowAt(indexPath: IndexPath, tableViewType: TableViewType?, completion: @escaping (String) -> Void)
+    func dismissTableViews()
+    func findButtonPressed(completiong: @escaping (MainTableViewController) -> Void)
     
 }

@@ -11,32 +11,73 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
     
     var viewModel = SearchScreenViewModel()
     
-    lazy var actionForGanre = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
-        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) { [unowned self] in
-            viewModel.isGanreCotainerOpened
-            ? (viewModel.ganreHeight?.constant = 0)
-            : (viewModel.ganreHeight?.constant = 150)
-            view.layoutIfNeeded()
-        }
-        viewModel.isGanreCotainerOpened.toggle()
+    var screenHeight: CGFloat {
+        return UIScreen.main.bounds.height
     }
     
-    lazy var actionForPlatform = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
-        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) { [unowned self] in
-            viewModel.iscurrentPlatformOpened
-            ? (viewModel.platformHeight?.constant = 0)
-            : (viewModel.platformHeight?.constant = 150)
-            
-            view.layoutIfNeeded()
-        }
-        viewModel.iscurrentPlatformOpened.toggle()
+    var screenWidth: CGFloat {
+        return UIScreen.main.bounds.width
     }
     
-    private let ganreButton: UIButton = {
+    private lazy var actionForGanre = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) { [unowned self] in
+            viewModel.ganreSelectedButtonPressed()
+            view.layoutIfNeeded()
+        }
+    }
+    
+    private lazy var actionForPlatform = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) { [unowned self] in
+            viewModel.platformSelectedButtonPressed()
+            view.layoutIfNeeded()
+        }
+    }
+    
+    private lazy var actionForSearchButton = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
+        loadingIndicator.startAnimating()
+        UIView.animate(withDuration: 0.17) {
+            self.loadingView.layer.opacity = 0.4
+        }
+        
+        viewModel.findButtonPressed { searchVC in
+            self.loadingView.layer.opacity = 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.show(searchVC, sender: nil)
+            }
+        }
+    }
+    
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        indicator.color = .white
+        loadingView.addSubview(indicator)
+        
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        return indicator
+    }()
+    
+    private lazy var loadingView: UIView = {
+        let view = UIView(frame: view.frame)
+        
+        view.backgroundColor = .black
+        view.layer.opacity = 0
+        self.view.addSubview(view)
+        
+        return view
+    }()
+    
+    private lazy var ganreButton: UIButton = {
         let button = UIButton()
         var config: UIButton.Configuration = .bordered()
         
-        config.title = "Chose game ganre"
+        config.title = viewModel.ganreButtonText
         config.baseBackgroundColor = UIColor(white: 0.7, alpha: 0.8)
         config.titleAlignment = .leading
         config.cornerStyle = .small
@@ -49,11 +90,11 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         
     }()
     
-    private let platformButton: UIButton = {
+    private lazy var platformButton: UIButton = {
         let button = UIButton()
         var config: UIButton.Configuration = .bordered()
         
-        config.title = "Chose game platform"
+        config.title = viewModel.platformButtonText
         config.baseBackgroundColor = UIColor(white: 0.7, alpha: 0.8)
         config.titleAlignment = .leading
         config.cornerStyle = .small
@@ -61,6 +102,22 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         button.translatesAutoresizingMaskIntoConstraints = false
         button.configuration = config
         button.tintColor = .black
+        
+        return button
+    }()
+    
+    private let startSearchButton: UIButton = {
+        let button = UIButton()
+        var config: UIButton.Configuration = .bordered()
+        
+        config.title = "Find"
+        config.baseBackgroundColor = UIColor.myBlueColor
+        config.titleAlignment = .leading
+        config.cornerStyle = .small
+        
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.configuration = config
+        button.tintColor = .white
         
         return button
     }()
@@ -83,31 +140,43 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         return tableView
     }()
     
-    //MARK: View did Load
+    //MARK: View Did Load
     override func viewDidLoad() {
         
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        addSubviewsToSuperView(views: [ganreButton, ganreTableView, platformButton, platformTableView])
-        setButtonAndTableView(withButton: ganreButton, andTable: ganreTableView, on: 200)
-        setButtonAndTableView(withButton: platformButton, andTable: platformTableView, fromView: ganreButton, on: 80 + UIScreen.main.bounds.height * 0.05)
+        addSubviewsToSuperView(views: [ganreButton, ganreTableView, platformButton, platformTableView, startSearchButton])
+        
+        setButtonAndTableView(
+            withButton: ganreButton,
+            andTable: ganreTableView,
+            on: 200
+        )
+        
+        setButtonAndTableView(
+            withButton: platformButton,
+            andTable: platformTableView,
+            fromView: ganreButton,
+            on: 80 + screenHeight * 0.05
+        )
         
         view.insertSubview(ganreTableView, aboveSubview: platformButton)
         view.insertSubview(ganreTableView, aboveSubview: platformTableView)
         
-        setTableViewGanre(&ganreTableView)
-        setTableViewGanre(&platformTableView)
+        tableViewSettings(&ganreTableView)
+        tableViewSettings(&platformTableView)
         
         setButtonActions()
         setTableViewHeights()
+        setSearchButton()
         
         hideTableViewsWhenTappedAround()
         
     }
     
     //MARK: Dismiss TableViewes when view tapped
-    func hideTableViewsWhenTappedAround() {
+    private func hideTableViewsWhenTappedAround() {
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissTalbeViews(_:)))
         view.addGestureRecognizer(tap)
@@ -118,22 +187,33 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
     @objc private func dismissTalbeViews(_ sender: UITapGestureRecognizer) {
         
         if sender.state == .ended {
-            if sender.view == self.view {
-                UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
-                    viewModel.ganreHeight?.constant = 0
-                    viewModel.isGanreCotainerOpened = false
-                    view.layoutIfNeeded()
-                }
-                
-                UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
-                    viewModel.platformHeight?.constant = 0
-                    viewModel.iscurrentPlatformOpened = false
-                    view.layoutIfNeeded()
-                }
+            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
+                viewModel.dismissTableViews()
+                view.layoutIfNeeded()
             }
         }
     }
-
+    
+    private func setButtonActions() {
+        
+        ganreButton.addAction(actionForGanre, for: .touchUpInside)
+        platformButton.addAction(actionForPlatform, for: .touchUpInside)
+        startSearchButton.addAction(actionForSearchButton, for: .touchUpInside)
+        
+    }
+    
+    private func setTableViewHeights() {
+        viewModel.ganreHeight = ganreTableView.heightAnchor.constraint(equalToConstant: 0)
+        viewModel.ganreHeight?.isActive = true
+        
+        viewModel.platformHeight = platformTableView.heightAnchor.constraint(equalToConstant: 0)
+        viewModel.platformHeight?.isActive = true
+        
+    }
+}
+//MARK: UISettings
+extension SearchScreenViewController {
+    
     private func addSubviewsToSuperView(views: [UIView]) {
         views.forEach { view.addSubview($0) }
     }
@@ -149,8 +229,8 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         NSLayoutConstraint.activate([
             button.topAnchor.constraint(equalTo: parentView.topAnchor, constant: constant),
             button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 0.8),
-            button.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.height * 0.05)
+            button.widthAnchor.constraint(equalToConstant: screenWidth * 0.8),
+            button.heightAnchor.constraint(equalToConstant: screenHeight * 0.05)
         ])
         
         NSLayoutConstraint.activate([
@@ -162,8 +242,17 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         
     }
     
-    private func setTableViewGanre(_ tableView: inout UITableView) {
-        
+    private func setSearchButton() {
+        NSLayoutConstraint.activate([
+            startSearchButton.topAnchor.constraint(equalTo: view.topAnchor, constant: screenHeight * 0.8),
+            //Почему-то от нижнего анкора не ставится вьюха
+            startSearchButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            startSearchButton.widthAnchor.constraint(equalToConstant: screenWidth * 0.8),
+            startSearchButton.heightAnchor.constraint(equalToConstant: screenHeight * 0.05)
+        ])
+    }
+    
+    private func tableViewSettings(_ tableView: inout UITableView) {
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -173,79 +262,53 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         tableView.layer.cornerRadius = 6
         
     }
-    
-    private func setButtonActions() {
-        
-        ganreButton.addAction(actionForGanre, for: .touchUpInside)
-        platformButton.addAction(actionForPlatform, for: .touchUpInside)
-    }
-    
-    private func setTableViewHeights() {
-        viewModel.ganreHeight = ganreTableView.heightAnchor.constraint(equalToConstant: 0)
-        viewModel.ganreHeight?.isActive = true
-        
-        viewModel.platformHeight = platformTableView.heightAnchor.constraint(equalToConstant: 0)
-        viewModel.platformHeight?.isActive = true
-    }
 }
 
 //MARK: TableView methods
 extension SearchScreenViewController {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == ganreTableView {
-            return GlobalProperties.shared.genres?.value.count ?? 0
-        } else if tableView == platformTableView {
-            return GlobalProperties.shared.platforms.value.count
-        }
-        return 0
+        let type = setTableViewType(tableView: tableView)
+        
+        return viewModel.numberOfRowsInSection(section: section, tableVieewType: type)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let type = setTableViewType(tableView: tableView)
         
-        var content = cell.defaultContentConfiguration()
-        
-        if tableView == ganreTableView {
-            let ganre = GlobalProperties.shared.genres?.value.results?[indexPath.row]
-            content.text = ganre?.name
-        } else if tableView == platformTableView {
-            let platform = GlobalProperties.shared.platforms.value[indexPath.row]
-            content.text = platform.name
-        }
-        
-        cell.contentConfiguration = content
-        return cell
+        return viewModel.cellForRowAt(tableView, at: indexPath, tableViewType: type)
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        if tableView == ganreTableView {
-            let ganreContent = GlobalProperties.shared.genres?.value.results?[indexPath.row]
-            ganreButton.setTitle(ganreContent?.name, for: .normal)
-            
-            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
-                viewModel.isGanreCotainerOpened = false
-                viewModel.ganreHeight?.constant = 0
-                view.layoutIfNeeded()
+        let type = setTableViewType(tableView: tableView)
+        
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
+            viewModel.didSelectRowAt(indexPath: indexPath, tableViewType: type) { text in
+                if type == .genre {
+                    self.ganreButton.setTitle(text, for: .normal)
+                } else if type == .platform {
+                    self.platformButton.setTitle(text, for: .normal)
+                }
             }
-            
-        } else if tableView == platformTableView {
-            let platform = GlobalProperties.shared.platforms.value[indexPath.row]
-            platformButton.setTitle(platform.name, for: .normal)
-            
-            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
-                viewModel.iscurrentPlatformOpened = false
-                viewModel.platformHeight?.constant = 0
-                view.layoutIfNeeded()
-            }
+            view.layoutIfNeeded()
         }
+    }
+    
+    private func setTableViewType(tableView: UITableView) -> TableViewType? {
+        var type: TableViewType?
+        
+        if tableView == ganreTableView {
+            type = .genre
+        } else if tableView == platformTableView {
+            type = .platform
+        }
+        
+        return type
     }
 }
 
-
 //MARK: Gesture delegate
 extension SearchScreenViewController: UIGestureRecognizerDelegate {
-    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         
         if (touch.view?.isDescendant(of: ganreTableView) == true) || (touch.view?.isDescendant(of: platformTableView) == true) {
@@ -254,5 +317,9 @@ extension SearchScreenViewController: UIGestureRecognizerDelegate {
         return true
         
     }
-    
+}
+
+enum TableViewType {
+    case genre
+    case platform
 }

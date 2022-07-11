@@ -99,7 +99,7 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         
         let navbarapp = UINavigationBarAppearance()
         
-        navbarapp.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+        navbarapp.backgroundColor = UIColor.myBlueColor
         navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         
@@ -120,7 +120,7 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         
         appearence.configureWithDefaultBackground()
         appearence.stackedLayoutAppearance.focused.badgeBackgroundColor = .white
-        appearence.backgroundColor = UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+        appearence.backgroundColor = UIColor.myBlueColor
         appearence.shadowColor = .black
         appearence.stackedLayoutAppearance.normal.iconColor = UIColor.black
         appearence.stackedLayoutAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
@@ -128,4 +128,10 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         tabBar.standardAppearance = appearence
         tabBar.scrollEdgeAppearance = appearence
     }
+}
+
+extension UIColor {
+    static let myBlueColor: UIColor = {
+        return UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+    }()
 }

@@ -45,11 +45,19 @@ final class Cell: UICollectionViewCell {
     override init(frame: CGRect) {
         
         super.init(frame: frame)
-        self.layer.borderWidth = 2
-        self.layer.borderColor = CGColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
+//        self.layer.borderWidth = 2
+//        self.layer.borderColor = UIColor.myBlueColor.cgColor
         self.layer.cornerRadius = 13
         
-        clipsToBounds = true
+        self.layer.shadowColor = UIColor.black.cgColor
+        self.layer.shadowOpacity = 0.35
+        self.layer.shadowRadius = 2
+        
+        self.layer.shadowOffset = CGSize(width: 2, height: 3)
+        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 13).cgPath
+        self.layer.masksToBounds = false
+        self.backgroundColor = .white
+        
         setUI()
         setConstr()
         
@@ -100,14 +108,6 @@ final class Cell: UICollectionViewCell {
             gamePic.centerYAnchor.constraint(equalTo: centerYAnchor),
             gamePic.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10)
         ])
-//        gamePic.layer.cornerRadius = 13
-//        gamePic.layer.shadowOpacity = 1
-//        gamePic.layer.shadowColor = UIColor.black.cgColor
-//        gamePic.layer.shadowRadius = 3
-//        gamePic.layer.shadowOffset = CGSize(width: 5, height: 5)
-//
-//        gamePic.layer.shadowPath = UIBezierPath(rect: gamePic.bounds).cgPath
-//        gamePic.layer.shouldRasterize = true
         
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 10),

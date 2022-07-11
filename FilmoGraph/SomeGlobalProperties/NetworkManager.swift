@@ -104,16 +104,14 @@ final class FetchSomeFilm {
     }
     
     //MARK: Games
-    func fetchWith(page: Int? = nil, orUrl url: String? = nil, search text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
-        var urlForFetch: String?
+    func fetchWith(page: Int? = nil,  search text: String, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
+        var urlForFetch = ""
         
         if let page = page {
             urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&search=\(text)"
-        } else {
-            urlForFetch = url
         }
         
-        guard let urlForFetch = URL(string: urlForFetch ?? "") else { return UUID() }
+        guard let urlForFetch = URL(string: urlForFetch) else { return UUID() }
         let uuid = UUID()
         
         var request = URLRequest(url: urlForFetch)
@@ -154,6 +152,56 @@ final class FetchSomeFilm {
         return uuid
     }
     
+    //MARK: Search fetch
+    func searchFetch(onPage page: Int, with text: String? = nil, ganre: Int? = nil, platform: Int? = nil, completion: @escaping(Result<Welcome, Error>) -> Void) -> UUID? {
+        let uuid = UUID()
+        var urlConstructor = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)"
+        
+        if let text = text { urlConstructor += "&search=\(text)" }
+        if let ganre = ganre { urlConstructor += "&genres=\(ganre)" }
+        if let platform = platform { urlConstructor += "&platforms=\(platform)" }
+        
+        guard let url = URL(string: urlConstructor) else { return uuid }
+        
+        print(url)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        request.allHTTPHeaderFields = [
+            "application/json" : "Content-Type"
+        ]
+        
+        let task = URLSession.shared.dataTask(with: request) { [unowned self] data, responce, error in
+            guard let data = data else { return }
+            
+            do {
+                
+                let welcome = try decoder.decode(Welcome.self, from: data)
+                DispatchQueue.main.async {
+                    completion(.success(welcome))
+                }
+                
+            } catch let DecodingError.dataCorrupted(context) {
+                print(context)
+            } catch let DecodingError.keyNotFound(key, context) {
+                print("Key '\(key)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.valueNotFound(value, context) {
+                print("Value '\(value)' not found:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch let DecodingError.typeMismatch(type, context)  {
+                print("Type '\(type)' mismatch:", context.debugDescription)
+                print("codingPath:", context.codingPath)
+            } catch {
+                print("error: ", error)
+            }
+        }
+        
+        task.resume()
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
+        return uuid
+    }
     
     
     //MARK: Game details
