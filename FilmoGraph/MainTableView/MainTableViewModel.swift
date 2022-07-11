@@ -38,18 +38,13 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         deleteOneRequest()
         DispatchQueue.global().async {
-            self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, search: self.searchText) {  result in
-                switch result {
-                case .success(let result):
-                    DispatchQueue.main.async {
-                        self.nextPage = result.next
-                        self.prevPage = result.previous
-                        self.games = Observable(result.results)
-                        self.deleteOneRequest()
-                        completion()
-                    }
-                case .failure(let error):
-                    print(error)
+            self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: self.searchText) {  result in
+                DispatchQueue.main.async {
+                    self.nextPage = result.next
+                    self.prevPage = result.previous
+                    self.games = Observable(result.results)
+                    self.deleteOneRequest()
+                    completion()
                 }
             }
         }
@@ -114,13 +109,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         GlobalGroup.shared.group.notify(queue: .global()) { [unowned self ] in
             
             let request = FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
-                do {
-                    let details = try result.get()
-                    DispatchQueue.main.async {
-                        completion(details)
-                    }
-                } catch {
-                    print(error)
+                DispatchQueue.main.async {
+                    completion(result)
                 }
             }
             self.listOfRequests.append(request)
@@ -132,16 +122,11 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         DispatchQueue.global().async { [unowned self] in
             
             let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
-                do {
-                    let images = try result.get()
-                    DispatchQueue.main.async {
-                        self.screenShots = images.results
-                        self.unpackScreenshots { images in
-                            completion(images)
-                        }
+                DispatchQueue.main.async {
+                    self.screenShots = result.results
+                    self.unpackScreenshots { images in
+                        completion(images)
                     }
-                } catch {
-                    print(error)
                 }
             }
             self.listOfRequests.append(request)
@@ -156,16 +141,11 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             screenShots?.forEach { url in
                 guard let url = URL(string: url.image ?? "") else { return }
                 let request = ImageLoader.shared.loadImage(url) { result in
-                    do {
-                        let image = try result.get()
-                        DispatchQueue.main.async {
-                            loadedImages.append(image)
-                            if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
-                                completion(loadedImages)
-                            }
+                    DispatchQueue.main.async {
+                        loadedImages.append(result)
+                        if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
+                            completion(loadedImages)
                         }
-                    } catch {
-                        print(error)
                     }
                 }
                 self.listOfRequests.append(request)

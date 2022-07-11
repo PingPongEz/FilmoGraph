@@ -21,15 +21,10 @@ final class CellViewModel: CellViewModelProtocol {
         guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
         DispatchQueue.global().async { [unowned self] in
             self.onReuse = ImageLoader.shared.loadImage(url) { result in
-                do {
-                    let imageView = try result.get()
                     DispatchQueue.main.async {
-                        image.value = imageView
+                        image.value = result
                         self.stopCellRequest()
                     }
-                } catch {
-                    print(error)
-                }
             }
         }
         return image

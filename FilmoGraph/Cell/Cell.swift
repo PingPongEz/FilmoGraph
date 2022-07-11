@@ -25,8 +25,6 @@ final class Cell: UICollectionViewCell {
     private var platform = UILabel()
     private var gameCreator = UILabel()
 
-    
-    
     override func prepareForReuse() {
         super.prepareForReuse()
 //        self.viewModel.stopCellRequest()

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Alamofire
 
 final class Cached {
     
@@ -22,7 +23,7 @@ final class URLResquests {
     static let shared = URLResquests()
     private let semaphore = DispatchSemaphore(value: 1)
     
-    var runningRequests = [UUID?: URLSessionDataTask]()
+    var runningRequests = [UUID?: DataRequest]()
     
     func deleteOneRequest(request: UUID?) {
         semaphore.wait()
@@ -30,7 +31,7 @@ final class URLResquests {
             runningRequests[request]?.cancel()
             runningRequests.removeValue(forKey: request)
         }
-        semaphore.signal()
+        do { semaphore.signal() }
     }
     
     func cancelRequests(requests: [UUID?]) {
@@ -44,9 +45,9 @@ final class URLResquests {
         semaphore.signal()
     }
     
-    func addTasksToArray(uuid: UUID?, task: URLSessionDataTask) {
+    func addTasksToArray(uuid: UUID?, task: DataRequest) {
         semaphore.wait()
         runningRequests[uuid] = task
-        semaphore.signal()
+        do { semaphore.signal() }
     }
 }

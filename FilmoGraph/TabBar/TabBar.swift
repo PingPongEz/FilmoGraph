@@ -77,7 +77,6 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         group.notify(queue: .main) { [unowned self] in
             viewControllers = [
                 addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
-                addNavBar(for: LoadingViewController(), title: "Red screen", image: UIImage(systemName: "person")!),
                 addNavBar(for: SearchScreenViewController(), title: "Search", image: UIImage(systemName: "magnifyingglass")!)
             ]
             tabBar.isHidden = false

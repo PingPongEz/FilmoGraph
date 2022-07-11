@@ -17,17 +17,12 @@ final class StartFetch {
     func fetchGameListForMainView(completion: @escaping (MainTableViewModel) -> Void) {
         let mainTableViewModel = MainTableViewModel()
         
-        let uuid = FetchSomeFilm.shared.fetchWith(page: 1, search: "") { [unowned self] result in
-            do {
-                let welcome = try result.get()
-                mainTableViewModel.games.value = welcome.results
-                mainTableViewModel.nextPage = welcome.next
-                mainTableViewModel.prevPage = welcome.previous
-                URLResquests.shared.cancelRequests(requests: requests)
-                completion(mainTableViewModel)
-            } catch let error {
-                print(error)
-            }
+        let uuid = FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in
+            mainTableViewModel.games.value = result.results
+            mainTableViewModel.nextPage = result.next
+            mainTableViewModel.prevPage = result.previous
+            URLResquests.shared.cancelRequests(requests: requests)
+            completion(mainTableViewModel)
         }
         self.requests.append(uuid)
     }

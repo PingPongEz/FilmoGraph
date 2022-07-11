@@ -13,7 +13,6 @@ protocol StopLoadingPic {
 
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    
     var viewModel = MainTableViewModel()
     private var searchController: UISearchController?
     
@@ -22,7 +21,6 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         let layout = UICollectionViewFlowLayout()
         
         layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
-        
         
         let collectionView = UICollectionView(
             frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height),

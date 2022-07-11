@@ -23,12 +23,11 @@
 		094D7EB928774A760087ED77 /* SearchScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EB828774A760087ED77 /* SearchScreenViewController.swift */; };
 		094D7EBB28774A820087ED77 /* SearchScreenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBA28774A820087ED77 /* SearchScreenViewModel.swift */; };
 		094D7EBD28774A900087ED77 /* SearchScreenViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBC28774A900087ED77 /* SearchScreenViewModelProtocol.swift */; };
-		094D7EC028774B410087ED77 /* LoadingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EBF28774B410087ED77 /* LoadingViewController.swift */; };
+		094D7EC2287C33840087ED77 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 094D7EC1287C33840087ED77 /* Alamofire.framework */; };
+		094D7EC6287C38920087ED77 /* Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 094D7EC5287C38920087ED77 /* Cache.swift */; };
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
-		0968984A2858DB5600E8874F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 096898492858DB5600E8874F /* Assets.xcassets */; };
-		0968984D2858DB5600E8874F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0968984B2858DB5600E8874F /* LaunchScreen.storyboard */; };
 		096898582858DB5600E8874F /* FilmoGraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898572858DB5600E8874F /* FilmoGraphTests.swift */; };
 		096898622858DB5600E8874F /* FilmoGraphUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898612858DB5600E8874F /* FilmoGraphUITests.swift */; };
 		096898642858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898632858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift */; };
@@ -37,6 +36,7 @@
 		096898762858FF4300E8874F /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898752858FF4300E8874F /* GameModel.swift */; };
 		0968987A285A319E00E8874F /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09689879285A319E00E8874F /* Cell.swift */; };
 		0968987C285A31C900E8874F /* CellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968987B285A31C900E8874F /* CellViewModel.swift */; };
+		4BD179C9C75D60B2F80672D8 /* Pods_FilmoGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +56,19 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		094D7EC4287C33840087ED77 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0921DF51285CD1EA00EFDAF7 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableBox.swift; sourceTree = "<group>"; };
@@ -74,7 +87,8 @@
 		094D7EB828774A760087ED77 /* SearchScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewController.swift; sourceTree = "<group>"; };
 		094D7EBA28774A820087ED77 /* SearchScreenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewModel.swift; sourceTree = "<group>"; };
 		094D7EBC28774A900087ED77 /* SearchScreenViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchScreenViewModelProtocol.swift; sourceTree = "<group>"; };
-		094D7EBF28774B410087ED77 /* LoadingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingViewController.swift; sourceTree = "<group>"; };
+		094D7EC1287C33840087ED77 /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		094D7EC5287C38920087ED77 /* Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cache.swift; sourceTree = "<group>"; };
 		0968983D2858DB5400E8874F /* FilmoGraph.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmoGraph.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898402858DB5500E8874F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		096898422858DB5500E8874F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +106,9 @@
 		096898752858FF4300E8874F /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		09689879285A319E00E8874F /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 		0968987B285A31C900E8874F /* CellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModel.swift; sourceTree = "<group>"; };
+		389C59F045E5759B72795766 /* Pods-FilmoGraph.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraph.release.xcconfig"; path = "Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph.release.xcconfig"; sourceTree = "<group>"; };
+		3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmoGraph.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		758E583EC07973D5210F44A4 /* Pods-FilmoGraph.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraph.debug.xcconfig"; path = "Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +116,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4BD179C9C75D60B2F80672D8 /* Pods_FilmoGraph.framework in Frameworks */,
+				094D7EC2287C33840087ED77 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +148,7 @@
 				0921DF53285CD20D00EFDAF7 /* ObservableBox.swift */,
 				0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */,
 				094D7EB42876FB3F0087ED77 /* GlobalProperties.swift */,
+				094D7EC5287C38920087ED77 /* Cache.swift */,
 			);
 			path = SomeGlobalProperties;
 			sourceTree = "<group>";
@@ -167,7 +187,6 @@
 			isa = PBXGroup;
 			children = (
 				094D7EAD287365DD0087ED77 /* TabBar.swift */,
-				094D7EBF28774B410087ED77 /* LoadingViewController.swift */,
 			);
 			path = TabBar;
 			sourceTree = "<group>";
@@ -179,6 +198,8 @@
 				096898562858DB5600E8874F /* FilmoGraphTests */,
 				096898602858DB5600E8874F /* FilmoGraphUITests */,
 				0968983E2858DB5400E8874F /* Products */,
+				23FE6F8782417E42C8D3DE7D /* Pods */,
+				BEFCA470C3E3CD7430E0CF05 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -195,9 +216,10 @@
 		0968983F2858DB5500E8874F /* FilmoGraph */ = {
 			isa = PBXGroup;
 			children = (
+				0968984E2858DB5600E8874F /* Info.plist */,
+				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				094D7EBE28774AEB0087ED77 /* TabBar */,
 				094D7EB628774A510087ED77 /* SearchScreen */,
-				0921DF67286BA86400EFDAF7 /* CheckMarks.md */,
 				0921DF50285CD1B300EFDAF7 /* SomeGlobalProperties */,
 				0921DF602862427700EFDAF7 /* Others */,
 				0921DF5B2860FF5600EFDAF7 /* DetailGame */,
@@ -206,7 +228,6 @@
 				096898742858FF3500E8874F /* Models */,
 				096898492858DB5600E8874F /* Assets.xcassets */,
 				0968984B2858DB5600E8874F /* LaunchScreen.storyboard */,
-				0968984E2858DB5600E8874F /* Info.plist */,
 			);
 			path = FilmoGraph;
 			sourceTree = "<group>";
@@ -256,6 +277,24 @@
 			path = Cell;
 			sourceTree = "<group>";
 		};
+		23FE6F8782417E42C8D3DE7D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				758E583EC07973D5210F44A4 /* Pods-FilmoGraph.debug.xcconfig */,
+				389C59F045E5759B72795766 /* Pods-FilmoGraph.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		BEFCA470C3E3CD7430E0CF05 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				094D7EC1287C33840087ED77 /* Alamofire.framework */,
+				3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -263,9 +302,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 096898672858DB5600E8874F /* Build configuration list for PBXNativeTarget "FilmoGraph" */;
 			buildPhases = (
+				609A3B9BF37606C6BEB4FA16 /* [CP] Check Pods Manifest.lock */,
 				096898392858DB5400E8874F /* Sources */,
 				0968983A2858DB5400E8874F /* Frameworks */,
 				0968983B2858DB5400E8874F /* Resources */,
+				094D7EC4287C33840087ED77 /* Embed Frameworks */,
+				0DB85AFA34807BCE774BB846 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -360,8 +402,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0968984D2858DB5600E8874F /* LaunchScreen.storyboard in Resources */,
-				0968984A2858DB5600E8874F /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,6 +421,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0DB85AFA34807BCE774BB846 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		609A3B9BF37606C6BEB4FA16 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FilmoGraph-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		096898392858DB5400E8874F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -392,8 +474,8 @@
 				0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */,
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
 				0921DF52285CD1EA00EFDAF7 /* CacheManager.swift in Sources */,
+				094D7EC6287C38920087ED77 /* Cache.swift in Sources */,
 				094D7EAC286E2D5F0087ED77 /* Mutex.swift in Sources */,
-				094D7EC028774B410087ED77 /* LoadingViewController.swift in Sources */,
 				094D7EAE287365DD0087ED77 /* TabBar.swift in Sources */,
 				0921DF54285CD20D00EFDAF7 /* ObservableBox.swift in Sources */,
 				094D7EB928774A760087ED77 /* SearchScreenViewController.swift in Sources */,
@@ -508,7 +590,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -562,7 +644,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -574,6 +656,7 @@
 		};
 		096898682858DB5600E8874F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 758E583EC07973D5210F44A4 /* Pods-FilmoGraph.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -582,6 +665,7 @@
 				DEVELOPMENT_TEAM = JM2LZTGHNA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FilmoGraph/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FilmoGraph;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -591,7 +675,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraphh;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraph;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -601,6 +685,7 @@
 		};
 		096898692858DB5600E8874F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 389C59F045E5759B72795766 /* Pods-FilmoGraph.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -609,6 +694,7 @@
 				DEVELOPMENT_TEAM = JM2LZTGHNA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FilmoGraph/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = FilmoGraph;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -618,7 +704,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraphh;
+				PRODUCT_BUNDLE_IDENTIFIER = com.swiftBook.FilmoGraph;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
