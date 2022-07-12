@@ -20,8 +20,15 @@ final class CellViewModel: CellViewModelProtocol {
         
         guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
         self.onReuse = ImageLoader.shared.loadImage(url) { result in
-            image.value = result
-            self.stopCellRequest()
+            switch result {
+            case .success(let resultImage):
+                DispatchQueue.main.async {
+                    image.value = resultImage
+                    self.stopCellRequest()
+                }
+            case .failure(let error):
+                print(error)
+            }
         }
         return image
     }
@@ -48,10 +55,6 @@ final class CellViewModel: CellViewModelProtocol {
     
     func stopCellRequest() {
         URLResquests.shared.deleteOneRequest(request: onReuse)
-    }
-    
-    deinit {
-        stopCellRequest()
     }
     
     required init(game: Game) {

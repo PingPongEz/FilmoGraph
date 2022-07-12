@@ -11,10 +11,17 @@ final class Cell: UICollectionViewCell {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
-            gameName.text = self.viewModel.gameName
-            gameGenre.text = self.viewModel.gameType
-            gameCreator.text = self.viewModel.gameCreator
-            platform.text = self.viewModel.platform
+            DispatchQueue.main.async { [unowned self] in
+                gameName.text = self.viewModel.gameName
+                gameGenre.text = self.viewModel.gameType
+                gameCreator.text = self.viewModel.gameCreator
+                platform.text = self.viewModel.platform
+                
+                
+                viewModel.gamePic.bind { image in
+                    self.gamePic.image = image
+                }
+            }
         }
     }
     
@@ -24,27 +31,21 @@ final class Cell: UICollectionViewCell {
     private var gameGenre = UILabel()
     private var platform = UILabel()
     private var gameCreator = UILabel()
-
+    
     override func prepareForReuse() {
         super.prepareForReuse()
-//        self.viewModel.stopCellRequest()
+        viewModel.stopCellRequest()
         gamePic.image = nil
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        viewModel.gamePic.bind { image in
-            DispatchQueue.main.async { [unowned self] in
-                gamePic.image = image
-            }
-        }
     }
     
     override init(frame: CGRect) {
         
         super.init(frame: frame)
-//        self.layer.borderWidth = 2
-//        self.layer.borderColor = UIColor.myBlueColor.cgColor
+        
         self.layer.cornerRadius = 13
         
         self.layer.shadowColor = UIColor.black.cgColor
@@ -92,7 +93,6 @@ final class Cell: UICollectionViewCell {
         stackView.alignment = .leading
         stackView.distribution = .equalSpacing
         
-        
         addSubview(gamePic)
         addSubview(stackView)
         
@@ -110,7 +110,7 @@ final class Cell: UICollectionViewCell {
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: gamePic.trailingAnchor, constant: 10),
             stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: 10),
+            stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             stackView.heightAnchor.constraint(equalToConstant: 150)
         ])
         

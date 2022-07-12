@@ -193,8 +193,6 @@ extension DetailGameViewController {
         ? (scrollView.subviews.last?.frame.maxY ?? 0)
         : UIScreen.main.bounds.height
         
-        
-        
         scrollView.contentSize = CGSize(width: view.frame.width, height: height + 20)
     }
     

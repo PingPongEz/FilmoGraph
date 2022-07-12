@@ -31,16 +31,14 @@ final class URLResquests {
             runningRequests[request]?.cancel()
             runningRequests.removeValue(forKey: request)
         }
-        do { semaphore.signal() }
+        semaphore.signal()
     }
     
     func cancelRequests(requests: [UUID?]) {
         semaphore.wait()
         requests.forEach { request in
-            print(runningRequests.count)
             runningRequests[request]?.cancel()
             runningRequests.removeValue(forKey: request)
-            print(runningRequests.count)
         }
         semaphore.signal()
     }
@@ -48,6 +46,6 @@ final class URLResquests {
     func addTasksToArray(uuid: UUID?, task: DataRequest) {
         semaphore.wait()
         runningRequests[uuid] = task
-        do { semaphore.signal() }
+        semaphore.signal()
     }
 }

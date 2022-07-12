@@ -173,6 +173,7 @@ class SearchScreenViewController: UIViewController, UITableViewDelegate, UITable
         
         hideTableViewsWhenTappedAround()
         
+        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
     }
     
     //MARK: Dismiss TableViewes when view tapped

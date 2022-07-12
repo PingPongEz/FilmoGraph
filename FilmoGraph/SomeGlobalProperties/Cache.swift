@@ -25,6 +25,6 @@ final class Cache {
     }
     
     func getFromCache(with url: NSString) -> UIImage? {
-        return cache.object(forKey: url)
+            return cache.object(forKey: url)
     }
 }

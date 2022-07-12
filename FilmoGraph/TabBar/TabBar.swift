@@ -102,9 +102,12 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         
+        
+        
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = image
         rootVC.navigationItem.title = title
+        
         
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.navigationBar.tintColor = .white
@@ -123,6 +126,12 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         appearence.shadowColor = .black
         appearence.stackedLayoutAppearance.normal.iconColor = UIColor.black
         appearence.stackedLayoutAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        
+        tabBar.layer.shadowPath = UIBezierPath(roundedRect: tabBar.bounds, cornerRadius: 2).cgPath
+        tabBar.layer.shadowColor = UIColor.black.cgColor
+        tabBar.layer.shadowRadius = 3.5
+        tabBar.layer.shadowOffset = CGSize(width: 0, height: -2)
+        tabBar.layer.shadowOpacity = 0.45
         
         tabBar.standardAppearance = appearence
         tabBar.scrollEdgeAppearance = appearence

@@ -10,7 +10,7 @@ import Foundation
 final class Mutex {
     
     private init(){}
-    static var shared = Mutex()
+    static let shared = Mutex()
     
     var available = false
     
@@ -41,6 +41,7 @@ final class LockMutex: Thread {
         
         Mutex.shared.available = false
         defer { pthread_mutex_unlock(&Mutex.shared.mutex) }
+        
         completion()
     }
 }

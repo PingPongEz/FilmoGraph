@@ -25,14 +25,12 @@ final class ImageLoader {
     private init(){}
     static var shared = ImageLoader()
     
-    func loadImage(_ url: URL, _ completion: @escaping(UIImage) -> Void) -> UUID? {
+    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         
-            if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
-                GlobalQueueAndGroup.shared.queue.async {
-                    completion(cacheImage)
-                }
-                return UUID()
-            }
+        if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
+            completion(.success(cacheImage))
+            return UUID()
+        }
         
         let uuid = UUID()
         
@@ -46,9 +44,10 @@ final class ImageLoader {
                     
                     Cache.shared.saveToCache(with: NSString(string: url.absoluteString), and: data)
                     guard let image = UIImage(data: data) else { return }
-                    completion(image)
+                    completion(.success(image))
                 case .failure(let error):
-                    print(error)
+                    print("error in single image")
+                    completion(.failure(error))
                 }
             }
         
@@ -65,12 +64,13 @@ final class ImageLoader {
 
 final class FetchSomeFilm {
     
-    static var shared = FetchSomeFilm()
+    static let shared = FetchSomeFilm()
     private init(){}
     
     
     private let formatter = DateFormatter()
     private let header = HTTPHeaders([ "application/json" : "Content-Type" ])
+    private let interseptor = Interceptor()
     
     //MARK: Scrennshots
     func fetchScreenShots(with url: String, completion: @escaping(ScreenShots) -> Void) -> UUID? {
@@ -82,7 +82,6 @@ final class FetchSomeFilm {
         let task = AF.request(trueURL, headers: header)
             .validate()
             .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
-                print(trueURL)
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -91,6 +90,7 @@ final class FetchSomeFilm {
                         completion(screens)
                     }
                 case .failure(let error):
+                    print("error in screenshots")
                     print(error)
                 }
             }
@@ -155,6 +155,7 @@ final class FetchSomeFilm {
                         completion(result)
                     }
                 case .failure(let error):
+                    print("error in searchFetch")
                     print(error)
                 }
             }
@@ -181,6 +182,7 @@ final class FetchSomeFilm {
                         completion(details)
                     }
                 case .failure(let error):
+                    print("error in Details")
                     print(error)
                 }
             }

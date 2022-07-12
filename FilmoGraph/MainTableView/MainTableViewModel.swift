@@ -35,6 +35,23 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     private var currentRequest: UUID?
     private var screenShots: [ScreenShotsResult]?
     
+    private let semaphoreForImages = DispatchSemaphore(value: 1)
+    private let semaphoreForRequests = DispatchSemaphore(value: 1)
+    
+    private var loadedImages = [UIImage]()
+        
+    private func appendRequest(_ uuid: UUID?) { // Safe append
+        semaphoreForRequests.wait()
+        listOfRequests.append(uuid)
+        semaphoreForRequests.signal()
+    }
+    
+    private func appendImage(_ image: UIImage) { // Safe append
+        semaphoreForImages.wait()
+        loadedImages.append(image)
+        semaphoreForImages.signal()
+    }
+    
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         deleteOneRequest()
         self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: self.searchText) {  result in
@@ -48,9 +65,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         }
     }
     
-    func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
+    func cellForRowAt(_ indexPath: IndexPath)-> CellViewModelProtocol {
         let game = games.value[indexPath.row]
-        
         return CellViewModel(game: game)
     }
     
@@ -68,6 +84,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                 
                 Mutex.shared.available = true
                 pthread_cond_signal(&Mutex.shared.condition)
+                print(Mutex.shared.available)
                 
                 dispatchGroup.leave()
             }
@@ -106,8 +123,8 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         guard let urlForFetch = urlForFetch else { return }
         let request = FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
             completion(result)
-            self.listOfRequests.append(request)
         }
+        appendRequest(request)
     }
     
     private func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
@@ -118,29 +135,34 @@ final class MainTableViewModel : MainTableViewModelProtocol {
                 completion(images)
             }
         }
-        self.listOfRequests.append(request)
+        appendRequest(request)
     }
     
     private func unpackScreenshots(completion: @escaping ([UIImage]) -> Void) {
-        var loadedImages = [UIImage]()
-        
         screenShots?.forEach { url in
             guard let url = URL(string: url.image ?? "") else { return }
-            let request = ImageLoader.shared.loadImage(url) { result in
-                loadedImages.append(result)
-                DispatchQueue.main.async {
+            
+            let request = ImageLoader.shared.loadImage(url) { [unowned self] result in
+                
+                switch result {
+                case .success(let resultImage):
+                    appendImage(resultImage)
                     if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
                         completion(loadedImages)
+                        loadedImages = []
                     }
+                case .failure(let error):
+                    print(error)
                 }
+                
             }
-            self.listOfRequests.append(request)
+            appendRequest(request)
         }
     }
     
     func deleteRequests() {
         URLResquests.shared.cancelRequests(requests: listOfRequests)
-        listOfRequests.removeAll()
+        print(URLResquests.shared.runningRequests.count)
     }
     
     func deleteOneRequest() {

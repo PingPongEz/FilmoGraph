@@ -79,9 +79,9 @@ extension MainTableViewController {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
         
-        cell.viewModel = viewModel.cellForRowAt(indexPath)
-        cell.awakeFromNib()
-        cell.prepareForReuse()
+        GlobalQueueAndGroup.shared.queue.async {
+            cell.viewModel = self.viewModel.cellForRowAt(indexPath)
+        }
         
         return cell
     }
@@ -104,7 +104,7 @@ extension MainTableViewController {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
     }
 }
 
