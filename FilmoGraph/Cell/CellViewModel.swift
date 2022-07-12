@@ -19,13 +19,9 @@ final class CellViewModel: CellViewModelProtocol {
         let image = Observable<UIImage?>(nil)
         
         guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
-        DispatchQueue.global().async { [unowned self] in
-            self.onReuse = ImageLoader.shared.loadImage(url) { result in
-                    DispatchQueue.main.async {
-                        image.value = result
-                        self.stopCellRequest()
-                    }
-            }
+        self.onReuse = ImageLoader.shared.loadImage(url) { result in
+            image.value = result
+            self.stopCellRequest()
         }
         return image
     }

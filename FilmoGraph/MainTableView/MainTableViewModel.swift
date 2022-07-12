@@ -37,15 +37,13 @@ final class MainTableViewModel : MainTableViewModelProtocol {
     
     func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
         deleteOneRequest()
-        DispatchQueue.global().async {
-            self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: self.searchText) {  result in
-                DispatchQueue.main.async {
-                    self.nextPage = result.next
-                    self.prevPage = result.previous
-                    self.games = Observable(result.results)
-                    self.deleteOneRequest()
-                    completion()
-                }
+        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: self.searchText) {  result in
+            self.nextPage = result.next
+            self.prevPage = result.previous
+            self.games = Observable(result.results)
+            self.deleteOneRequest()
+            DispatchQueue.main.async {
+                completion()
             }
         }
     }
@@ -60,11 +58,11 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         let url = cellDidTap(indexPath)
         let detailVC = DetailGameViewController()
         
-        let concurrentQueue = DispatchQueue(label: "Loading details", qos: .utility, attributes: .concurrent)
-        let dispatchGroup = DispatchGroup()
+        let concurrentQueue = GlobalQueueAndGroup.shared.queue
+        let dispatchGroup = GlobalQueueAndGroup.shared.group
         
-        dispatchGroup.enter()
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
+            dispatchGroup.enter()
             createDetailViewControllerModel(with: url) { details in
                 detailVC.viewModel = DetailGameViewModel(game: details)
                 
@@ -76,9 +74,9 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         }
         
         
-        dispatchGroup.enter()
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             
+            dispatchGroup.enter()
             guard let slug = games.value[indexPath.row].slug else { return }
             fetchScreenShots(gameSlug: slug) { images in
                 LockMutex {
@@ -106,50 +104,37 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         isShowAvailable = false
         
         guard let urlForFetch = urlForFetch else { return }
-        GlobalGroup.shared.group.notify(queue: .global()) { [unowned self ] in
-            
-            let request = FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
-                DispatchQueue.main.async {
-                    completion(result)
-                }
-            }
+        let request = FetchSomeFilm.shared.fetchGameDetails(with: urlForFetch) { result in
+            completion(result)
             self.listOfRequests.append(request)
         }
     }
     
     private func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
         
-        DispatchQueue.global().async { [unowned self] in
-            
-            let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
-                DispatchQueue.main.async {
-                    self.screenShots = result.results
-                    self.unpackScreenshots { images in
-                        completion(images)
-                    }
-                }
+        let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
+            self.screenShots = result.results
+            self.unpackScreenshots { images in
+                completion(images)
             }
-            self.listOfRequests.append(request)
         }
+        self.listOfRequests.append(request)
     }
     
     private func unpackScreenshots(completion: @escaping ([UIImage]) -> Void) {
         var loadedImages = [UIImage]()
         
-        DispatchQueue.global().async { [unowned self] in
-            
-            screenShots?.forEach { url in
-                guard let url = URL(string: url.image ?? "") else { return }
-                let request = ImageLoader.shared.loadImage(url) { result in
-                    DispatchQueue.main.async {
-                        loadedImages.append(result)
-                        if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
-                            completion(loadedImages)
-                        }
+        screenShots?.forEach { url in
+            guard let url = URL(string: url.image ?? "") else { return }
+            let request = ImageLoader.shared.loadImage(url) { result in
+                loadedImages.append(result)
+                DispatchQueue.main.async {
+                    if loadedImages.count == self.screenShots?.count {  //MARK: For only one completion call
+                        completion(loadedImages)
                     }
                 }
-                self.listOfRequests.append(request)
             }
+            self.listOfRequests.append(request)
         }
     }
     

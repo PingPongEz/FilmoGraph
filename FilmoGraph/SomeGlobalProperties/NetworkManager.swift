@@ -9,6 +9,16 @@ import Foundation
 import UIKit
 import Alamofire
 
+
+final class GlobalQueueAndGroup {
+    private init(){}
+    static let shared = GlobalQueueAndGroup()
+    
+    
+    let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
+    let group = DispatchGroup()
+}
+
 //MARK: ImageLoader
 final class ImageLoader {
     
@@ -17,20 +27,23 @@ final class ImageLoader {
     
     func loadImage(_ url: URL, _ completion: @escaping(UIImage) -> Void) -> UUID? {
         
-        if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
-            completion(cacheImage)
-            return UUID()
-        }
+            if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
+                GlobalQueueAndGroup.shared.queue.async {
+                    completion(cacheImage)
+                }
+                return UUID()
+            }
         
         let uuid = UUID()
         
         let header = HTTPHeaders([ "application/json" : "Content-Type" ])
         let task = AF.request(url, headers: header)
             .validate()
-            .response { response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
+                    
                     Cache.shared.saveToCache(with: NSString(string: url.absoluteString), and: data)
                     guard let image = UIImage(data: data) else { return }
                     completion(image)
@@ -38,7 +51,6 @@ final class ImageLoader {
                     print(error)
                 }
             }
-        
         
         task.resume()
         URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
@@ -56,6 +68,7 @@ final class FetchSomeFilm {
     static var shared = FetchSomeFilm()
     private init(){}
     
+    
     private let formatter = DateFormatter()
     private let header = HTTPHeaders([ "application/json" : "Content-Type" ])
     
@@ -68,7 +81,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(trueURL, headers: header)
             .validate()
-            .response { [unowned self] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 print(trueURL)
                 switch response.result {
                 case .success(let data):
@@ -102,7 +115,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(urlForFetch, headers: header)
             .validate()
-            .response { [ unowned self ] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [ unowned self ] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -133,7 +146,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(urlConstructor, headers: header)
             .validate()
-            .response { [unowned self] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -159,7 +172,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(url, headers: header)
             .validate()
-            .response { [unowned self] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -183,7 +196,7 @@ final class FetchSomeFilm {
         
         AF.request(url, headers: header)
             .validate()
-            .response { [unowned self] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -202,13 +215,12 @@ final class FetchSomeFilm {
         
         AF.request(url, headers: header)
             .validate()
-            .response { [unowned self] response in
+            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
                     
                     guard let platforms: AllPlatforms? = doCatch(from: data) else { return }
-                    
                     GlobalProperties.shared.platforms.value += platforms?.results ?? []
                     
                     if let next = platforms?.next {
