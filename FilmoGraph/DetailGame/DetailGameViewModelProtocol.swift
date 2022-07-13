@@ -10,6 +10,7 @@ import UIKit
 
 protocol DetailGameViewModelProtocol: AnyObject {
     
+    var images: [UIImage] { get set}
     var gameName: String { get }
     var gameDescription: String { get }
     var gamePlatforms: String { get }

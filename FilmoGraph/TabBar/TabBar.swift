@@ -10,6 +10,8 @@ import UIKit
 class TabBar: UITabBarController, UITabBarControllerDelegate {
     
     var selectedInd = 2
+    let queue = GlobalQueueAndGroup.shared.queue
+    let group = GlobalQueueAndGroup.shared.group
     
     lazy var selectionView: UIView = {
         let view = UIView()
@@ -43,41 +45,60 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
+    private func fetchGameModel(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
+        queue.async(group: group) { [unowned self] in
+            group.enter()
+            StartFetch.shared.fetchGameListForMainView() { viewModel in
+                completion(viewModel)
+                self.group.leave()
+            }
+        }
+    }
+    
+    private func fetchGenresForApp(completion: @escaping (Genres) -> Void) {
+        queue.async(group: group) { [unowned self] in
+            group.enter()
+            FetchSomeFilm.shared.fetchGenres() { genres in
+                completion(genres)
+                self.group.leave()
+            }
+        }
+    }
+    
+    private func fetchAllPlatforms() {
+        let platformsUrl = "https://api.rawg.io/api/platforms?key=7f01c67ed4d2433bb82f3dd38282088c&page=1"
+        
+        queue.async(group: group) { [unowned self] in
+            group.enter()
+            FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) {
+                print(GlobalProperties.shared.platforms.value.count)
+                self.group.leave()
+            }
+        }
+    }
     
     private func setupVC() {
         
         let mainTableVC = MainTableViewController()
-        let platformsUrl = "https://api.rawg.io/api/platforms?key=7f01c67ed4d2433bb82f3dd38282088c&page=1"
         
-        let queue = DispatchQueue(label: "Concurrent Queue", qos: .utility, attributes: .concurrent)
-        let group = DispatchGroup()
-        
-        group.enter()
-        queue.async(group: group) {
-            StartFetch.shared.fetchGameListForMainView() { viewModel in
-                mainTableVC.viewModel = viewModel
-                group.leave()
-            }
+        fetchGameModel { viewModel in
+            mainTableVC.viewModel = viewModel
         }
         
-        group.enter()
-        queue.async(group: group) {
-            FetchSomeFilm.shared.fetchGenres() {
-                group.leave()
-            }
+        fetchGenresForApp() { genres in
+            GlobalProperties.shared.genres = Observable(genres)
         }
         
-        group.enter()
-        queue.async(group: group) {
-            FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) {
-                group.leave()
-            }
-        }
+        fetchAllPlatforms()
         
         group.notify(queue: .main) { [unowned self] in
+            let searchViewController = SearchScreenViewController()
+            let searchViewControllerViewModel = SearchScreenViewModel()
+            searchViewController.viewModel = searchViewControllerViewModel
+            
             viewControllers = [
                 addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
-                addNavBar(for: SearchScreenViewController(), title: "Search", image: UIImage(systemName: "magnifyingglass")!)
+                addNavBar(for: searchViewController, title: "Search", image: UIImage(systemName: "magnifyingglass")!)
             ]
             tabBar.isHidden = false
             addSomethings()
@@ -137,6 +158,16 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         tabBar.scrollEdgeAppearance = appearence
     }
 }
+
+#if DEBUG
+extension TabBar {
+    func _fetchGameGenres(completionTwo: @escaping (Genres) -> Void) {
+        fetchGenresForApp() { genres in
+            completionTwo(genres)
+        }
+    }
+}
+#endif
 
 extension UIColor {
     static let myBlueColor: UIColor = {

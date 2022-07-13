@@ -14,7 +14,7 @@ final class StartFetch {
     
     private var requests = [UUID?]()
     
-    func fetchGameListForMainView(completion: @escaping (MainTableViewModel) -> Void) {
+    func fetchGameListForMainView(completion: @escaping (MainTableViewModel?) -> Void) {
         let mainTableViewModel = MainTableViewModel()
         
         let uuid = FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in

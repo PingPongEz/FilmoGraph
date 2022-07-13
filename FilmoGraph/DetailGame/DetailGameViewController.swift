@@ -40,7 +40,7 @@ final class DetailGameViewController: UIViewController {
     private lazy var gesture = UITapGestureRecognizer(target: self, action: #selector(self.tapped(_:)))
     
     
-    var viewModel: DetailGameViewModel?
+    var viewModel: DetailGameViewModelProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()

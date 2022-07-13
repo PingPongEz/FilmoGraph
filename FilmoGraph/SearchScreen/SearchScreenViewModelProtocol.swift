@@ -13,6 +13,14 @@ protocol SearchScreenViewModelProtocol {
     var currentGanre: Genre? { get set }
     var currentPlatform: Platform? { get set }
     
+    var isGanreCotainerOpened: Bool { get set }
+    var ganreHeight: NSLayoutConstraint? { get set }
+    var ganreButtonText: String { get set }
+    
+    var iscurrentPlatformOpened: Bool { get set }
+    var platformHeight: NSLayoutConstraint? { get set }
+    var platformButtonText: String { get set }
+    
     func platformSelectedButtonPressed()
     func ganreSelectedButtonPressed()
     func numberOfRowsInSection(section: Int, tableVieewType: TableViewType?) -> Int

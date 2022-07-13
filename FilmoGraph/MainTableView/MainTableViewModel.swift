@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 
-final class MainTableViewModel : MainTableViewModelProtocol {
+final class MainTableViewModel: MainTableViewModelProtocol {
     
     var games: Observable<[Game]> = Observable([])
     
@@ -20,17 +20,14 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             }
         }
     }
-    
-    var searchText: String = "" {
-        didSet {
-            searchText = searchText.replacingOccurrences(of: " ", with: "")
-        }
-    }
-    
+
     var nextPage: String?
     var prevPage: String?
     var isShowAvailable = true
     var listOfRequests = [UUID?]()
+    
+    private let concurrentQueue = GlobalQueueAndGroup.shared.queue
+    private let dispatchGroup = GlobalQueueAndGroup.shared.group
     
     private var currentRequest: UUID?
     private var screenShots: [ScreenShotsResult]?
@@ -52,44 +49,26 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         semaphoreForImages.signal()
     }
     
-    func fetchGamesWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping () -> Void) {
-        deleteOneRequest()
-        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page, orUrl: self.searchText) {  result in
-            self.nextPage = result.next
-            self.prevPage = result.previous
-            self.games = Observable(result.results)
-            self.deleteOneRequest()
-            DispatchQueue.main.async {
-                completion()
-            }
-        }
-    }
-    
-    func cellForRowAt(_ indexPath: IndexPath)-> CellViewModelProtocol {
-        let game = games.value[indexPath.row]
-        return CellViewModel(game: game)
-    }
-    
-    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
-        let url = cellDidTap(indexPath)
-        let detailVC = DetailGameViewController()
+    private func downLoadViewModelForDetails(with indexPath: IndexPath, completion: @escaping (GameDetais) -> Void) {
         
-        let concurrentQueue = GlobalQueueAndGroup.shared.queue
-        let dispatchGroup = GlobalQueueAndGroup.shared.group
+        let url = cellDidTap(indexPath)
         
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             dispatchGroup.enter()
             createDetailViewControllerModel(with: url) { details in
-                detailVC.viewModel = DetailGameViewModel(game: details)
+                
+                completion(details)
                 
                 Mutex.shared.available = true
                 pthread_cond_signal(&Mutex.shared.condition)
                 print(Mutex.shared.available)
                 
-                dispatchGroup.leave()
+                self.dispatchGroup.leave()
             }
         }
-        
+    }
+    
+    private func downloadScreenShots(with indexPath: IndexPath, completion: @escaping([UIImage]) -> Void) {
         
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             
@@ -97,19 +76,13 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             guard let slug = games.value[indexPath.row].slug else { return }
             fetchScreenShots(gameSlug: slug) { images in
                 LockMutex {
-                    detailVC.viewModel?.images = images
+                    completion(images)
+                    
                     self.deleteRequests()
-                    dispatchGroup.leave()
+                    self.dispatchGroup.leave()
                 }.start()
             }
-            
         }
-        
-        dispatchGroup.notify(queue: .main) {
-            detailVC.uploadUI()
-        }
-        
-        return detailVC
     }
     
     private func cellDidTap(_ indexPath: IndexPath) -> String {
@@ -117,7 +90,7 @@ final class MainTableViewModel : MainTableViewModelProtocol {
         return String("https://api.rawg.io/api/games/\(string)?key=7f01c67ed4d2433bb82f3dd38282088c")
     }
     
-    private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais?) -> Void) {
+    private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais) -> Void) {
         isShowAvailable = false
         
         guard let urlForFetch = urlForFetch else { return }
@@ -158,6 +131,43 @@ final class MainTableViewModel : MainTableViewModelProtocol {
             }
             appendRequest(request)
         }
+    }
+    
+    func fetchGamesWith(page: Int? = nil, completion: @escaping () -> Void) {
+        deleteOneRequest()
+        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page) { result in
+            self.nextPage = result.next
+            self.prevPage = result.previous
+            self.games = Observable(result.results)
+            self.deleteOneRequest()
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
+    
+    func cellForRowAt(_ indexPath: IndexPath)-> CellViewModelProtocol {
+        let game = games.value[indexPath.row]
+        return CellViewModel(game: game)
+    }
+    
+    
+    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
+        let detailVC = DetailGameViewController()
+        
+        downLoadViewModelForDetails(with: indexPath) { details in
+            detailVC.viewModel = DetailGameViewModel(game: details)
+        }
+        
+        downloadScreenShots(with: indexPath) { images in
+            detailVC.viewModel?.images = images
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            detailVC.uploadUI()
+        }
+        
+        return detailVC
     }
     
     func deleteRequests() {

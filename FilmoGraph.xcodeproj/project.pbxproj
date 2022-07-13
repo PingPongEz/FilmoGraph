@@ -28,7 +28,7 @@
 		096898412858DB5500E8874F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898402858DB5500E8874F /* AppDelegate.swift */; };
 		096898432858DB5500E8874F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898422858DB5500E8874F /* SceneDelegate.swift */; };
 		096898452858DB5500E8874F /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898442858DB5500E8874F /* MainTableViewController.swift */; };
-		096898582858DB5600E8874F /* FilmoGraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898572858DB5600E8874F /* FilmoGraphTests.swift */; };
+		096898582858DB5600E8874F /* TestsForManagingRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898572858DB5600E8874F /* TestsForManagingRequests.swift */; };
 		096898622858DB5600E8874F /* FilmoGraphUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898612858DB5600E8874F /* FilmoGraphUITests.swift */; };
 		096898642858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898632858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift */; };
 		096898712858DCD800E8874F /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898702858DCD800E8874F /* NetworkManager.swift */; };
@@ -36,7 +36,7 @@
 		096898762858FF4300E8874F /* GameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 096898752858FF4300E8874F /* GameModel.swift */; };
 		0968987A285A319E00E8874F /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09689879285A319E00E8874F /* Cell.swift */; };
 		0968987C285A31C900E8874F /* CellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968987B285A31C900E8874F /* CellViewModel.swift */; };
-		4BD179C9C75D60B2F80672D8 /* Pods_FilmoGraph.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */; };
+		09DCCF0C287F3CB300117E35 /* TestsForTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,7 +97,7 @@
 		0968984C2858DB5600E8874F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0968984E2858DB5600E8874F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		096898532858DB5600E8874F /* FilmoGraphTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FilmoGraphTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		096898572858DB5600E8874F /* FilmoGraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmoGraphTests.swift; sourceTree = "<group>"; };
+		096898572858DB5600E8874F /* TestsForManagingRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsForManagingRequests.swift; sourceTree = "<group>"; };
 		0968985D2858DB5600E8874F /* FilmoGraphUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FilmoGraphUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		096898612858DB5600E8874F /* FilmoGraphUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmoGraphUITests.swift; sourceTree = "<group>"; };
 		096898632858DB5600E8874F /* FilmoGraphUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmoGraphUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -106,8 +106,12 @@
 		096898752858FF4300E8874F /* GameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameModel.swift; sourceTree = "<group>"; };
 		09689879285A319E00E8874F /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 		0968987B285A31C900E8874F /* CellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModel.swift; sourceTree = "<group>"; };
+		09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsForTabBarController.swift; sourceTree = "<group>"; };
+		09ED1B44287EED6F00D30EEF /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		10003F4521178E491AA58AA6 /* Pods-FilmoGraphTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraphTests.release.xcconfig"; path = "Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests.release.xcconfig"; sourceTree = "<group>"; };
+		1BA4E5F02211EB0A44BFE9D2 /* Pods_FilmoGraphTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmoGraphTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2DBD7C101FE9E2F901684183 /* Pods-FilmoGraphTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraphTests.debug.xcconfig"; path = "Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests.debug.xcconfig"; sourceTree = "<group>"; };
 		389C59F045E5759B72795766 /* Pods-FilmoGraph.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraph.release.xcconfig"; path = "Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph.release.xcconfig"; sourceTree = "<group>"; };
-		3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmoGraph.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		758E583EC07973D5210F44A4 /* Pods-FilmoGraph.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraph.debug.xcconfig"; path = "Target Support Files/Pods-FilmoGraph/Pods-FilmoGraph.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,7 +120,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4BD179C9C75D60B2F80672D8 /* Pods_FilmoGraph.framework in Frameworks */,
 				094D7EC2287C33840087ED77 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -235,7 +238,8 @@
 		096898562858DB5600E8874F /* FilmoGraphTests */ = {
 			isa = PBXGroup;
 			children = (
-				096898572858DB5600E8874F /* FilmoGraphTests.swift */,
+				096898572858DB5600E8874F /* TestsForManagingRequests.swift */,
+				09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */,
 			);
 			path = FilmoGraphTests;
 			sourceTree = "<group>";
@@ -282,6 +286,8 @@
 			children = (
 				758E583EC07973D5210F44A4 /* Pods-FilmoGraph.debug.xcconfig */,
 				389C59F045E5759B72795766 /* Pods-FilmoGraph.release.xcconfig */,
+				2DBD7C101FE9E2F901684183 /* Pods-FilmoGraphTests.debug.xcconfig */,
+				10003F4521178E491AA58AA6 /* Pods-FilmoGraphTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -289,8 +295,9 @@
 		BEFCA470C3E3CD7430E0CF05 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				09ED1B44287EED6F00D30EEF /* Alamofire.framework */,
 				094D7EC1287C33840087ED77 /* Alamofire.framework */,
-				3FD5FD94922F93562384C1E3 /* Pods_FilmoGraph.framework */,
+				1BA4E5F02211EB0A44BFE9D2 /* Pods_FilmoGraphTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -322,9 +329,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0968986A2858DB5600E8874F /* Build configuration list for PBXNativeTarget "FilmoGraphTests" */;
 			buildPhases = (
+				8C3E05BBDC729BD8AF3F9EF0 /* [CP] Check Pods Manifest.lock */,
 				0968984F2858DB5600E8874F /* Sources */,
 				096898502858DB5600E8874F /* Frameworks */,
 				096898512858DB5600E8874F /* Resources */,
+				844FE7A9A65C27D14C471988 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -461,6 +470,45 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		844FE7A9A65C27D14C471988 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8C3E05BBDC729BD8AF3F9EF0 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FilmoGraphTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -500,7 +548,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				096898582858DB5600E8874F /* FilmoGraphTests.swift in Sources */,
+				096898582858DB5600E8874F /* TestsForManagingRequests.swift in Sources */,
+				09DCCF0C287F3CB300117E35 /* TestsForTabBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -714,6 +763,7 @@
 		};
 		0968986B2858DB5600E8874F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DBD7C101FE9E2F901684183 /* Pods-FilmoGraphTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -734,6 +784,7 @@
 		};
 		0968986C2858DB5600E8874F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 10003F4521178E491AA58AA6 /* Pods-FilmoGraphTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";

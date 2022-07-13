@@ -193,7 +193,7 @@ final class FetchSomeFilm {
     }
     
     //MARK: Fetch Genres
-    func fetchGenres(completion: @escaping () -> ()) {
+    func fetchGenres(completion: @escaping (Genres) -> ()) {
         let url = "https://api.rawg.io/api/genres?key=7f01c67ed4d2433bb82f3dd38282088c"
         
         AF.request(url, headers: header)
@@ -203,8 +203,7 @@ final class FetchSomeFilm {
                 case .success(let data):
                     guard let data = data else { return }
                     guard let genres: Genres = doCatch(from: data) else { return }
-                    GlobalProperties.shared.genres = Observable(genres)
-                    completion()
+                    completion(genres)
                 case .failure(let error):
                     print(error)
                 }
@@ -235,7 +234,6 @@ final class FetchSomeFilm {
                     print(error)
                 }
             }.resume()
-        
     }
 }
 

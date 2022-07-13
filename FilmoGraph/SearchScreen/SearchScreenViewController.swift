@@ -7,9 +7,9 @@
 
 import UIKit
 
-class SearchScreenViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+final class SearchScreenViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    var viewModel = SearchScreenViewModel()
+    var viewModel: SearchScreenViewModelProtocol!
     
     var screenHeight: CGFloat {
         return UIScreen.main.bounds.height

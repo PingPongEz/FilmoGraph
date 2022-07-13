@@ -66,6 +66,7 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     }
     
     func didSelectRowAt(indexPath: IndexPath, tableViewType: TableViewType?, completion: @escaping (String) -> Void) {
+        
         var text = ""
         
         if indexPath.row == 0 {
@@ -107,7 +108,7 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     }
     
     func findButtonPressed(completiong: @escaping (MainTableViewController) -> Void) {
-        FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { result in
+        let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { result in
             let searchVCVM = MainTableViewModel()
             searchVCVM.games.value = result.results
             

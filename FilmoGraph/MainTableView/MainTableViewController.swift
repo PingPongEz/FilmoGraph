@@ -13,7 +13,8 @@ protocol StopLoadingPic {
 
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
-    var viewModel = MainTableViewModel()
+    var viewModel: MainTableViewModelProtocol!
+    
     private var searchController: UISearchController?
     
     private var collectionView: UICollectionView = {
