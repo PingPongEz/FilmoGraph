@@ -10,14 +10,7 @@ import UIKit
 import Alamofire
 
 
-final class GlobalQueueAndGroup {
-    private init(){}
-    static let shared = GlobalQueueAndGroup()
-    
-    
-    let queue = DispatchQueue(label: "Queue", qos: .default, attributes: .concurrent)
-    let group = DispatchGroup()
-}
+
 
 //MARK: ImageLoader
 final class ImageLoader {

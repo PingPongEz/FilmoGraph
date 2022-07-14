@@ -9,13 +9,6 @@ import Foundation
 import UIKit
 import Alamofire
 
-final class Cached {
-    
-    private init() {}
-    static let shared = Cached()
-    
-    var loadedImages = NSCache<NSString, UIImage>()
-}
 
 final class URLResquests {
     

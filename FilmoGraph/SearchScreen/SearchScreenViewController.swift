@@ -212,6 +212,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         
     }
 }
+
 //MARK: UISettings
 extension SearchScreenViewController {
     

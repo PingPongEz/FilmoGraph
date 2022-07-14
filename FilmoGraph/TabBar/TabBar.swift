@@ -174,9 +174,3 @@ extension TabBar {
     }
 }
 #endif
-
-extension UIColor {
-    static let myBlueColor: UIColor = {
-        return UIColor(red: 65/255, green: 144/255, blue: 255/255, alpha: 1)
-    }()
-}

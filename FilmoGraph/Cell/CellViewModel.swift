@@ -60,5 +60,4 @@ final class CellViewModel: CellViewModelProtocol {
     required init(game: Game) {
         self.game = game
     }
-    
 }

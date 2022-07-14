@@ -55,6 +55,7 @@ final class DetailGameViewController: UIViewController {
         
         
         view.addSubview(scrollView)
+        scrollView.delegate = self
         
         addIndicator()
         
@@ -220,5 +221,11 @@ extension DetailGameViewController {
         setImageForScrollView()
         
         viewWillLayoutSubviews()
+    }
+}
+
+extension DetailGameViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
     }
 }

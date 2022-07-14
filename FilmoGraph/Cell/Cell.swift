@@ -17,7 +17,6 @@ final class Cell: UICollectionViewCell {
                 gameCreator.text = self.viewModel.gameCreator
                 platform.text = self.viewModel.platform
                 
-                
                 viewModel.gamePic.bind { image in
                     self.gamePic.image = image
                 }
@@ -25,12 +24,12 @@ final class Cell: UICollectionViewCell {
         }
     }
     
-    private var gamePic = UIImageView()
-    private var stackView = UIStackView()
-    private var gameName = UILabel()
-    private var gameGenre = UILabel()
-    private var platform = UILabel()
-    private var gameCreator = UILabel()
+    private lazy var gamePic = UIImageView()
+    private lazy var stackView = UIStackView()
+    private lazy var gameName = UILabel()
+    private lazy var gameGenre = UILabel()
+    private lazy var platform = UILabel()
+    private lazy var gameCreator = UILabel()
     
     override func prepareForReuse() {
         super.prepareForReuse()

@@ -31,7 +31,7 @@ class TestsForTabBarController: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: .infinity) { error in
+        waitForExpectations(timeout: 10) { error in
             if let error = error {
                 print(error.localizedDescription)
             }
@@ -47,7 +47,7 @@ class TestsForTabBarController: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: .infinity) { error in
+        waitForExpectations(timeout: 10) { error in
             if let error = error {
                 print(error.localizedDescription)
             }
@@ -66,7 +66,7 @@ class TestsForTabBarController: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: .infinity) { error in
+        waitForExpectations(timeout: 10) { error in
             if let error = error {
                 print(error)
             }
