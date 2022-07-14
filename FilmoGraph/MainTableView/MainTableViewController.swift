@@ -13,6 +13,7 @@ protocol StopLoadingPic {
 
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
+    let arrow = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 28))
     var viewModel: MainTableViewModelProtocol!
     
     private var searchController: UISearchController?
@@ -36,6 +37,8 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         super.viewDidLoad()
         createTableView()
         collectionView.reloadData()
+        
+        setNavBarButtons()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -129,6 +132,55 @@ extension MainTableViewController {
         ])
         
     }
+}
+
+extension MainTableViewController {
+    private func setNavBarButtons() {
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sort by: \(viewModel.ordering.rawValue)", style: .done, target: self, action: #selector(chooseSortMethod))
+        
+        
+        
+        arrow.image = UIImage(systemName: viewModel.isReversedString)
+        arrow.isHidden = false
+        arrow.layer.opacity = 1
+        arrow.tintColor = .white
+        arrow.isUserInteractionEnabled = true
+        arrow.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(chooseSortRevercing)))
+        
+        let item = UIBarButtonItem(customView: arrow)
+        
+        navigationItem.rightBarButtonItem = item
+        
+        
+    }
+    
+    @objc private func chooseSortMethod() {
+        let actionSheet = viewModel.createAlertController() { [unowned self] in
+            collectionView.reloadData()
+        }
+        
+        present(actionSheet, animated: true)
+    }
+    
+    @objc private func chooseSortRevercing() {
+        
+        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) { [unowned self] in
+            if viewModel.isReversed.value {
+                navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: .pi)
+            } else {
+                navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: -0)
+            }
+            
+            view.layoutIfNeeded()
+        }
+        
+        viewModel.reverseSorting { [unowned self] in
+            collectionView.reloadData()
+        }
+        
+    }
+    
 }
 
 

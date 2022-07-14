@@ -94,11 +94,16 @@ final class FetchSomeFilm {
     }
     
     //MARK: Games
-    func fetchWith(page: Int? = nil, orUrl url: String? = nil, completion: @escaping(Welcome) -> Void) -> UUID? {
+    func fetchWith(page: Int? = nil, orUrl url: String? = nil, ordering: String, isReversed: Bool, completion: @escaping(Welcome) -> Void) -> UUID? {
+        
         var urlForFetch = ""
+        var kingOfSort = ""
+        
+        isReversed ? (kingOfSort = "-\(ordering)") : (kingOfSort = ordering)
         
         if let page = page {
-            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20"
+            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&ordering=\(kingOfSort)"
+            print(urlForFetch)
         } else {
             guard let url = url else { return UUID() }
             urlForFetch = url

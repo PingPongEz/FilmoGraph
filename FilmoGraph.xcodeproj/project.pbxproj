@@ -39,6 +39,7 @@
 		09DCCF0E2880029600117E35 /* TestsForStartFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0D2880029600117E35 /* TestsForStartFetch.swift */; };
 		09DCCF102880165300117E35 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0F2880165300117E35 /* UserDefaults.swift */; };
 		09DCCF13288065D800117E35 /* GlobalGroupAndQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF12288065D800117E35 /* GlobalGroupAndQueue.swift */; };
+		09DCCF1528808EAD00117E35 /* KindOfSortingGames.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF1428808EAD00117E35 /* KindOfSortingGames.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +112,7 @@
 		09DCCF0D2880029600117E35 /* TestsForStartFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsForStartFetch.swift; sourceTree = "<group>"; };
 		09DCCF0F2880165300117E35 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		09DCCF12288065D800117E35 /* GlobalGroupAndQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalGroupAndQueue.swift; sourceTree = "<group>"; };
+		09DCCF1428808EAD00117E35 /* KindOfSortingGames.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KindOfSortingGames.swift; sourceTree = "<group>"; };
 		09ED1B44287EED6F00D30EEF /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10003F4521178E491AA58AA6 /* Pods-FilmoGraphTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraphTests.release.xcconfig"; path = "Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests.release.xcconfig"; sourceTree = "<group>"; };
 		1BA4E5F02211EB0A44BFE9D2 /* Pods_FilmoGraphTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmoGraphTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +159,7 @@
 				094D7EC5287C38920087ED77 /* Cache.swift */,
 				09DCCF0F2880165300117E35 /* UserDefaults.swift */,
 				09DCCF12288065D800117E35 /* GlobalGroupAndQueue.swift */,
+				09DCCF1428808EAD00117E35 /* KindOfSortingGames.swift */,
 			);
 			path = SomeGlobalProperties;
 			sourceTree = "<group>";
@@ -541,6 +544,7 @@
 				0921DF64286311B400EFDAF7 /* CellViewModelProtocol.swift in Sources */,
 				094D7EB52876FB3F0087ED77 /* GlobalProperties.swift in Sources */,
 				096898712858DCD800E8874F /* NetworkManager.swift in Sources */,
+				09DCCF1528808EAD00117E35 /* KindOfSortingGames.swift in Sources */,
 				094D7EB22874B0DA0087ED77 /* StartAppFetches.swift in Sources */,
 				094D7EBD28774A900087ED77 /* SearchScreenViewModelProtocol.swift in Sources */,
 				096898432858DB5500E8874F /* SceneDelegate.swift in Sources */,

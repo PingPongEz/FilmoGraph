@@ -17,7 +17,7 @@ final class StartFetch {
     func fetchGameListForMainView(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
         let mainTableViewModel = MainTableViewModel()
         
-        requests?.append( FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in
+        requests?.append( FetchSomeFilm.shared.fetchWith(page: 1, ordering: SortGames.added.rawValue, isReversed: true) { [unowned self] result in
             mainTableViewModel.games.value = result.results
             mainTableViewModel.nextPage = result.next
             mainTableViewModel.prevPage = result.previous

@@ -21,6 +21,22 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
 
+    var isReversed: Observable<Bool> = Observable(true)
+    
+    var isReversedString: String {
+        get {
+            if isReversed.value {
+                return "arrow.down.square"
+            } else {
+                return "arrow.up.square"
+            }
+        }
+    }
+    
+    var ordering: SortGames = .added
+    
+    var image: UIImage = UIImage(systemName: "arrow.down.square") ?? UIImage()
+    
     var nextPage: String?
     var prevPage: String?
     var isShowAvailable = true
@@ -133,9 +149,53 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
-    func fetchGamesWith(page: Int? = nil, completion: @escaping () -> Void) {
+    func reverseSorting(completion: @escaping () -> Void) {
+        
+        isReversed.value.toggle()
+        
+        fetchGamesWith {
+            completion()
+        }
+        
+    }
+    
+    func createAlertController(completion: @escaping () -> Void) -> UIAlertController {
+        
+        let actionSheet = UIAlertController(title: "Choose sorting", message: "Sort by:", preferredStyle: .actionSheet)
+        
+        SortGames.allCases.forEach { method in
+            let action = UIAlertAction(title: method.rawValue.capitalized, style: .default) { [unowned self] _ in
+                switch method {
+                case .name:
+                    ordering = .name
+                case .released:
+                    ordering = .released
+                case .added:
+                    ordering = .added
+                case .created:
+                    ordering = .created
+                case .updated:
+                    ordering = .updated
+                case .rating:
+                    ordering = .rating
+                case .metacritic:
+                    ordering = .metacritic
+                }
+                
+                fetchGamesWith {
+                    completion()
+                }
+            }
+            actionSheet.addAction(action)
+        }
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .destructive))
+        return actionSheet
+    }
+    
+    func fetchGamesWith(completion: @escaping () -> Void) {
         deleteOneRequest()
-        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: page) { result in
+        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { result in
             self.nextPage = result.next
             self.prevPage = result.previous
             self.games = Observable(result.results)

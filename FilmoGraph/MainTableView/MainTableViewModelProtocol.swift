@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol MainTableViewModelProtocol {
     
@@ -15,8 +16,14 @@ protocol MainTableViewModelProtocol {
     var isShowAvailable: Bool { get set }
     var currentPage: Int { get set }
     var listOfRequests: [UUID?] { get set}
+    var ordering: SortGames { get set }
+    var isReversed: Observable<Bool> { get set }
+    var isReversedString: String { get }
+    var image: UIImage { get }
     
-    func fetchGamesWith(page: Int?, completion: @escaping () -> Void)
+    func reverseSorting(completion: @escaping () -> Void)
+    func createAlertController(completion: @escaping () -> Void) -> UIAlertController 
+    func fetchGamesWith(completion: @escaping () -> Void)
     func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
     func deleteRequests()
