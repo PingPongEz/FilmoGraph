@@ -71,7 +71,6 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         queue.async(group: group) { [unowned self] in
             group.enter()
             FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) {
-                print(GlobalProperties.shared.platforms.value.count)
                 self.group.leave()
             }
         }
@@ -161,6 +160,13 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
 
 #if DEBUG
 extension TabBar {
+    
+    func _fetchGameModel(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
+        fetchGameModel { mainViewModel in
+            completion(mainViewModel)
+        }
+    }
+    
     func _fetchGameGenres(completionTwo: @escaping (Genres) -> Void) {
         fetchGenresForApp() { genres in
             completionTwo(genres)

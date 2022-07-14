@@ -180,3 +180,10 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     }
 }
 
+#if DEBUG
+
+extension MainTableViewModel {
+    
+}
+
+#endif

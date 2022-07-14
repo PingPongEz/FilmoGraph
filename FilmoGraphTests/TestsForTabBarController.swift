@@ -31,7 +31,7 @@ class TestsForTabBarController: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: 10) { error in
+        waitForExpectations(timeout: .infinity) { error in
             if let error = error {
                 print(error.localizedDescription)
             }
@@ -47,12 +47,31 @@ class TestsForTabBarController: XCTestCase {
             exp.fulfill()
         }
         
-        waitForExpectations(timeout: 10) { error in
+        waitForExpectations(timeout: .infinity) { error in
             if let error = error {
                 print(error.localizedDescription)
             }
             guard let genres = GlobalProperties.shared.genres else { return }
             XCTAssertTrue(genres.value.count ?? 0 > 0, "")
+        }
+    }
+    
+    func testMainTableViewModelShouldNotBeNilAfterFetch() {
+        
+        var mainModel: MainTableViewModel?
+        let exp = expectation(description: #function)
+        
+        sut._fetchGameModel { mainViewModel in
+            mainModel = mainViewModel as? MainTableViewModel
+            exp.fulfill()
+        }
+        
+        waitForExpectations(timeout: .infinity) { error in
+            if let error = error {
+                print(error)
+            }
+            
+            XCTAssertNotNil(mainModel)
         }
     }
     

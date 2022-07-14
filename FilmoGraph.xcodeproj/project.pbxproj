@@ -37,6 +37,8 @@
 		0968987A285A319E00E8874F /* Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09689879285A319E00E8874F /* Cell.swift */; };
 		0968987C285A31C900E8874F /* CellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0968987B285A31C900E8874F /* CellViewModel.swift */; };
 		09DCCF0C287F3CB300117E35 /* TestsForTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */; };
+		09DCCF0E2880029600117E35 /* TestsForStartFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0D2880029600117E35 /* TestsForStartFetch.swift */; };
+		09DCCF102880165300117E35 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCCF0F2880165300117E35 /* UserDefaults.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +109,8 @@
 		09689879285A319E00E8874F /* Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cell.swift; sourceTree = "<group>"; };
 		0968987B285A31C900E8874F /* CellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CellViewModel.swift; sourceTree = "<group>"; };
 		09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsForTabBarController.swift; sourceTree = "<group>"; };
+		09DCCF0D2880029600117E35 /* TestsForStartFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestsForStartFetch.swift; sourceTree = "<group>"; };
+		09DCCF0F2880165300117E35 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		09ED1B44287EED6F00D30EEF /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		10003F4521178E491AA58AA6 /* Pods-FilmoGraphTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FilmoGraphTests.release.xcconfig"; path = "Target Support Files/Pods-FilmoGraphTests/Pods-FilmoGraphTests.release.xcconfig"; sourceTree = "<group>"; };
 		1BA4E5F02211EB0A44BFE9D2 /* Pods_FilmoGraphTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FilmoGraphTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +156,7 @@
 				0921DF652868E46500EFDAF7 /* GlobalQueueGroup.swift */,
 				094D7EB42876FB3F0087ED77 /* GlobalProperties.swift */,
 				094D7EC5287C38920087ED77 /* Cache.swift */,
+				09DCCF0F2880165300117E35 /* UserDefaults.swift */,
 			);
 			path = SomeGlobalProperties;
 			sourceTree = "<group>";
@@ -240,6 +245,7 @@
 			children = (
 				096898572858DB5600E8874F /* TestsForManagingRequests.swift */,
 				09DCCF0B287F3CB300117E35 /* TestsForTabBarController.swift */,
+				09DCCF0D2880029600117E35 /* TestsForStartFetch.swift */,
 			);
 			path = FilmoGraphTests;
 			sourceTree = "<group>";
@@ -520,6 +526,7 @@
 				096898452858DB5500E8874F /* MainTableViewController.swift in Sources */,
 				096898412858DB5500E8874F /* AppDelegate.swift in Sources */,
 				0921DF662868E46500EFDAF7 /* GlobalQueueGroup.swift in Sources */,
+				09DCCF102880165300117E35 /* UserDefaults.swift in Sources */,
 				0968987C285A31C900E8874F /* CellViewModel.swift in Sources */,
 				0921DF52285CD1EA00EFDAF7 /* CacheManager.swift in Sources */,
 				094D7EC6287C38920087ED77 /* Cache.swift in Sources */,
@@ -549,6 +556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				096898582858DB5600E8874F /* TestsForManagingRequests.swift in Sources */,
+				09DCCF0E2880029600117E35 /* TestsForStartFetch.swift in Sources */,
 				09DCCF0C287F3CB300117E35 /* TestsForTabBarController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

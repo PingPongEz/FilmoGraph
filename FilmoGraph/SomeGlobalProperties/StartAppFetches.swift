@@ -12,18 +12,28 @@ final class StartFetch {
     
     static let shared = StartFetch()
     
-    private var requests = [UUID?]()
+    private var requests: [UUID?]? = []
     
-    func fetchGameListForMainView(completion: @escaping (MainTableViewModel?) -> Void) {
+    func fetchGameListForMainView(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
         let mainTableViewModel = MainTableViewModel()
         
-        let uuid = FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in
+        requests?.append( FetchSomeFilm.shared.fetchWith(page: 1) { [unowned self] result in
             mainTableViewModel.games.value = result.results
             mainTableViewModel.nextPage = result.next
             mainTableViewModel.prevPage = result.previous
-            URLResquests.shared.cancelRequests(requests: requests)
+            URLResquests.shared.cancelRequests(requests: requests ?? [])
+            self.requests = nil
             completion(mainTableViewModel)
-        }
-        self.requests.append(uuid)
+        })
     }
 }
+
+#if DEBUG
+
+extension StartFetch {
+    func _checkRequestsInStartFetch() -> [UUID?]? {
+        return requests
+    }
+}
+
+#endif
