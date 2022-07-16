@@ -13,7 +13,7 @@ protocol SearchScreenViewModelProtocol {
     var currentGanre: Genre? { get set }
     var currentPlatform: Platform? { get set }
     
-    var isGanreCotainerOpened: Bool { get set }
+    var isGanreContainerOpened: Bool { get set }
     var ganreHeight: NSLayoutConstraint? { get set }
     var ganreButtonText: String { get set }
     

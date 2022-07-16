@@ -69,7 +69,6 @@ final class ImageLoader {
         let task = AF.request(url, headers: header)
             .validate()
             .response(queue: queue) { response in
-                print(Thread.current)
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }

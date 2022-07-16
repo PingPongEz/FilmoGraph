@@ -13,13 +13,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     
     var games: Observable<[Game]> = Observable([])
     
-    var currentPage: Int = 1 {
-        didSet {
-            if currentPage < 1 {
-                currentPage = 1
-            }
-        }
-    }
+    var currentPage: Int = 2                            //Setted to 2 because of view initing with fetch on page 1
 
     var isReversed: Observable<Bool> = Observable(true)
     
@@ -33,14 +27,19 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
-    var ordering: SortGames = .added
-    
+    var ordering: SortGames = .added  //King of sorting
     var image: UIImage = UIImage(systemName: "arrow.down.square") ?? UIImage()
     
     var nextPage: String?
     var prevPage: String?
     var isShowAvailable = true
     var listOfRequests = [UUID?]()
+    
+    // **If searching works**
+    var isSearchingViewController = false
+    var currentGengre: Genre?
+    var currentPlatform: Platform?
+    var textForSearchFetch: String?
     
     private let concurrentQueue = GlobalQueueAndGroup.shared.queue
     private let dispatchGroup = GlobalQueueAndGroup.shared.group
@@ -149,22 +148,57 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
-    func reverseSorting(completion: @escaping () -> Void) {
+    private func updateAfterFetch(with result: Welcome, completion: @escaping () -> Void) {
+        nextPage = result.next
+        prevPage = result.previous
+        games.value += result.results
+        deleteOneRequest()
+        
+        DispatchQueue.main.async {
+            completion()
+        }
+    }
+    
+    private func calculateItemsForReloadCollectionView(count: Int) -> [IndexPath] {
+        var insertingItems: [IndexPath] = []
+        
+        print(count, currentPage)
+        let start = (currentPage - 2) * count                               //Calculating range of items
+        let end = (currentPage - 1) * count
+        
+        for item in (start..<end) {
+            insertingItems.append(IndexPath(item: item, section: 0))
+        }
+        
+        return insertingItems
+    }
+    
+    func reverseSorting(startAction: @escaping () -> Void, completion: @escaping ([IndexPath]) -> Void) {
         
         isReversed.value.toggle()
         
-        fetchGamesWith {
-            completion()
-        }
+        currentPage = 1             //Making it for delete old values
+        games = Observable([])
         
+        startAction()
+        
+        fetchGamesWith { [unowned self] items in
+            completion(items)
+        }
     }
     
-    func createAlertController(completion: @escaping () -> Void) -> UIAlertController {
+    func createAlertController(startAction: @escaping() -> Void ,completion: @escaping ([IndexPath]) -> Void) -> UIAlertController {
         
         let actionSheet = UIAlertController(title: "Choose sorting", message: "Sort by:", preferredStyle: .actionSheet)
         
         SortGames.allCases.forEach { method in
             let action = UIAlertAction(title: method.rawValue.capitalized, style: .default) { [unowned self] _ in
+                
+                currentPage = 1         //Making it for delete old values
+                
+                startAction()
+                games = Observable([])
+                
                 switch method {
                 case .name:
                     ordering = .name
@@ -182,8 +216,8 @@ final class MainTableViewModel: MainTableViewModelProtocol {
                     ordering = .metacritic
                 }
                 
-                fetchGamesWith {
-                    completion()
+                fetchGamesWith { items in
+                    completion(items)
                 }
             }
             actionSheet.addAction(action)
@@ -193,22 +227,36 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         return actionSheet
     }
     
-    func fetchGamesWith(completion: @escaping () -> Void) {
+    func fetchGamesWith(completion: @escaping ([IndexPath]) -> Void) {
+        
         deleteOneRequest()
-        currentPage = 1
-        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { result in
-            self.nextPage = result.next
-            self.prevPage = result.previous
-            self.games = Observable(result.results)
-            self.deleteOneRequest()
-            DispatchQueue.main.async {
-                completion()
+        
+        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { [unowned self] result in
+            
+            currentPage += 1
+            updateAfterFetch(with: result) {
+                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
             }
+            
         }
     }
     
-    func cellForRowAt(_ indexPath: IndexPath)-> CellViewModelProtocol {
-        let game = games.value[indexPath.row]
+    func searchFetch(completion: @escaping ([IndexPath]) -> Void) {
+        
+        deleteRequests()
+        
+        self.currentRequest = FetchSomeFilm.shared.searchFetch(onPage: currentPage, with: textForSearchFetch, ganre: currentGengre?.id, platform: currentPlatform?.id) { [unowned self] result in
+            currentPage += 1
+            
+            updateAfterFetch(with: result) {
+                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
+            }
+            
+        }
+    }
+    
+    func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
+        let game = games.value[indexPath.item]
         return CellViewModel(game: game)
     }
     

@@ -11,7 +11,7 @@ import UIKit
 final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     
     var currentGanre: Genre?
-    var isGanreCotainerOpened = false
+    var isGanreContainerOpened = false
     var ganreHeight: NSLayoutConstraint?
     var ganreButtonText = "Choose game ganre..."
     
@@ -21,10 +21,10 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     var platformButtonText = "Choose game platform..."
     
     func ganreSelectedButtonPressed() {
-        isGanreCotainerOpened
+        isGanreContainerOpened
         ? (ganreHeight?.constant = 0)
         : (ganreHeight?.constant = 150)
-        isGanreCotainerOpened.toggle()
+        isGanreContainerOpened.toggle()
     }
     
     func platformSelectedButtonPressed() {
@@ -73,19 +73,19 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
             
             if tableViewType == .genre {
                 currentGanre = nil
-                isGanreCotainerOpened = false
+                isGanreContainerOpened = false
                 ganreHeight?.constant = 0
                 text = ganreButtonText
             } else if tableViewType == .platform {
                 currentPlatform = nil
                 iscurrentPlatformOpened = false
-                platformHeight?.constant = 0
+                platformHeight?.constant = 10
                 text = platformButtonText
             }
             
         } else if tableViewType == .genre {
             currentGanre = GlobalProperties.shared.genres?.value.results?[indexPath.row - 1]
-            isGanreCotainerOpened = false
+            isGanreContainerOpened = false
             ganreHeight?.constant = 0
             text = currentGanre?.name ?? ""
         } else if tableViewType == .platform {
@@ -101,19 +101,23 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     func dismissTableViews() {
         
         ganreHeight?.constant = 0
-        isGanreCotainerOpened = false
+        isGanreContainerOpened = false
         
         platformHeight?.constant = 0
         iscurrentPlatformOpened = false
     }
     
     func findButtonPressed(completion: @escaping (MainTableViewController) -> Void) {
-        let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { result in
+        let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { [unowned self] result in
             let searchVCVM = MainTableViewModel()
             searchVCVM.games.value = result.results
             
             let searchVC = MainTableViewController()
             searchVC.viewModel = searchVCVM
+            searchVC.viewModel.isSearchingViewController = true
+            searchVC.viewModel.currentPage = 2
+            searchVC.viewModel.currentGengre = currentGanre
+            searchVC.viewModel.currentPlatform = currentPlatform
             
             DispatchQueue.global().async {
                 completion(searchVC)

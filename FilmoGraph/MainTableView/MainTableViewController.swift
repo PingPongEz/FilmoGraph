@@ -15,9 +15,6 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     
     let arrow = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 28))
     var viewModel: MainTableViewModelProtocol!
-    var isSearchingViewController = false
-    
-    private var searchController: UISearchController?
     
     private var collectionView: UICollectionView = {
         
@@ -34,12 +31,21 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         return collectionView
     }()
     
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        indicator.hidesWhenStopped = true
+        
+        return indicator
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         createTableView()
         collectionView.reloadData()
         
-        if !isSearchingViewController {
+        if !viewModel.isSearchingViewController {
             setNavBarButtons()
         }
     }
@@ -86,11 +92,26 @@ extension MainTableViewController {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! Cell
         
-        GlobalQueueAndGroup.shared.queue.async {
+        DispatchQueue(label: "Cell queue", qos: .userInteractive, attributes: .concurrent).async {
             cell.viewModel = self.viewModel.cellForRowAt(indexPath)
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        
+        if indexPath.item == viewModel.games.value.count - 1 {
+            if viewModel.isSearchingViewController {
+                viewModel.searchFetch { items in
+                    collectionView.insertItems(at: items)
+                }
+            } else {
+                viewModel.fetchGamesWith { items in
+                    collectionView.insertItems(at: items)
+                }
+            }
+        }
     }
     
     //MARK: Did Select Row
@@ -126,6 +147,12 @@ extension MainTableViewController {
         collectionView.delegate = self
         
         view.addSubview(collectionView)
+        collectionView.addSubview(loadingIndicator)
+        
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
         
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
@@ -152,14 +179,26 @@ extension MainTableViewController {
         let item = UIBarButtonItem(customView: arrow)
         
         navigationItem.rightBarButtonItem = item
-        
-        
     }
     
     @objc private func chooseSortMethod() {
-        let actionSheet = viewModel.createAlertController() { [unowned self] in
-            collectionView.reloadData()
-        }
+        
+        // Action for each button in sheet. startAction made for fetching after pressing on button but not at leftBarButton
+        
+        let actionSheet = viewModel.createAlertController(
+            startAction: { [unowned self] in
+                
+                loadingIndicator.startAnimating()
+                collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                collectionView.reloadData()
+                
+            }) { [unowned self] items in
+                
+                loadingIndicator.stopAnimating()
+                collectionView.reloadItems(at: items)
+                navigationItem.leftBarButtonItem?.title = "Sort by: \(viewModel.ordering.rawValue.capitalized)"
+                
+            }
         
         present(actionSheet, animated: true)
     }
@@ -172,17 +211,27 @@ extension MainTableViewController {
             } else {
                 navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: -0)
             }
-            
             view.layoutIfNeeded()
         }
         
-        viewModel.reverseSorting { [unowned self] in
-            collectionView.reloadData()
-        }
+        //startAction need for reload olny when reverseSorting starts in viewModel
         
+        viewModel.reverseSorting(
+            startAction: { [unowned self] in
+                
+                loadingIndicator.startAnimating()
+                collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+                collectionView.reloadData()
+                
+            }) { [unowned self] items in
+                
+                loadingIndicator.stopAnimating()
+                collectionView.reloadItems(at: items)
+                
+            }
     }
-    
 }
+
 
 
 extension MainTableViewController: StopLoadingPic {

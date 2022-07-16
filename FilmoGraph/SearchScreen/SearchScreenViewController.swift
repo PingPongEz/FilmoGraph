@@ -40,7 +40,6 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         }
         
         viewModel.findButtonPressed { searchVC in
-            searchVC.isSearchingViewController = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.loadingView.layer.opacity = 0
                 self.show(searchVC, sender: nil)
