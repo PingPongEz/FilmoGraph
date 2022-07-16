@@ -131,7 +131,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         screenShots?.forEach { url in
             guard let url = URL(string: url.image ?? "") else { return }
             
-            let request = ImageLoader.shared.loadImage(url) { [unowned self] result in
+            let request = ImageLoader.shared.loadImageWithData(url) { [unowned self] result in
                 
                 switch result {
                 case .success(let resultImage):
@@ -195,6 +195,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     
     func fetchGamesWith(completion: @escaping () -> Void) {
         deleteOneRequest()
+        currentPage = 1
         self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { result in
             self.nextPage = result.next
             self.prevPage = result.previous

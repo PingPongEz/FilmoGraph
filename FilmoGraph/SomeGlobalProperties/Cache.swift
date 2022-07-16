@@ -8,23 +8,23 @@
 import Foundation
 import UIKit
 
-final class Cache {
+
+final class DataCache {
     
     private init(){}
     
-    static let shared = Cache()
-    let cache: NSCache<NSString, UIImage> = NSCache()
+    static let shared = DataCache()
+    let cache: NSCache<NSString, NSData> = NSCache()
     private let queue = DispatchQueue(label: "Queue", qos: .utility, attributes: .concurrent, target: .global())
     
     func saveToCache(with url: NSString, and data: Data) {
         queue.async { [unowned self] in
-            guard let uiimage = UIImage(data: data) else { return }
-            cache.setObject(uiimage, forKey: url)
+            cache.setObject(NSData(data: data), forKey: url)
         }
-        
     }
     
     func getFromCache(with url: NSString) -> UIImage? {
-            return cache.object(forKey: url)
+        guard let data = cache.object(forKey: url) as? Data else { return UIImage(systemName: "gamepad") }
+        return UIImage(data: data)
     }
 }

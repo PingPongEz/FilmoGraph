@@ -18,10 +18,48 @@ final class ImageLoader {
     private init(){}
     static var shared = ImageLoader()
     
-    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
+//    func loadImage(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
+//        
+//        let queue = DispatchQueue(label: "Queue", qos: .userInteractive, attributes: .concurrent)
+//        
+//        if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
+//            completion(.success(cacheImage))
+//            return UUID()
+//        }
+//        
+//        let uuid = UUID()
+//        
+//        let header = HTTPHeaders([ "application/json" : "Content-Type" ])
+//        let task = AF.request(url, headers: header)
+//            .validate()
+//            .response(queue: queue) { response in
+//                switch response.result {
+//                case .success(let data):
+//                    guard let data = data else { return }
+//                    guard let image = UIImage(data: data) else { return }
+//                    print(data, "Before")
+//                    guard let newData = image.jpegData(compressionQuality: 0) else { return }
+//                    print(newData, "After")
+//                    Cache.shared.saveToCache(with: NSString(string: url.absoluteString), and: newData)
+//                
+//                    completion(.success(image))
+//                case .failure(let error):
+//                    print("error in single image")
+//                    completion(.failure(error))
+//                }
+//            }
+//        
+//        task.resume()
+//        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
+//        return uuid
+//    }
+    
+    func loadImageWithData(_ url: URL, _ completion: @escaping(Result<UIImage, Error>) -> Void) -> UUID? {
         
-        if let cacheImage = Cache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
-            completion(.success(cacheImage))
+        let queue = DispatchQueue(label: "Queue", qos: .userInteractive, attributes: .concurrent)
+        
+        if let cachedImage = DataCache.shared.getFromCache(with: NSString(string: url.absoluteString)) {
+            completion(.success(cachedImage))
             return UUID()
         }
         
@@ -30,14 +68,19 @@ final class ImageLoader {
         let header = HTTPHeaders([ "application/json" : "Content-Type" ])
         let task = AF.request(url, headers: header)
             .validate()
-            .response(queue: GlobalQueueAndGroup.shared.queue) { response in
+            .response(queue: queue) { response in
+                print(Thread.current)
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
-                    
-                    Cache.shared.saveToCache(with: NSString(string: url.absoluteString), and: data)
                     guard let image = UIImage(data: data) else { return }
-                    completion(.success(image))
+                    
+                    guard let compressedData = image.jpegData(compressionQuality: 0) else { return }
+                    guard let compressedImage = UIImage(data: compressedData) else { return }
+                    
+                    DataCache.shared.saveToCache(with: NSString(string: url.absoluteString), and: compressedData)
+                
+                    completion(.success(compressedImage))
                 case .failure(let error):
                     print("error in single image")
                     completion(.failure(error))
@@ -49,9 +92,6 @@ final class ImageLoader {
         return uuid
     }
     
-    func cancelLoad(uuid: UUID?) {
-        URLResquests.shared.deleteOneRequest(request: uuid)
-    }
 }
 
 

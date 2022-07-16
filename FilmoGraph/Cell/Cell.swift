@@ -24,7 +24,7 @@ final class Cell: UICollectionViewCell {
         }
     }
     
-    private lazy var gamePic = UIImageView()
+    private var gamePic = UIImageView()
     private lazy var stackView = UIStackView()
     private lazy var gameName = UILabel()
     private lazy var gameGenre = UILabel()

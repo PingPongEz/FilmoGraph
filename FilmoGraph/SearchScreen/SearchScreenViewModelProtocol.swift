@@ -27,6 +27,6 @@ protocol SearchScreenViewModelProtocol {
     func cellForRowAt(_ tableView: UITableView, at indexPath: IndexPath, tableViewType: TableViewType?) -> UITableViewCell
     func didSelectRowAt(indexPath: IndexPath, tableViewType: TableViewType?, completion: @escaping (String) -> Void)
     func dismissTableViews()
-    func findButtonPressed(completiong: @escaping (MainTableViewController) -> Void)
+    func findButtonPressed(completion: @escaping (MainTableViewController) -> Void)
     
 }

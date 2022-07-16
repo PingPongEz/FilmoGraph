@@ -15,6 +15,7 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     
     let arrow = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 28))
     var viewModel: MainTableViewModelProtocol!
+    var isSearchingViewController = false
     
     private var searchController: UISearchController?
     
@@ -38,7 +39,9 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         createTableView()
         collectionView.reloadData()
         
-        setNavBarButtons()
+        if !isSearchingViewController {
+            setNavBarButtons()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -137,9 +140,7 @@ extension MainTableViewController {
 extension MainTableViewController {
     private func setNavBarButtons() {
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sort by: \(viewModel.ordering.rawValue)", style: .done, target: self, action: #selector(chooseSortMethod))
-        
-        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sort by: \(viewModel.ordering.rawValue.capitalized)", style: .done, target: self, action: #selector(chooseSortMethod))
         
         arrow.image = UIImage(systemName: viewModel.isReversedString)
         arrow.isHidden = false

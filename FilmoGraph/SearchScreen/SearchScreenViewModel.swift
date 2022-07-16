@@ -107,15 +107,16 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
         iscurrentPlatformOpened = false
     }
     
-    func findButtonPressed(completiong: @escaping (MainTableViewController) -> Void) {
+    func findButtonPressed(completion: @escaping (MainTableViewController) -> Void) {
         let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { result in
             let searchVCVM = MainTableViewModel()
             searchVCVM.games.value = result.results
             
             let searchVC = MainTableViewController()
             searchVC.viewModel = searchVCVM
+            
             DispatchQueue.global().async {
-                completiong(searchVC)
+                completion(searchVC)
             }
         }
     }

@@ -15,30 +15,37 @@ final class URLResquests {
     private init(){}
     static let shared = URLResquests()
     private let semaphore = DispatchSemaphore(value: 1)
+    private let queue = DispatchQueue(label: "Requests queue", qos: .default, attributes: .concurrent, target: .global())
     
     var runningRequests = [UUID?: DataRequest]()
     
     func deleteOneRequest(request: UUID?) {
-        semaphore.wait()
-        if runningRequests[request] != nil {
-            runningRequests[request]?.cancel()
-            runningRequests.removeValue(forKey: request)
+        queue.async { [unowned self] in
+            semaphore.wait()
+            if runningRequests[request] != nil {
+                runningRequests[request]?.cancel()
+                runningRequests.removeValue(forKey: request)
+            }
+            semaphore.signal()
         }
-        semaphore.signal()
     }
     
     func cancelRequests(requests: [UUID?]) {
-        semaphore.wait()
-        requests.forEach { request in
-            runningRequests[request]?.cancel()
-            runningRequests.removeValue(forKey: request)
+        queue.async { [unowned self] in
+            semaphore.wait()
+            requests.forEach { request in
+                runningRequests[request]?.cancel()
+                runningRequests.removeValue(forKey: request)
+            }
+            semaphore.signal()
         }
-        semaphore.signal()
     }
     
     func addTasksToArray(uuid: UUID?, task: DataRequest) {
-        semaphore.wait()
-        runningRequests[uuid] = task
-        semaphore.signal()
+        queue.async { [unowned self] in
+            semaphore.wait()
+            runningRequests[uuid] = task
+            semaphore.signal()
+        }
     }
 }
