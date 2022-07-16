@@ -18,6 +18,7 @@ final class DetailGameViewController: UIViewController {
     private let smallScreenConstraint = min(UIScreen.main.bounds.width * 0.25, UIScreen.main.bounds.height * 0.25)
     private let largeScreenConstraint = min(UIScreen.main.bounds.width * 0.75, UIScreen.main.bounds.height * 0.75)
     
+    var viewModel: DetailGameViewModelProtocol?
     
     private var gameDescription: UILabel = {
         let title = UILabel()
@@ -38,9 +39,6 @@ final class DetailGameViewController: UIViewController {
     private var picturePages = UIScrollView()
     private var scrollView = UIScrollView()
     private lazy var gesture = UITapGestureRecognizer(target: self, action: #selector(self.tapped(_:)))
-    
-    
-    var viewModel: DetailGameViewModelProtocol?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,18 +81,24 @@ final class DetailGameViewController: UIViewController {
 
 //MARK: UI setings
 extension DetailGameViewController {
-    private func addIndicator() {
-        indicator.startAnimating()
-        indicator.hidesWhenStopped = true
-        indicator.isHidden = false
+    
+    func uploadUI() {
+        indicator.stopAnimating()
         
-        indicator.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(indicator)
+        guard let viewModel = viewModel else { return }
         
-        NSLayoutConstraint.activate([
-            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
+        gameName.text = viewModel.gameName
+        gameDescription.text = "About game : \(viewModel.gameDescription)"
+        gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
+        gameRate.text = viewModel.gameRate
+        
+        picturePages.contentSize = CGSize(
+            width: fullScreenConstraint * CGFloat(viewModel.images.count),
+            height: fullScreenConstraint
+        )
+        setImageForScrollView()
+        
+        viewWillLayoutSubviews()
     }
     
     @objc private func tapped(_ sender: UITapGestureRecognizer) {
@@ -108,6 +112,20 @@ extension DetailGameViewController {
             }
             uploadUI()
         }
+    }
+    
+    private func addIndicator() {
+        indicator.startAnimating()
+        indicator.hidesWhenStopped = true
+        indicator.isHidden = false
+        
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(indicator)
+        
+        NSLayoutConstraint.activate([
+            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
     private func setImageForScrollView() {
@@ -204,24 +222,6 @@ extension DetailGameViewController {
         }
     }
     
-    func uploadUI() {
-        indicator.stopAnimating()
-        
-        guard let viewModel = viewModel else { return }
-        
-        gameName.text = viewModel.gameName
-        gameDescription.text = "About game : \(viewModel.gameDescription)"
-        gamePlatforms.text = "Available at : \(viewModel.gamePlatforms)"
-        gameRate.text = viewModel.gameRate
-        
-        picturePages.contentSize = CGSize(
-            width: fullScreenConstraint * CGFloat(viewModel.images.count),
-            height: fullScreenConstraint
-        )
-        setImageForScrollView()
-        
-        viewWillLayoutSubviews()
-    }
 }
 
 extension DetailGameViewController: UIScrollViewDelegate {

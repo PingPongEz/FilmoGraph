@@ -52,6 +52,123 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     
     private var loadedImages = [UIImage]()
         
+    
+    
+    func reverseSorting(startAction: @escaping () -> Void, completion: @escaping ([IndexPath]) -> Void) {
+        
+        isReversed.value.toggle()
+        
+        currentPage = 1             //Making it for delete old values
+        games = Observable([])
+        
+        startAction()
+        
+        fetchGamesWith { [unowned self] items in
+            completion(items)
+        }
+    }
+    
+    func createAlertController(startAction: @escaping() -> Void ,completion: @escaping ([IndexPath]) -> Void) -> UIAlertController {
+        
+        let actionSheet = UIAlertController(title: "Choose sorting", message: "Sort by:", preferredStyle: .actionSheet)
+        
+        SortGames.allCases.forEach { method in
+            let action = UIAlertAction(title: method.rawValue.capitalized, style: .default) { [unowned self] _ in
+                
+                currentPage = 1         //Making it for delete old values
+                
+                startAction()
+                games = Observable([])
+                
+                switch method {
+                case .name:
+                    ordering = .name
+                case .released:
+                    ordering = .released
+                case .added:
+                    ordering = .added
+                case .created:
+                    ordering = .created
+                case .updated:
+                    ordering = .updated
+                case .rating:
+                    ordering = .rating
+                case .metacritic:
+                    ordering = .metacritic
+                }
+                
+                fetchGamesWith { items in
+                    completion(items)
+                }
+            }
+            actionSheet.addAction(action)
+        }
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .destructive))
+        return actionSheet
+    }
+    
+    func fetchGamesWith(completion: @escaping ([IndexPath]) -> Void) {
+        
+        deleteOneRequest()
+        
+        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { [unowned self] result in
+            
+            currentPage += 1
+            updateAfterFetch(with: result) {
+                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
+            }
+            
+        }
+    }
+    
+    func searchFetch(completion: @escaping ([IndexPath]) -> Void) {
+        
+        deleteRequests()
+        
+        self.currentRequest = FetchSomeFilm.shared.searchFetch(onPage: currentPage, with: textForSearchFetch, ganre: currentGengre?.id, platform: currentPlatform?.id) { [unowned self] result in
+            currentPage += 1
+            
+            updateAfterFetch(with: result) {
+                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
+            }
+            
+        }
+    }
+    
+    func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
+        let game = games.value[indexPath.item]
+        return CellViewModel(game: game)
+    }
+    
+    
+    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
+        let detailVC = DetailGameViewController()
+        
+        downLoadViewModelForDetails(with: indexPath) { details in
+            detailVC.viewModel = DetailGameViewModel(game: details)
+        }
+        
+        downloadScreenShots(with: indexPath) { images in
+            detailVC.viewModel?.images = images
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            detailVC.uploadUI()
+        }
+        
+        return detailVC
+    }
+    
+    func deleteRequests() {
+        URLResquests.shared.cancelRequests(requests: listOfRequests)
+        print(URLResquests.shared.runningRequests.count)
+    }
+    
+    func deleteOneRequest() {
+        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
+    }
+    
     private func appendRequest(_ uuid: UUID?) { // Safe append
         semaphoreForRequests.wait()
         listOfRequests.append(uuid)
@@ -172,127 +289,4 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         
         return insertingItems
     }
-    
-    func reverseSorting(startAction: @escaping () -> Void, completion: @escaping ([IndexPath]) -> Void) {
-        
-        isReversed.value.toggle()
-        
-        currentPage = 1             //Making it for delete old values
-        games = Observable([])
-        
-        startAction()
-        
-        fetchGamesWith { [unowned self] items in
-            completion(items)
-        }
-    }
-    
-    func createAlertController(startAction: @escaping() -> Void ,completion: @escaping ([IndexPath]) -> Void) -> UIAlertController {
-        
-        let actionSheet = UIAlertController(title: "Choose sorting", message: "Sort by:", preferredStyle: .actionSheet)
-        
-        SortGames.allCases.forEach { method in
-            let action = UIAlertAction(title: method.rawValue.capitalized, style: .default) { [unowned self] _ in
-                
-                currentPage = 1         //Making it for delete old values
-                
-                startAction()
-                games = Observable([])
-                
-                switch method {
-                case .name:
-                    ordering = .name
-                case .released:
-                    ordering = .released
-                case .added:
-                    ordering = .added
-                case .created:
-                    ordering = .created
-                case .updated:
-                    ordering = .updated
-                case .rating:
-                    ordering = .rating
-                case .metacritic:
-                    ordering = .metacritic
-                }
-                
-                fetchGamesWith { items in
-                    completion(items)
-                }
-            }
-            actionSheet.addAction(action)
-        }
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .destructive))
-        return actionSheet
-    }
-    
-    func fetchGamesWith(completion: @escaping ([IndexPath]) -> Void) {
-        
-        deleteOneRequest()
-        
-        self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { [unowned self] result in
-            
-            currentPage += 1
-            updateAfterFetch(with: result) {
-                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
-            }
-            
-        }
-    }
-    
-    func searchFetch(completion: @escaping ([IndexPath]) -> Void) {
-        
-        deleteRequests()
-        
-        self.currentRequest = FetchSomeFilm.shared.searchFetch(onPage: currentPage, with: textForSearchFetch, ganre: currentGengre?.id, platform: currentPlatform?.id) { [unowned self] result in
-            currentPage += 1
-            
-            updateAfterFetch(with: result) {
-                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
-            }
-            
-        }
-    }
-    
-    func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
-        let game = games.value[indexPath.item]
-        return CellViewModel(game: game)
-    }
-    
-    
-    func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
-        let detailVC = DetailGameViewController()
-        
-        downLoadViewModelForDetails(with: indexPath) { details in
-            detailVC.viewModel = DetailGameViewModel(game: details)
-        }
-        
-        downloadScreenShots(with: indexPath) { images in
-            detailVC.viewModel?.images = images
-        }
-        
-        dispatchGroup.notify(queue: .main) {
-            detailVC.uploadUI()
-        }
-        
-        return detailVC
-    }
-    
-    func deleteRequests() {
-        URLResquests.shared.cancelRequests(requests: listOfRequests)
-        print(URLResquests.shared.runningRequests.count)
-    }
-    
-    func deleteOneRequest() {
-        URLResquests.shared.deleteOneRequest(request: self.currentRequest)
-    }
 }
-
-#if DEBUG
-
-extension MainTableViewModel {
-    
-}
-
-#endif
