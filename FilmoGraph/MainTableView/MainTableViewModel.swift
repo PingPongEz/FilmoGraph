@@ -17,20 +17,9 @@ final class MainTableViewModel: MainTableViewModelProtocol {
 
     var isReversed: Observable<Bool> = Observable(true)
     
-    var isReversedString: String {
-        get {
-            if isReversed.value {
-                return "arrow.down.square"
-            } else {
-                return "arrow.up.square"
-            }
-        }
-    }
-    
     var mainViewControllerState: MainViewControllerState = .games
     
     var ordering: SortGames = .added  //King of sorting
-    var image: UIImage = UIImage(systemName: "arrow.down.square") ?? UIImage()
     
     var nextPage: String?
     var prevPage: String?
@@ -38,7 +27,6 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     var listOfRequests = [UUID?]()
     
     // **If searching works**
-    var isSearchingViewController = false
     var currentGengre: Genre?
     var currentPlatform: Platform?
     var textForSearchFetch: String?
@@ -54,8 +42,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     
     private var loadedImages = [UIImage]()
         
-    
-    
+    //MARK: Reverse sort tapped
     func reverseSorting(startAction: @escaping () -> Void, completion: @escaping ([IndexPath]) -> Void) {
         
         isReversed.value.toggle()
@@ -70,6 +57,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: Setting alertSheet buttons
     func createAlertController(startAction: @escaping() -> Void ,completion: @escaping ([IndexPath]) -> Void) -> UIAlertController {
         
         let actionSheet = UIAlertController(title: "Choose sorting", message: "Sort by:", preferredStyle: .actionSheet)
@@ -109,7 +97,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .destructive))
         return actionSheet
     }
-    
+    //MARK: Fetching games (non-search)
     func fetchGamesWith(completion: @escaping ([IndexPath]) -> Void) {
         
         deleteOneRequest()
@@ -124,6 +112,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: Fetching games (search)
     func searchFetch(completion: @escaping ([IndexPath]) -> Void) {
         
         deleteRequests()
@@ -138,6 +127,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: fetching publishers
     func fetchPublishers(completion: @escaping ([IndexPath]) -> Void) {
         self.currentRequest = FetchSomeFilm.shared.fetchPublishers(onPage: currentPage) { [unowned self] result in
             currentPage += 1
@@ -148,6 +138,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: CellForRowAtIndexPath
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
         
         switch mainViewControllerState {
@@ -161,7 +152,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         
     }
     
-    
+    //MARK: Prepare for show detailsVC
     func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController {
         let detailVC = DetailGameViewController()
         
@@ -201,6 +192,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         semaphoreForImages.signal()
     }
     
+    //MARK: Fetch DetailsVC ViewModel
     private func downLoadViewModelForDetails(with indexPath: IndexPath, completion: @escaping (GameDetais) -> Void) {
         
         let url = cellDidTap(indexPath)
@@ -220,25 +212,8 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
-    private func downloadScreenShots(with indexPath: IndexPath, completion: @escaping([UIImage]) -> Void) {
-        
-        concurrentQueue.async(group: dispatchGroup) { [unowned self] in
-            
-            let game = games.value as! [Game]
-            
-            dispatchGroup.enter()
-            guard let slug = game[indexPath.row].slug else { return }
-            fetchScreenShots(gameSlug: slug) { images in
-                LockMutex {
-                    completion(images)
-                    
-                    self.deleteRequests()
-                    self.dispatchGroup.leave()
-                }.start()
-            }
-        }
-    }
     
+    //MARK: Setting fetch-string for details View Controller
     private func cellDidTap(_ indexPath: IndexPath) -> String {
         
         switch mainViewControllerState {
@@ -257,6 +232,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: Creating detail View Controller
     private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais) -> Void) {
         isShowAvailable = false
         
@@ -267,6 +243,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         appendRequest(request)
     }
     
+    //MARK: Screenshots fetch
     private func fetchScreenShots(gameSlug: String, completion: @escaping([UIImage]) -> Void) {
         
         let request = FetchSomeFilm.shared.fetchScreenShots(with: gameSlug) { result in
@@ -300,6 +277,26 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: Screenshots for DetailsVC
+    private func downloadScreenShots(with indexPath: IndexPath, completion: @escaping([UIImage]) -> Void) {
+        
+        concurrentQueue.async(group: dispatchGroup) { [unowned self] in
+            
+            let game = games.value as! [Game]
+            
+            dispatchGroup.enter()
+            guard let slug = game[indexPath.row].slug else { return }
+            fetchScreenShots(gameSlug: slug) { images in
+                LockMutex {
+                    completion(images)
+                    self.deleteRequests()
+                    self.dispatchGroup.leave()
+                }.start()
+            }
+        }
+    }
+    
+    //MARK: After-fetch updates
     private func updateAfterFetchPublishers(with result: Publishers, completion: @escaping () -> Void) {
         
         nextPage = result.next
@@ -311,6 +308,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
             completion()
         }
     }
+    
     
     private func updateAfterFetchGames(with result: Welcome, completion: @escaping () -> Void) {
         
@@ -324,6 +322,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
+    //MARK: IndexPath calculate
     private func calculateItemsForReloadCollectionView(count: Int) -> [IndexPath] {
         var insertingItems: [IndexPath] = []
         

@@ -189,12 +189,13 @@ extension MainTableViewController {
     }
 }
 
+//MARK: Setting CollectionViewBar
 extension MainTableViewController {
     private func setNavBarButtons() {
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Sort by: \(viewModel.ordering.rawValue.capitalized)", style: .done, target: self, action: #selector(chooseSortMethod))
         
-        arrow.image = UIImage(systemName: viewModel.isReversedString)
+        arrow.image = UIImage(systemName: "arrow.down.square")
         arrow.isHidden = false
         arrow.layer.opacity = 1
         arrow.tintColor = .white
@@ -211,18 +212,11 @@ extension MainTableViewController {
         // Action for each button in sheet. startAction made for fetching after pressing on button but not at leftBarButton
         
         let actionSheet = viewModel.createAlertController(
-            startAction: { [unowned self] in
-                
-                loadingIndicator.startAnimating()
-                collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-                collectionView.reloadData()
-                
-            }) { [unowned self] items in
+            startAction: { [unowned self] in preFetchReload()} ) { [unowned self] items in
                 
                 loadingIndicator.stopAnimating()
                 collectionView.reloadItems(at: items)
                 navigationItem.leftBarButtonItem?.title = "Sort by: \(viewModel.ordering.rawValue.capitalized)"
-                
             }
         
         present(actionSheet, animated: true)
@@ -242,18 +236,17 @@ extension MainTableViewController {
         //startAction need for reload olny when reverseSorting starts in viewModel
         
         viewModel.reverseSorting(
-            startAction: { [unowned self] in
-                
-                loadingIndicator.startAnimating()
-                collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
-                collectionView.reloadData()
-                
-            }) { [unowned self] items in
+            startAction: { [unowned self] in preFetchReload() }) { [unowned self] items in
                 
                 loadingIndicator.stopAnimating()
                 collectionView.reloadItems(at: items)
-                
             }
+    }
+    
+    private func preFetchReload() {
+        loadingIndicator.startAnimating()
+        collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+        collectionView.reloadData()
     }
 }
 
