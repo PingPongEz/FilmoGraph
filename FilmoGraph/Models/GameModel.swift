@@ -53,11 +53,28 @@ struct GameDetais: Codable {
     let platforms: [Platforms]?
 }
 
+
+
 struct Welcome: Codable {
     let count: Int?
     let next: String?
     let previous: String?
     let results: [Game]
+}
+
+struct Publishers: Codable {
+    let count: Int?
+    let next: String?
+    let previous: String?
+    let results: [Publisher]
+}
+
+struct Publisher: Codable {
+    let id: Int?
+    let name: String?
+    let slug: String?
+    let gamesCount: Int?
+    let imageBackground: String?
 }
 
 struct Game: Codable {

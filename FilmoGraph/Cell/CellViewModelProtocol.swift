@@ -12,10 +12,9 @@ protocol CellViewModelProtocol: AnyObject {
     
     var gamePic: Observable<UIImage?> { get }
     var onReuse: UUID? { get }
-    var gameName: String { get }
-    var gameType: String { get }
-    var platform: String { get }
-    var gameCreator: String { get }
+    var cellName: String { get }
+    var cellSecondaryName: String { get }
+    var cellThirdName: String { get }
     
     func stopCellRequest()
     init(game: Game)

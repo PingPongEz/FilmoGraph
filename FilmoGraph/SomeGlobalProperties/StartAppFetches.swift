@@ -17,14 +17,31 @@ final class StartFetch {
     func fetchGameListForMainView(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
         let mainTableViewModel = MainTableViewModel()
         
-        requests?.append( FetchSomeFilm.shared.fetchWith(page: 1, ordering: SortGames.added.rawValue, isReversed: true) { [unowned self] result in
+        let uuid = FetchSomeFilm.shared.fetchWith(page: 1, ordering: SortGames.added.rawValue, isReversed: true) { [unowned self] result in
             mainTableViewModel.games.value = result.results
             mainTableViewModel.nextPage = result.next
             mainTableViewModel.prevPage = result.previous
+            mainTableViewModel.mainViewControllerState = .games
             URLResquests.shared.cancelRequests(requests: requests ?? [])
-            self.requests = nil
             completion(mainTableViewModel)
-        })
+        }
+        
+        requests?.append(uuid)
+    }
+    
+    func fetchPublishersListForMainView(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
+        let mainTableViewModel = MainTableViewModel()
+        
+        let uuid = FetchSomeFilm.shared.fetchPublishers(onPage: 1) { [unowned self] result in
+            mainTableViewModel.games.value = result.results
+            mainTableViewModel.nextPage = result.next
+            mainTableViewModel.prevPage = result.previous
+            mainTableViewModel.mainViewControllerState = .publishers
+            URLResquests.shared.cancelRequests(requests: requests ?? [])
+            completion(mainTableViewModel)
+        }
+        
+        requests?.append(uuid)
     }
 }
 

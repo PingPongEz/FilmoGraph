@@ -11,14 +11,23 @@ import UIKit
 
 final class CellViewModel: CellViewModelProtocol {
     
-    private let game: Game!
+    private let cellValue: Any!
     
     var onReuse: UUID?
     
     var gamePic: Observable<UIImage?> {
-        let image = Observable<UIImage?>(nil)
         
-        guard let url = URL(string: game.backgroundImage ?? "") else { return Observable<UIImage?>(UIImage(systemName: "person"))}
+        let image = Observable<UIImage?>(nil)
+        var urlString = ""
+        
+        if cellValue as? Game != nil {
+            urlString = (cellValue as? Game)?.backgroundImage ?? ""
+        } else if cellValue as? Publisher != nil {
+            urlString = (cellValue as? Publisher)?.imageBackground ?? ""
+        }
+        
+        guard let url = URL(string: urlString) else { return Observable<UIImage?>(UIImage(systemName: "person"))}
+        
         self.onReuse = ImageLoader.shared.loadImageWithData(url) { result in
             switch result {
             case .success(let resultImage):
@@ -30,34 +39,55 @@ final class CellViewModel: CellViewModelProtocol {
                 print(error)
             }
         }
+        
         return image
+        
     }
     
-    var gameName: String {
-        game.name ?? "No data"
+    var cellName: String {
+        
+        if let game = cellValue as? Game {
+            return game.name ?? "No data"
+        } else if let publisher = cellValue as? Publisher {
+            return publisher.name ?? "No name"
+        }
+        
+        return ""
+        
     }
     
-    var gameType: String {
-        let array = game.genres?.compactMap { $0.name }
-        guard let text = array?.joined(separator: ", ") else { return "" }
-        return text
+    var cellSecondaryName: String {
+        
+        if let game = cellValue as? Game {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            return "Released at - " + formatter.string(from: game.released ?? Date())
+            
+        } else if let publisher = cellValue as? Publisher {
+            return "Popular games - \(publisher.gamesCount ?? 0)"
+        }
+        return ""
     }
     
-    var platform: String {
-        let array = game.platforms?.compactMap { $0.platform?.name }
-        guard let text = array?.joined(separator: ", ") else { return "" }
-        return text
-    }
-    
-    var gameCreator: String {
-        "Some creator"
+    var cellThirdName: String {
+        if let game = cellValue as? Game {
+            guard let metacritic = game.metacritic else { return "No metacritics data" }
+            return "Metacritic - \(metacritic) / 100"
+        } else if let publisher = cellValue as? Publisher {
+            
+        }
+        return ""
     }
     
     func stopCellRequest() {
         URLResquests.shared.deleteOneRequest(request: onReuse)
     }
     
+    init(publisher: Publisher) {
+        self.cellValue = publisher
+    }
+    
     required init(game: Game) {
-        self.game = game
+        self.cellValue = game
     }
 }

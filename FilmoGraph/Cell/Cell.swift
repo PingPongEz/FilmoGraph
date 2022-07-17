@@ -12,10 +12,9 @@ final class Cell: UICollectionViewCell {
     var viewModel: CellViewModelProtocol! {
         didSet {
             DispatchQueue.main.async { [unowned self] in
-                gameName.text = self.viewModel.gameName
-                gameGenre.text = self.viewModel.gameType
-                gameCreator.text = self.viewModel.gameCreator
-                platform.text = self.viewModel.platform
+                cellName.text = self.viewModel.cellName
+                cellSecondaryName.text = self.viewModel.cellSecondaryName
+                cellThirdName.text = self.viewModel.cellThirdName
                 
                 viewModel.gamePic.bind { image in
                     self.gamePic.image = image
@@ -26,10 +25,9 @@ final class Cell: UICollectionViewCell {
     
     private var gamePic = UIImageView()
     private lazy var stackView = UIStackView()
-    private lazy var gameName = UILabel()
-    private lazy var gameGenre = UILabel()
-    private lazy var platform = UILabel()
-    private lazy var gameCreator = UILabel()
+    private lazy var cellName = UILabel()
+    private lazy var cellSecondaryName = UILabel()
+    private lazy var cellThirdName = UILabel()
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -67,30 +65,30 @@ final class Cell: UICollectionViewCell {
         gamePic.layer.masksToBounds = true
         gamePic.layer.cornerRadius = 16
         
-        gameName.translatesAutoresizingMaskIntoConstraints = false
-        gameName.font = .systemFont(ofSize: 12)
-        gameName.numberOfLines = 0
+        cellName.translatesAutoresizingMaskIntoConstraints = false
+        cellName.font = .systemFont(ofSize: 12)
+        cellName.numberOfLines = 0
         
-        gameGenre.translatesAutoresizingMaskIntoConstraints = false
-        gameGenre.font = .systemFont(ofSize: 12)
-        gameGenre.numberOfLines = 0
+        cellSecondaryName.translatesAutoresizingMaskIntoConstraints = false
+        cellSecondaryName.font = .systemFont(ofSize: 12)
+        cellSecondaryName.numberOfLines = 0
         
-        platform.translatesAutoresizingMaskIntoConstraints = false
-        platform.font = .systemFont(ofSize: 12)
-        platform.numberOfLines = 0
+        cellThirdName.translatesAutoresizingMaskIntoConstraints = false
+        cellThirdName.font = .systemFont(ofSize: 12)
+        cellThirdName.numberOfLines = 0
         
-        gameCreator.translatesAutoresizingMaskIntoConstraints = false
-        gameCreator.font = .systemFont(ofSize: 12)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         
-        stackView.addArrangedSubview(gameName)
-        stackView.addArrangedSubview(gameGenre)
-        stackView.addArrangedSubview(platform)
-        stackView.addArrangedSubview(gameCreator)
+        stackView.addArrangedSubview(cellName)
+        stackView.addArrangedSubview(cellSecondaryName)
+        stackView.addArrangedSubview(cellThirdName)
+        
         stackView.axis = .vertical
         stackView.alignment = .leading
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillProportionally
+        
+
         
         addSubview(gamePic)
         addSubview(stackView)

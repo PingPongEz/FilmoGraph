@@ -10,7 +10,8 @@ import UIKit
 
 protocol MainTableViewModelProtocol {
     
-    var games: Observable<[Game]> { get set }
+    var games: Observable<[Any]> { get set }
+    
     var nextPage: String? { get set }
     var currentGengre: Genre? { get set }
     var currentPlatform: Platform? { get set }
@@ -24,11 +25,13 @@ protocol MainTableViewModelProtocol {
     var isReversedString: String { get }
     var image: UIImage { get }
     var isSearchingViewController: Bool { get set }
+    var mainViewControllerState: MainViewControllerState { get set }
     
     func reverseSorting(startAction: @escaping () -> Void, completion: @escaping ([IndexPath]) -> Void)
     func createAlertController(startAction: @escaping() -> Void, completion: @escaping ([IndexPath]) -> Void) -> UIAlertController
     func fetchGamesWith(completion: @escaping ([IndexPath]) -> Void) //Scrolling
     func searchFetch(completion: @escaping ([IndexPath]) -> Void) //Searching
+    func fetchPublishers(completion: @escaping ([IndexPath]) -> Void)
     func downloadEveryThingForDetails(with indexPath: IndexPath) -> DetailGameViewController
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol
     func deleteRequests()

@@ -18,13 +18,4 @@ final class GlobalProperties {
     
     var genres: Observable<Genres>?
     
-    func shadowOnScrolling(_ nav: UINavigationBar?) {
-        
-        nav?.layer.shadowPath = UIBezierPath(roundedRect: nav?.bounds ?? CGRect(), cornerRadius: 2).cgPath
-        nav?.layer.shadowColor = UIColor.black.cgColor
-        nav?.layer.shadowRadius = 5
-        nav?.layer.shadowOffset = CGSize(width: 0, height: 4)
-        nav?.layer.shadowOpacity = 0.6
-        
-    }
 }

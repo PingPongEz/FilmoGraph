@@ -59,9 +59,10 @@ final class DetailGameViewController: UIViewController {
         
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        delegate.stopRequestsOnDisappear()
+        delegate.actionsWhileDetailViewControllerDisappears()
+        
     }
     
     override func viewWillLayoutSubviews() {
@@ -224,8 +225,10 @@ extension DetailGameViewController {
     
 }
 
+
+//MARK: ScrollView delegate
 extension DetailGameViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
+        
     }
 }

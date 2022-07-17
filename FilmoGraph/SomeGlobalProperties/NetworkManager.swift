@@ -135,13 +135,15 @@ final class FetchSomeFilm {
     //MARK: Games
     func fetchWith(page: Int? = nil, orUrl url: String? = nil, ordering: String, isReversed: Bool, completion: @escaping(Welcome) -> Void) -> UUID? {
         
-        var urlForFetch = ""
-        var kingOfSort = ""
+        let queue = DispatchQueue(label: "Search fetch", qos: .userInteractive, attributes: .concurrent)
         
-        isReversed ? (kingOfSort = "-\(ordering)") : (kingOfSort = ordering)
+        var urlForFetch = ""
+        var kindOfSort = ""
+        
+        isReversed ? (kindOfSort = "-\(ordering)") : (kindOfSort = ordering)
         
         if let page = page {
-            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&ordering=\(kingOfSort)"
+            urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&ordering=\(kindOfSort)"
             print(urlForFetch)
         } else {
             guard let url = url else { return UUID() }
@@ -152,7 +154,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(urlForFetch, headers: header)
             .validate()
-            .response(queue: GlobalQueueAndGroup.shared.queue) { [ unowned self ] response in
+            .response(queue: queue) { [ unowned self ] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -170,12 +172,46 @@ final class FetchSomeFilm {
         URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
         return uuid
     }
+    //MARK: Search publishers
+    func fetchPublishers(onPage page: Int, completion: @escaping (Publishers) -> Void) -> UUID? {
+        let uuid = UUID()
+        
+        
+        
+        let url = "https://api.rawg.io/api/publishers?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)"
+        let queue = DispatchQueue(label: "Publishers", qos: .userInteractive, attributes: .concurrent)
+        
+        print(url)
+        
+        
+        let task = AF.request(url, method: .get, headers: header)
+            .validate()
+            .response(queue: queue) { [unowned self] response in
+                switch response.result {
+                case .success(let data):
+                    guard let data = data else { return }
+                    guard let result: Publishers = doCatch(from: data) else { return }
+                    DispatchQueue.main.async {
+                        completion(result)
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        
+        
+        task.resume()
+        URLResquests.shared.addTasksToArray(uuid: uuid, task: task)
+        return uuid
+        
+    }
     
     //MARK: Search fetch
     func searchFetch(onPage page: Int, with text: String? = nil, ganre: Int? = nil, platform: Int? = nil, completion: @escaping(Welcome) -> Void) -> UUID? {
         
         let uuid = UUID()
         var urlConstructor = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)"
+        let queue = DispatchQueue(label: "Search fetch", qos: .userInteractive, attributes: .concurrent)
         
         if let text = text { urlConstructor += "&search=\(text)" }
         if let ganre = ganre { urlConstructor += "&genres=\(ganre)" }
@@ -183,7 +219,7 @@ final class FetchSomeFilm {
         
         let task = AF.request(urlConstructor, headers: header)
             .validate()
-            .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
+            .response(queue: queue) { [unowned self] response in
                 switch response.result {
                 case .success(let data):
                     guard let data = data else { return }
@@ -230,7 +266,7 @@ final class FetchSomeFilm {
     }
     
     //MARK: Fetch Genres
-    func fetchGenres(completion: @escaping (Genres) -> ()) {
+    func fetchGenres(completion: @escaping (Genres) -> Void){
         let url = "https://api.rawg.io/api/genres?key=7f01c67ed4d2433bb82f3dd38282088c"
         
         AF.request(url, headers: header)
@@ -246,7 +282,6 @@ final class FetchSomeFilm {
                 }
             }.resume()
     }
-    
     
     //MARK: Fetch Platforms
     func fetchAllPlatforms(with url: String, completion: @escaping () -> ()) {
@@ -271,6 +306,11 @@ final class FetchSomeFilm {
                     print(error)
                 }
             }.resume()
+    }
+    
+    enum LoadingState {
+        case loading
+        case loaded
     }
 }
 

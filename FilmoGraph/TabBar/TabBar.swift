@@ -51,7 +51,21 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
             StartFetch.shared.fetchGameListForMainView() { viewModel in
                 completion(viewModel)
                 self.group.leave()
+                Mutex.shared.available = true
+                pthread_cond_signal(&Mutex.shared.condition)
             }
+        }
+    }
+    
+    private func fetchPublishersViewModel(comletion: @escaping (MainTableViewModelProtocol?) -> Void) {
+        queue.async(group: group) { [unowned self] in
+            group.enter()
+            LockMutex {                                         //Rawg can't give more than one 200...299 response in moment
+                StartFetch.shared.fetchPublishersListForMainView { viewModel in
+                    comletion(viewModel)
+                    self.group.leave()
+                }
+            }.start()
         }
     }
     
@@ -79,9 +93,14 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     private func setupVC() {
         
         let mainTableVC = MainTableViewController()
+        let publishersVC = MainTableViewController()
         
         fetchGameModel { viewModel in
             mainTableVC.viewModel = viewModel
+        }
+        
+        fetchPublishersViewModel { viewModel in
+            publishersVC.viewModel = viewModel
         }
         
         fetchGenresForApp() { genres in
@@ -97,6 +116,7 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
             
             viewControllers = [
                 addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
+                addNavBar(for: publishersVC, title: "Publishers", image: UIImage(systemName: "tortoise")!),
                 addNavBar(for: searchViewController, title: "Search", image: UIImage(systemName: "magnifyingglass")!)
             ]
             tabBar.isHidden = false
@@ -123,6 +143,12 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
         
         
+        
+        navigationController.navigationBar.layer.shadowPath = UIBezierPath(roundedRect: navigationController.navigationBar.bounds, cornerRadius: 2).cgPath
+        navigationController.navigationBar.layer.shadowColor = UIColor.black.cgColor
+        navigationController.navigationBar.layer.shadowRadius = 5
+        navigationController.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 4)
+        navigationController.navigationBar.layer.shadowOpacity = 0.6
         
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = image

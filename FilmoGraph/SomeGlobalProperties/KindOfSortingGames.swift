@@ -18,3 +18,11 @@ enum SortGames: String, CaseIterable {
 }
 
 
+
+enum MainViewControllerState {
+    case games
+    case publishers
+    case search
+}
+
+

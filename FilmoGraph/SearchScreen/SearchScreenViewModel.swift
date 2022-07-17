@@ -114,10 +114,11 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
             
             let searchVC = MainTableViewController()
             searchVC.viewModel = searchVCVM
-            searchVC.viewModel.isSearchingViewController = true
+            searchVC.viewModel.mainViewControllerState = .search
             searchVC.viewModel.currentPage = 2
             searchVC.viewModel.currentGengre = currentGanre
             searchVC.viewModel.currentPlatform = currentPlatform
+            searchVC.viewModel.nextPage = result.next       //Needs to locate is fetch available in search VC
             
             DispatchQueue.global().async {
                 completion(searchVC)

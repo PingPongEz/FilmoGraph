@@ -8,7 +8,7 @@
 import UIKit
 
 protocol StopLoadingPic {
-    func stopRequestsOnDisappear()
+    func actionsWhileDetailViewControllerDisappears()
 }
 
 final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -45,8 +45,10 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         createTableView()
         collectionView.reloadData()
         
-        if !viewModel.isSearchingViewController {
+        switch viewModel.mainViewControllerState {
+        case .games:
             setNavBarButtons()
+        default: break
         }
     }
     
@@ -100,15 +102,21 @@ extension MainTableViewController {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
         if indexPath.item == viewModel.games.value.count - 1 {
-            if viewModel.isSearchingViewController {
-                viewModel.searchFetch { items in
-                    collectionView.insertItems(at: items)
-                }
-            } else {
-                viewModel.fetchGamesWith { items in
-                    collectionView.insertItems(at: items)
+            if viewModel.nextPage != nil {
+                switch viewModel.mainViewControllerState {
+                case .games:
+                    viewModel.searchFetch { items in
+                        collectionView.insertItems(at: items)
+                    }
+                case .search:
+                    viewModel.fetchGamesWith { items in
+                        collectionView.insertItems(at: items)
+                    }
+                case .publishers:
+                    viewModel.fetchPublishers { items in
+                        collectionView.insertItems(at: items)
+                    }
                 }
             }
         }
@@ -117,22 +125,39 @@ extension MainTableViewController {
     //MARK: Did Select Row
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredVertically)
+        
         if viewModel.isShowAvailable {
-            viewModel.isShowAvailable = false
-            Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
-                
-                weak var detailsVC = viewModel.downloadEveryThingForDetails(with: indexPath)
-                
-                detailsVC?.delegate = self
-                guard let detailsVC = detailsVC else { return }
-                
-                show(detailsVC, sender: nil)
+            switch viewModel.mainViewControllerState {
+            case .games:
+                viewModel.isShowAvailable = false
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
+                    
+                    weak var detailsVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                    
+                    detailsVC?.delegate = self
+                    guard let detailsVC = detailsVC else { return }
+                    
+                    show(detailsVC, sender: nil)
+                }
+            case .publishers:
+                print("Publisher segue")
+            default:
+                viewModel.isShowAvailable = false
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
+                    
+                    weak var detailsVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                    
+                    detailsVC?.delegate = self
+                    guard let detailsVC = detailsVC else { return }
+                    
+                    show(detailsVC, sender: nil)
+                }
             }
         }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
+//        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
     }
 }
 
@@ -235,9 +260,10 @@ extension MainTableViewController {
 
 
 extension MainTableViewController: StopLoadingPic {
-    func stopRequestsOnDisappear() {
+    func actionsWhileDetailViewControllerDisappears() {
         viewModel.deleteRequests()
         print(URLResquests.shared.runningRequests.count)
+        
     }
 }
 

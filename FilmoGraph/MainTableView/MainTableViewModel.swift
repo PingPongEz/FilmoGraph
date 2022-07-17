@@ -11,7 +11,7 @@ import UIKit
 
 final class MainTableViewModel: MainTableViewModelProtocol {
     
-    var games: Observable<[Game]> = Observable([])
+    var games: Observable<[Any]> = Observable([])
     
     var currentPage: Int = 2                            //Setted to 2 because of view initing with fetch on page 1
 
@@ -26,6 +26,8 @@ final class MainTableViewModel: MainTableViewModelProtocol {
             }
         }
     }
+    
+    var mainViewControllerState: MainViewControllerState = .games
     
     var ordering: SortGames = .added  //King of sorting
     var image: UIImage = UIImage(systemName: "arrow.down.square") ?? UIImage()
@@ -63,7 +65,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         
         startAction()
         
-        fetchGamesWith { [unowned self] items in
+        fetchGamesWith { items in
             completion(items)
         }
     }
@@ -115,7 +117,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         self.currentRequest = FetchSomeFilm.shared.fetchWith(page: currentPage, ordering: ordering.rawValue, isReversed: isReversed.value) { [unowned self] result in
             
             currentPage += 1
-            updateAfterFetch(with: result) {
+            updateAfterFetchGames(with: result) {
                 completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
             }
             
@@ -129,16 +131,34 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         self.currentRequest = FetchSomeFilm.shared.searchFetch(onPage: currentPage, with: textForSearchFetch, ganre: currentGengre?.id, platform: currentPlatform?.id) { [unowned self] result in
             currentPage += 1
             
-            updateAfterFetch(with: result) {
+            updateAfterFetchGames(with: result) {
                 completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
             }
             
         }
     }
     
+    func fetchPublishers(completion: @escaping ([IndexPath]) -> Void) {
+        self.currentRequest = FetchSomeFilm.shared.fetchPublishers(onPage: currentPage) { [unowned self] result in
+            currentPage += 1
+            
+            updateAfterFetchPublishers(with: result) {
+                completion(self.calculateItemsForReloadCollectionView(count: result.results.count))
+            }
+        }
+    }
+    
     func cellForRowAt(_ indexPath: IndexPath) -> CellViewModelProtocol {
-        let game = games.value[indexPath.item]
-        return CellViewModel(game: game)
+        
+        switch mainViewControllerState {
+        case .games:
+            return CellViewModel(game: games.value[indexPath.item] as! Game)
+        case .publishers:
+            return CellViewModel(publisher: games.value[indexPath.item] as! Publisher)
+        default:
+            return CellViewModel(game: games.value[indexPath.item] as! Game)
+        }
+        
     }
     
     
@@ -154,7 +174,7 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
         
         dispatchGroup.notify(queue: .main) {
-            detailVC.uploadUI()
+            detailVC.uploadUI()                        //Setting detailsView UI before it's presented only after data ready for show
         }
         
         return detailVC
@@ -204,8 +224,10 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         
         concurrentQueue.async(group: dispatchGroup) { [unowned self] in
             
+            let game = games.value as! [Game]
+            
             dispatchGroup.enter()
-            guard let slug = games.value[indexPath.row].slug else { return }
+            guard let slug = game[indexPath.row].slug else { return }
             fetchScreenShots(gameSlug: slug) { images in
                 LockMutex {
                     completion(images)
@@ -218,8 +240,21 @@ final class MainTableViewModel: MainTableViewModelProtocol {
     }
     
     private func cellDidTap(_ indexPath: IndexPath) -> String {
-        guard let string = games.value[indexPath.row].id else { return "" }
-        return String("https://api.rawg.io/api/games/\(string)?key=7f01c67ed4d2433bb82f3dd38282088c")
+        
+        switch mainViewControllerState {
+        case .games:
+            let games = games.value as! [Game]
+            guard let id = games[indexPath.item].id else { return "" }
+            return String("https://api.rawg.io/api/games/\(id)?key=7f01c67ed4d2433bb82f3dd38282088c")
+        case .publishers:
+            let publishers = games.value as! [Publisher]
+            guard let id = publishers[indexPath.item].id else { return "" }
+            return String("https://api.rawg.io/api/games/\(id)?key=7f01c67ed4d2433bb82f3dd38282088c")
+        default:
+            let games = games.value as! [Game]
+            guard let id = games[indexPath.item].id else { return "" }
+            return String("https://api.rawg.io/api/games/\(id)?key=7f01c67ed4d2433bb82f3dd38282088c")
+        }
     }
     
     private func createDetailViewControllerModel(with urlForFetch: String?, completion: @escaping(GameDetais) -> Void) {
@@ -265,7 +300,20 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         }
     }
     
-    private func updateAfterFetch(with result: Welcome, completion: @escaping () -> Void) {
+    private func updateAfterFetchPublishers(with result: Publishers, completion: @escaping () -> Void) {
+        
+        nextPage = result.next
+        prevPage = result.previous
+        games.value += result.results
+        deleteOneRequest()
+        
+        DispatchQueue.main.async {
+            completion()
+        }
+    }
+    
+    private func updateAfterFetchGames(with result: Welcome, completion: @escaping () -> Void) {
+        
         nextPage = result.next
         prevPage = result.previous
         games.value += result.results
@@ -290,3 +338,5 @@ final class MainTableViewModel: MainTableViewModelProtocol {
         return insertingItems
     }
 }
+
+
