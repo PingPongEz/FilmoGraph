@@ -9,6 +9,10 @@ import UIKit
 
 class TabBar: UITabBarController, UITabBarControllerDelegate {
     
+    
+    let mainTableVC = MainTableViewController()
+    let publishersVC = MainTableViewController()
+    
     var selectedInd = 2
     let queue = GlobalQueueAndGroup.shared.queue
     let group = GlobalQueueAndGroup.shared.group
@@ -39,6 +43,11 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         setupVC()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navigationController = navigationController, let tabBarController = tabBarController else { return }
+        GlobalProperties.shared.setNavBarShadow(navigationController, tabBarController)
+    }
+    
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
             self.addSomethings()
@@ -56,6 +65,7 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
             }
         }
     }
+    
     
     private func fetchPublishersViewModel(comletion: @escaping (MainTableViewModelProtocol?) -> Void) {
         queue.async(group: group) { [unowned self] in
@@ -92,14 +102,11 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     
     private func setupVC() {
         
-        let mainTableVC = MainTableViewController()
-        let publishersVC = MainTableViewController()
-        
-        fetchGameModel { viewModel in
+        fetchGameModel { [unowned self] viewModel in
             mainTableVC.viewModel = viewModel
         }
         
-        fetchPublishersViewModel { viewModel in
+        fetchPublishersViewModel { [unowned self] viewModel in
             publishersVC.viewModel = viewModel
         }
         
@@ -144,16 +151,9 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         
         
         
-        navigationController.navigationBar.layer.shadowPath = UIBezierPath(roundedRect: navigationController.navigationBar.bounds, cornerRadius: 2).cgPath
-        navigationController.navigationBar.layer.shadowColor = UIColor.black.cgColor
-        navigationController.navigationBar.layer.shadowRadius = 5
-        navigationController.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 4)
-        navigationController.navigationBar.layer.shadowOpacity = 0.6
-        
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = image
         rootVC.navigationItem.title = title
-        
         
         navigationController.navigationBar.prefersLargeTitles = true
         navigationController.navigationBar.tintColor = .white
@@ -173,14 +173,12 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         appearence.stackedLayoutAppearance.normal.iconColor = UIColor.black
         appearence.stackedLayoutAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         
-        tabBar.layer.shadowPath = UIBezierPath(roundedRect: tabBar.bounds, cornerRadius: 2).cgPath
-        tabBar.layer.shadowColor = UIColor.black.cgColor
-        tabBar.layer.shadowRadius = 3.5
-        tabBar.layer.shadowOffset = CGSize(width: 0, height: -2)
-        tabBar.layer.shadowOpacity = 0.45
-        
         tabBar.standardAppearance = appearence
         tabBar.scrollEdgeAppearance = appearence
+    }
+    
+    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
+        
     }
 }
 

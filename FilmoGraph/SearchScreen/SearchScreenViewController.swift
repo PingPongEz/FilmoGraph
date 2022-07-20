@@ -12,11 +12,11 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     var viewModel: SearchScreenViewModelProtocol!
     
     var screenHeight: CGFloat {
-        return UIScreen.main.bounds.height
+        return view.frame.height
     }
     
     var screenWidth: CGFloat {
-        return UIScreen.main.bounds.width
+        return view.frame.width
     }
     
     private lazy var actionForGanre = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
@@ -148,18 +148,6 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         
         addSubviewsToSuperView(views: [ganreButton, ganreTableView, platformButton, platformTableView, startSearchButton])
         
-        setButtonAndTableView(
-            withButton: ganreButton,
-            andTable: ganreTableView,
-            on: 200
-        )
-        
-        setButtonAndTableView(
-            withButton: platformButton,
-            andTable: platformTableView,
-            fromView: ganreButton,
-            on: 80 + screenHeight * 0.05
-        )
         
         view.insertSubview(ganreTableView, aboveSubview: platformButton)
         view.insertSubview(ganreTableView, aboveSubview: platformTableView)
@@ -169,10 +157,17 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         
         setButtonActions()
         setTableViewHeights()
-        setSearchButton()
+        setConstraints()
         
         hideTableViewsWhenTappedAround()
         
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        print("Update")
+        DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
+            updateViewConstraints()
+        }
     }
     
     //MARK: Dismiss TableViewes when view tapped
@@ -202,13 +197,9 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         
     }
     
-    private func setTableViewHeights() {
-        viewModel.ganreHeight = ganreTableView.heightAnchor.constraint(equalToConstant: 0)
-        viewModel.ganreHeight?.isActive = true
-        
-        viewModel.platformHeight = platformTableView.heightAnchor.constraint(equalToConstant: 0)
-        viewModel.platformHeight?.isActive = true
-        
+    override func updateViewConstraints() {
+        super.updateViewConstraints()
+        setConstraints()
     }
 }
 
@@ -227,11 +218,14 @@ extension SearchScreenViewController {
             parentView = nilView
         }
         
+        let width = UIScreen.main.bounds.width
+        print(width)
+        
         NSLayoutConstraint.activate([
             button.topAnchor.constraint(equalTo: parentView.topAnchor, constant: constant),
             button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.widthAnchor.constraint(equalToConstant: screenWidth * 0.8),
-            button.heightAnchor.constraint(equalToConstant: screenHeight * 0.05)
+            button.widthAnchor.constraint(equalToConstant: width),
+            button.heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
@@ -243,7 +237,35 @@ extension SearchScreenViewController {
         
     }
     
+    private func setConstraints() {
+        
+        setButtonAndTableView(
+            withButton: ganreButton,
+            andTable: ganreTableView,
+            on: UIScreen.main.bounds.height * 0.25
+        )
+        
+        setButtonAndTableView(
+            withButton: platformButton,
+            andTable: platformTableView,
+            fromView: ganreButton,
+            on: 80 + screenHeight * 0.05
+        )
+        
+        setSearchButton()
+    }
+    
+    private func setTableViewHeights() {
+        viewModel.ganreHeight = ganreTableView.heightAnchor.constraint(equalToConstant: 0)
+        viewModel.ganreHeight?.isActive = true
+        
+        viewModel.platformHeight = platformTableView.heightAnchor.constraint(equalToConstant: 0)
+        viewModel.platformHeight?.isActive = true
+        
+    }
+    
     private func setSearchButton() {
+        print(screenWidth)
         NSLayoutConstraint.activate([
             startSearchButton.topAnchor.constraint(equalTo: view.topAnchor, constant: screenHeight * 0.8),
             //Почему-то от нижнего анкора не ставится вьюха

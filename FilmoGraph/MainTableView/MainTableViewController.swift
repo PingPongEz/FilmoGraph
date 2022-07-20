@@ -11,16 +11,21 @@ protocol StopLoadingPic {
     func actionsWhileDetailViewControllerDisappears()
 }
 
-final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+final class MainTableViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UINavigationControllerDelegate {
     
     let arrow = UIImageView(frame: CGRect(x: 0, y: 0, width: 30, height: 28))
     var viewModel: MainTableViewModelProtocol!
     
-    private var collectionView: UICollectionView = {
-        
+    lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         
+        layout.itemSize = CGSize(width: view.frame.width * 0.9, height: (view.frame.width) * 0.55)
         layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+        
+        return layout
+    }()
+    
+    lazy var collectionView: UICollectionView = {
         
         let collectionView = UICollectionView(
             frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height),
@@ -54,34 +59,57 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        viewModel.isShowAvailable = true        //Unlocking "show" method
+        
+        collectionView.reloadData()             //Needs to setShadows with changing view in tab bar
+        GlobalProperties.shared.setNavBarShadow(navigationController ?? UINavigationController(), tabBarController ?? UITabBarController())
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.isShowAvailable = true
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        let width = view.frame.height           //Height because method works before transition
+        
+        if UIDevice.current.orientation.isLandscape {
+            layout.itemSize = CGSize(width: width * 0.9, height: (width) * 0.35)
+        } else if UIDevice.current.orientation.isPortrait {
+            layout.itemSize = CGSize(width: width * 0.9, height: (width) * 0.55)
+        }
+        
+        collectionView.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now()) { [weak navigationController, tabBarController] in
+            GlobalProperties.shared.setNavBarShadow(
+                navigationController ?? UINavigationController(),
+                tabBarController ?? UITabBarController()
+            )
+        }
     }
 }
 
 //MARK: FlowLayoutDelegate
 extension MainTableViewController {
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
-    }
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+//
+//    }
+//
+//    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
+//        let layout = UICollectionViewFlowLayout()
+//
+//        layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
+//        layout.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
+//        let layout2 = UICollectionViewFlowLayout()
+//
+//        layout2.sectionInset = UIEdgeInsets(top: 40, left: 32, bottom: 40, right: 32)
+//        layout2.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 500)
+//
+//        return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
+//    }
     
-    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
-        let layout = UICollectionViewFlowLayout()
-        
-        layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
-        layout.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
-        let layout2 = UICollectionViewFlowLayout()
-        
-        layout2.sectionInset = UIEdgeInsets(top: 40, left: 32, bottom: 40, right: 32)
-        layout2.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 500)
-        
-        return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
-    }
+    
 }
 
 //MARK: TableViewDelegate
@@ -98,11 +126,12 @@ extension MainTableViewController {
             cell.viewModel = self.viewModel.cellForRowAt(indexPath)
         }
         
+        cell.setShadow()
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == viewModel.games.value.count - 1 {
+        if indexPath.item == viewModel.games.value.count - 2 {
             if viewModel.nextPage != nil {
                 switch viewModel.mainViewControllerState {
                 case .games:
@@ -167,7 +196,6 @@ extension MainTableViewController {
         
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
-        collectionView.sizeToFit()
         collectionView.dataSource = self
         collectionView.delegate = self
         
@@ -180,7 +208,7 @@ extension MainTableViewController {
         ])
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)

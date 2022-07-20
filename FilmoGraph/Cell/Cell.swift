@@ -33,30 +33,44 @@ final class Cell: UICollectionViewCell {
         super.prepareForReuse()
         viewModel.stopCellRequest()
         gamePic.image = nil
+        setShadow()
+        automaticallyUpdatesContentConfiguration = true
+        automaticallyUpdatesBackgroundConfiguration = true
+    }
+    
+    override func updateConfiguration(using state: UICellConfigurationState) {
+        setShadow()
     }
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
     }
     
     override init(frame: CGRect) {
         
         super.init(frame: frame)
         
-        self.layer.cornerRadius = 13
+        layer.cornerRadius = 13
+        layer.borderColor = UIColor.black.cgColor
+        layer.borderWidth = 2
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.35
+        layer.shadowRadius = 2
         
-        self.layer.shadowColor = UIColor.black.cgColor
-        self.layer.shadowOpacity = 0.35
-        self.layer.shadowRadius = 2
-        
-        self.layer.shadowOffset = CGSize(width: 2, height: 3)
-        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 13).cgPath
-        self.layer.masksToBounds = false
-        self.backgroundColor = .white
+        setShadow()
         
         setUI()
         setConstr()
         
+    }
+    
+    func setShadow() {
+        
+        self.layer.shadowOffset = CGSize(width: self.frame.width * 0.015, height: self.frame.width * 0.01)
+        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 13).cgPath
+        self.layer.masksToBounds = false
+        self.backgroundColor = .white
     }
     
     private func setUI() {
