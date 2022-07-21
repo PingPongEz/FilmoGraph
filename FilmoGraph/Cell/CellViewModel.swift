@@ -31,9 +31,9 @@ final class CellViewModel: CellViewModelProtocol {
         self.onReuse = ImageLoader.shared.loadImageWithData(url) { result in
             switch result {
             case .success(let resultImage):
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
                     image.value = resultImage
-                    self.stopCellRequest()
+                    self?.stopCellRequest()
                 }
             case .failure(let error):
                 print(error)

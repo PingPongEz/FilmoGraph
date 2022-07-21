@@ -164,10 +164,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        print("Update")
-        DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
-            updateViewConstraints()
-        }
+        
     }
     
     //MARK: Dismiss TableViewes when view tapped
@@ -199,7 +196,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
-        setConstraints()
+        
     }
 }
 

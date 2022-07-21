@@ -43,23 +43,18 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         setupVC()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        guard let navigationController = navigationController, let tabBarController = tabBarController else { return }
-        GlobalProperties.shared.setNavBarShadow(navigationController, tabBarController)
-    }
-    
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0001) {
-            self.addSomethings()
+        DispatchQueue.main.asyncAfter(deadline: .now()) {
+            self.addSelectionView()
         }
     }
     
     private func fetchGameModel(completion: @escaping (MainTableViewModelProtocol?) -> Void) {
-        queue.async(group: group) { [unowned self] in
-            group.enter()
+        queue.async(group: group) { [weak self] in
+            self?.group.enter()
             StartFetch.shared.fetchGameListForMainView() { viewModel in
                 completion(viewModel)
-                self.group.leave()
+                self?.group.leave()
                 Mutex.shared.available = true
                 pthread_cond_signal(&Mutex.shared.condition)
             }
@@ -68,23 +63,23 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     
     
     private func fetchPublishersViewModel(comletion: @escaping (MainTableViewModelProtocol?) -> Void) {
-        queue.async(group: group) { [unowned self] in
-            group.enter()
+        queue.async(group: group) { [weak self] in
+            self?.group.enter()
             LockMutex {                                         //Rawg can't give more than one 200...299 response in moment
                 StartFetch.shared.fetchPublishersListForMainView { viewModel in
                     comletion(viewModel)
-                    self.group.leave()
+                    self?.group.leave()
                 }
             }.start()
         }
     }
     
-    private func fetchGenresForApp(completion: @escaping (Genres) -> Void) {
-        queue.async(group: group) { [unowned self] in
-            group.enter()
+    private func fetchGenresForApp() {
+        queue.async(group: group) { [weak self] in
+            self?.group.enter()
             FetchSomeFilm.shared.fetchGenres() { genres in
-                completion(genres)
-                self.group.leave()
+                GlobalProperties.shared.genres = Observable(genres)
+                self?.group.leave()
             }
         }
     }
@@ -92,51 +87,53 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     private func fetchAllPlatforms() {
         let platformsUrl = "https://api.rawg.io/api/platforms?key=7f01c67ed4d2433bb82f3dd38282088c&page=1"
         
-        queue.async(group: group) { [unowned self] in
-            group.enter()
+        queue.async(group: group) { [weak self] in
+            self?.group.enter()
             FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) { platforms in
                 GlobalProperties.shared.platforms.value += platforms
-                self.group.leave()
+                self?.group.leave()
             }()
         }
     }
     
     private func setupVC() {
         
-        fetchGameModel { [unowned self] viewModel in
-            mainTableVC.viewModel = viewModel
+        fetchGameModel { [weak self] viewModel in
+            self?.mainTableVC.viewModel = viewModel
         }
         
-        fetchPublishersViewModel { [unowned self] viewModel in
-            publishersVC.viewModel = viewModel
+        fetchPublishersViewModel { [weak self] viewModel in
+            self?.publishersVC.viewModel = viewModel
         }
         
-        fetchGenresForApp() { genres in
-            GlobalProperties.shared.genres = Observable(genres)
-        }
+        fetchGenresForApp()
         
         fetchAllPlatforms()
         
-        group.notify(queue: .main) { [unowned self] in
+        group.notify(queue: .main) { [weak self] in
+            
+            guard let self = self else { return }
+            
             let searchViewController = SearchScreenViewController()
             let searchViewControllerViewModel = SearchScreenViewModel()
             searchViewController.viewModel = searchViewControllerViewModel
             
-            viewControllers = [
-                addNavBar(for: mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
-                addNavBar(for: publishersVC, title: "Publishers", image: UIImage(systemName: "tortoise")!),
-                addNavBar(for: searchViewController, title: "Search", image: UIImage(systemName: "magnifyingglass")!)
+            self.viewControllers = [
+                self.addNavBar(for: self.mainTableVC, title: "Games", image: UIImage(systemName: "gamecontroller")!),
+                self.addNavBar(for: self.publishersVC, title: "Publishers", image: UIImage(systemName: "tortoise")!),
+                self.addNavBar(for: searchViewController, title: "Search", image: UIImage(systemName: "magnifyingglass")!)
             ]
-            tabBar.isHidden = false
-            addSomethings()
+            self.tabBar.isHidden = false
+            self.addSelectionView()
         }
     }
     
-    private func addSomethings() {
+    private func addSelectionView() {
         selectionView.frame.size = CGSize(width: tabBar.bounds.width / CGFloat(viewControllers?.count ?? 0), height: tabBar.bounds.height)
         
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) { [unowned self] in
-            selectionView.frame.origin.x = tabBar.frame.width * (CGFloat(selectedIndex) / CGFloat(viewControllers?.count ?? 0))
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) { [weak self] in
+            guard let self = self else { return }
+            self.selectionView.frame.origin.x = self.tabBar.frame.width * (CGFloat(self.selectedIndex) / CGFloat(self.viewControllers?.count ?? 0))
         }
     }
     
@@ -149,8 +146,6 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         navbarapp.backgroundColor = UIColor.myBlueColor
         navbarapp.titleTextAttributes = [.foregroundColor: UIColor.white]
         navbarapp.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
-        
-        
         
         navigationController.tabBarItem.title = title
         navigationController.tabBarItem.image = image
@@ -170,7 +165,6 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         appearence.configureWithDefaultBackground()
         appearence.stackedLayoutAppearance.focused.badgeBackgroundColor = .white
         appearence.backgroundColor = UIColor.myBlueColor
-        appearence.shadowColor = .black
         appearence.stackedLayoutAppearance.normal.iconColor = UIColor.black
         appearence.stackedLayoutAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
         
@@ -179,7 +173,9 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
     }
     
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-        
+        DispatchQueue.main.asyncAfter(deadline: .now()) { [weak self] in
+            self?.addSelectionView()
+        }
     }
 }
 
@@ -193,9 +189,7 @@ extension TabBar {
     }
     
     func _fetchGameGenres(completionTwo: @escaping (Genres) -> Void) {
-        fetchGenresForApp() { genres in
-            completionTwo(genres)
-        }
+        fetchGenresForApp()
     }
 }
 #endif

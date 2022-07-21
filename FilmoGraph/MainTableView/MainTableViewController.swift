@@ -19,7 +19,7 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     lazy var layout: UICollectionViewFlowLayout = {
         let layout = UICollectionViewFlowLayout()
         
-        layout.itemSize = CGSize(width: view.frame.width * 0.9, height: (view.frame.width) * 0.55)
+        layout.itemSize = CGSize(width: view.bounds.width * 0.9, height: (view.bounds.width) * 0.55)
         layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
         
         return layout
@@ -32,9 +32,13 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
             collectionViewLayout: layout
         )
         
+        collectionView.setCollectionViewLayout(layout, animated: true)
+        
         collectionView.register(Cell.self, forCellWithReuseIdentifier: "Cell")
         return collectionView
     }()
+    
+    private var isRotateEnabaled = false
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -48,68 +52,70 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         createTableView()
-        collectionView.reloadData()
         
-        switch viewModel.mainViewControllerState {
+        switch viewModel.mainViewControllerState {              //Setting buttons for NavBar only for All games
         case .games:
             setNavBarButtons()
         default: break
         }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        viewModel.isShowAvailable = true        //Unlocking "show" method
-        
-        collectionView.reloadData()             //Needs to setShadows with changing view in tab bar
-        GlobalProperties.shared.setNavBarShadow(navigationController ?? UINavigationController(), tabBarController ?? UITabBarController())
-        
+        viewModel.isShowAvailable = true                        //Unlocking "show" method
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        resetLayout()
+        DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
+            calculateShadowsOfBars()
+            collectionView.reloadData()
+            blickCollectionViewAnimation()
+            isRotateEnabaled = true                                 //That needs to update only one with viewWillTransition()
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        isRotateEnabaled = false                                //That needs to update only one with viewWillTransition()
+        //If the view invisible it's not updating
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        let width = view.frame.height           //Height because method works before transition
         
+        if isRotateEnabaled {                                   //Lock another views here
+            DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
+                resetLayout()
+                collectionView.reloadData()
+                calculateShadowsOfBars()
+            }
+        }
+    }
+}
+
+//MARK: Additional methods
+extension MainTableViewController {
+    private func blickCollectionViewAnimation() {                                   //Blick animation for not to see reloadData() :D
+        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.layer.opacity = 0
+        }
+        UIView.animate(withDuration: 0.15, delay: 0.15, options: .curveEaseIn) { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.layer.opacity = 1
+        }
+    }
+    
+    private func resetLayout() {                                                    //Setting item's size before rotate
+        let width = view.bounds.width
         if UIDevice.current.orientation.isLandscape {
             layout.itemSize = CGSize(width: width * 0.9, height: (width) * 0.35)
         } else if UIDevice.current.orientation.isPortrait {
             layout.itemSize = CGSize(width: width * 0.9, height: (width) * 0.55)
         }
-        
-        collectionView.reloadData()
-        DispatchQueue.main.asyncAfter(deadline: .now()) { [weak navigationController, tabBarController] in
-            GlobalProperties.shared.setNavBarShadow(
-                navigationController ?? UINavigationController(),
-                tabBarController ?? UITabBarController()
-            )
-        }
     }
-}
-
-//MARK: FlowLayoutDelegate
-extension MainTableViewController {
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, transitionLayoutForOldLayout fromLayout: UICollectionViewLayout, newLayout toLayout: UICollectionViewLayout) -> UICollectionViewTransitionLayout {
-//        let layout = UICollectionViewFlowLayout()
-//
-//        layout.sectionInset = UIEdgeInsets(top: 20, left: 16, bottom: 20, right: 16)
-//        layout.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 220)
-//        let layout2 = UICollectionViewFlowLayout()
-//
-//        layout2.sectionInset = UIEdgeInsets(top: 40, left: 32, bottom: 40, right: 32)
-//        layout2.itemSize = CGSize(width: UIScreen.main.bounds.width * 0.9, height: 500)
-//
-//        return UICollectionViewTransitionLayout(currentLayout: layout, nextLayout: layout2)
-//    }
-    
-    
 }
 
 //MARK: TableViewDelegate
@@ -126,12 +132,12 @@ extension MainTableViewController {
             cell.viewModel = self.viewModel.cellForRowAt(indexPath)
         }
         
-        cell.setShadow()
+        cell.setShadow()                                                            //Setting shadows for each cell
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.item == viewModel.games.value.count - 2 {
+        if indexPath.item == viewModel.games.value.count - 2 {                      //Adding cells when table view's content almost ended
             if viewModel.nextPage != nil {
                 switch viewModel.mainViewControllerState {
                 case .games:
@@ -159,34 +165,34 @@ extension MainTableViewController {
             switch viewModel.mainViewControllerState {
             case .games:
                 viewModel.isShowAvailable = false
-                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
-                    
-                    weak var detailsVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+                    guard let self = self else { return }
+                    weak var detailsVC = self.viewModel.downloadEveryThingForDetails(with: indexPath)
                     
                     detailsVC?.delegate = self
                     guard let detailsVC = detailsVC else { return }
                     
-                    show(detailsVC, sender: nil)
+                    self.show(detailsVC, sender: nil)
                 }
             case .publishers:
                 print("Publisher segue")
             default:
                 viewModel.isShowAvailable = false
-                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [unowned self] _ in
-                    
-                    weak var detailsVC = viewModel.downloadEveryThingForDetails(with: indexPath)
+                Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false) { [weak self] _ in
+                    guard let self = self else { return }
+                    weak var detailsVC = self.viewModel.downloadEveryThingForDetails(with: indexPath)
                     
                     detailsVC?.delegate = self
                     guard let detailsVC = detailsVC else { return }
                     
-                    show(detailsVC, sender: nil)
+                    self.show(detailsVC, sender: nil)
                 }
             }
         }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        GlobalProperties.shared.shadowOnScrolling(navigationController?.navigationBar)
+        calculateShadowsOfBars()
     }
 }
 
@@ -240,11 +246,11 @@ extension MainTableViewController {
         // Action for each button in sheet. startAction made for fetching after pressing on button but not at leftBarButton
         
         let actionSheet = viewModel.createAlertController(
-            startAction: { [unowned self] in preFetchReload()} ) { [unowned self] items in
-                
-                loadingIndicator.stopAnimating()
-                collectionView.reloadItems(at: items)
-                navigationItem.leftBarButtonItem?.title = "Sort by: \(viewModel.ordering.rawValue.capitalized)"
+            startAction: { [unowned self] in preFetchReload()} ) { [weak self] items in
+                guard let self = self else { return }
+                self.loadingIndicator.stopAnimating()
+                self.collectionView.reloadItems(at: items)
+                self.navigationItem.leftBarButtonItem?.title = "Sort by: \(self.viewModel.ordering.rawValue.capitalized)"
             }
         
         present(actionSheet, animated: true)
@@ -252,22 +258,23 @@ extension MainTableViewController {
     
     @objc private func chooseSortRevercing() {
         
-        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) { [unowned self] in
-            if viewModel.isReversed.value {
-                navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: .pi)
+        UIView.animate(withDuration: 0.4, delay: 0, options: .curveEaseInOut) { [weak self] in
+            guard let self = self else { return }
+            if self.viewModel.isReversed.value {
+                self.navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: .pi)
             } else {
-                navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: -0)
+                self.navigationItem.rightBarButtonItem?.customView?.transform = CGAffineTransform(rotationAngle: -0)
             }
-            view.layoutIfNeeded()
+            self.view.layoutIfNeeded()
         }
         
         //startAction need for reload olny when reverseSorting starts in viewModel
         
         viewModel.reverseSorting(
-            startAction: { [unowned self] in preFetchReload() }) { [unowned self] items in
-                
-                loadingIndicator.stopAnimating()
-                collectionView.reloadItems(at: items)
+            startAction: { [weak self] in self?.preFetchReload() }) { [weak self] items in
+                guard let self = self else { return }
+                self.loadingIndicator.stopAnimating()
+                self.collectionView.reloadItems(at: items)
             }
     }
     
@@ -276,6 +283,10 @@ extension MainTableViewController {
         collectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
         collectionView.reloadData()
     }
+    
+    private func calculateShadowsOfBars() {
+        GlobalProperties.shared.setNavBarShadow(navigationController ?? UINavigationController(), tabBarController ?? UITabBarController())
+    }
 }
 
 
@@ -283,8 +294,6 @@ extension MainTableViewController {
 extension MainTableViewController: StopLoadingPic {
     func actionsWhileDetailViewControllerDisappears() {
         viewModel.deleteRequests()
-        print(URLResquests.shared.runningRequests.count)
-        
     }
 }
 

@@ -62,7 +62,6 @@ final class DetailGameViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         delegate.actionsWhileDetailViewControllerDisappears()
-        
     }
     
     override func viewWillLayoutSubviews() {
@@ -74,9 +73,9 @@ final class DetailGameViewController: UIViewController {
         
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        calculateShadows()
     }
 }
 
@@ -160,7 +159,6 @@ extension DetailGameViewController {
         scrollView.isUserInteractionEnabled = true
         scrollView.isScrollEnabled = true
         
-        
         NSLayoutConstraint.activate([
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -223,12 +221,16 @@ extension DetailGameViewController {
         }
     }
     
+    private func calculateShadows() {
+        guard let navigationController = navigationController, let tabBarController = tabBarController else { return }
+        GlobalProperties.shared.setNavBarShadow(navigationController, tabBarController)
+    }
 }
 
 
 //MARK: ScrollView delegate
 extension DetailGameViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        calculateShadows()
     }
 }

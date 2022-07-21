@@ -7,16 +7,19 @@
 
 import UIKit
 
-final class Cell: UICollectionViewCell {
+final class Cell: UICollectionViewCell  {
     
     var viewModel: CellViewModelProtocol! {
         didSet {
-            DispatchQueue.main.async { [unowned self] in
-                cellName.text = self.viewModel.cellName
-                cellSecondaryName.text = self.viewModel.cellSecondaryName
-                cellThirdName.text = self.viewModel.cellThirdName
+            DispatchQueue.main.async { [weak self] in
                 
-                viewModel.gamePic.bind { image in
+                guard let self = self else { return }
+                
+                self.cellName.text = self.viewModel.cellName
+                self.cellSecondaryName.text = self.viewModel.cellSecondaryName
+                self.cellThirdName.text = self.viewModel.cellThirdName
+                
+                self.viewModel.gamePic.bind { image in
                     self.gamePic.image = image
                 }
             }
