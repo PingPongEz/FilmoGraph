@@ -106,7 +106,6 @@ final class FetchSomeFilm {
         
         if let page = page {
             urlForFetch = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page=\(page)&page_size=20&ordering=\(kindOfSort)"
-            print(urlForFetch)
         } else {
             guard let url = url else { return UUID() }
             urlForFetch = url
@@ -140,8 +139,6 @@ final class FetchSomeFilm {
         
         let url = "https://api.rawg.io/api/publishers?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)"
         let queue = DispatchQueue(label: "Publishers", qos: .userInteractive, attributes: .concurrent)
-        
-        print(url)
         
         let task = AF.request(url, method: .get, headers: header)
             .validate()
@@ -187,7 +184,6 @@ final class FetchSomeFilm {
                         completion(result)
                     }
                 case .failure(let error):
-                    print("error in searchFetch")
                     print(error)
                 }
             }
@@ -214,7 +210,6 @@ final class FetchSomeFilm {
                         completion(details)
                     }
                 case .failure(let error):
-                    print("error in Details")
                     print(error)
                 }
             }
@@ -243,9 +238,14 @@ final class FetchSomeFilm {
     }
     
     //MARK: Fetch Platforms
-    func fetchAllPlatforms(with url: String, completion: @escaping () -> ()) {
+    func fetchAllPlatforms(with url: String, completion: @escaping ([Platform]) -> Void) -> () -> Void {
         
-        AF.request(url, headers: header)
+        var urlForFetch = url
+        var platformsForCompletion = [Platform]()
+        
+        func fetch() {                                          //Nested for only one completion
+            print("Count of \(platformsForCompletion.count)")
+        AF.request(urlForFetch, headers: header)
             .validate()
             .response(queue: GlobalQueueAndGroup.shared.queue) { [unowned self] response in
                 switch response.result {
@@ -253,18 +253,21 @@ final class FetchSomeFilm {
                     guard let data = data else { return }
                     
                     guard let platforms: AllPlatforms? = doCatch(from: data) else { return }
-                    GlobalProperties.shared.platforms.value += platforms?.results ?? []
                     
                     if let next = platforms?.next {
-                        fetchAllPlatforms(with: next) { }
+                        platformsForCompletion += platforms?.results ?? []
+                        urlForFetch = next
+                        return fetch()
+                    } else if platforms?.next == nil {
+                        platformsForCompletion += platforms?.results ?? []
+                        completion(platformsForCompletion)
                     }
-                    
-                    completion()
-                    
                 case .failure(let error):
                     print(error)
                 }
             }.resume()
+        }
+        return fetch
     }
     
     enum LoadingState {

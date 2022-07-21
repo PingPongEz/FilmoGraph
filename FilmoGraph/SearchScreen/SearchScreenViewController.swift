@@ -212,6 +212,20 @@ extension SearchScreenViewController {
     
     private func setButtonAndTableView(withButton button: UIButton, andTable table: UITableView, fromView: UIView? = nil, on constant: CGFloat) {
         
+        NSLayoutConstraint.activate([
+            ganreButton.topAnchor.constraint(equalTo: view.topAnchor, constant: screenHeight * 0.2),
+            ganreButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            ganreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: screenWidth * 0.1),
+            ganreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: screenWidth * 0.1)
+        ])
+        
+        NSLayoutConstraint.activate([
+            platformButton.topAnchor.constraint(equalTo: ganreButton.bottomAnchor, constant: screenHeight * 0.2),
+            platformButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            platformButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: screenWidth * 0.1),
+            platformButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: screenWidth * 0.1)
+        ])
+        
         guard var parentView = self.view else { return }
         
         if let nilView = fromView {

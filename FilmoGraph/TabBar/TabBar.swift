@@ -94,9 +94,10 @@ class TabBar: UITabBarController, UITabBarControllerDelegate {
         
         queue.async(group: group) { [unowned self] in
             group.enter()
-            FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) {
+            FetchSomeFilm.shared.fetchAllPlatforms(with: platformsUrl) { platforms in
+                GlobalProperties.shared.platforms.value += platforms
                 self.group.leave()
-            }
+            }()
         }
     }
     
