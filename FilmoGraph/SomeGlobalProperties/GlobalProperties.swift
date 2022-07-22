@@ -32,6 +32,5 @@ final class GlobalProperties {
         tabBar.tabBar.layer.shadowRadius = 3.5
         tabBar.tabBar.layer.shadowOffset = CGSize(width: 0, height: -2)
         tabBar.tabBar.layer.shadowOpacity = 0.45
-        
     }
 }

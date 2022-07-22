@@ -35,17 +35,7 @@ final class SearchScreenViewController: UIViewController, UITextFieldDelegate {
     }
     
     private lazy var actionForSearchButton = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
-        loadingIndicator.startAnimating()
-        UIView.animate(withDuration: 0.17) {
-            self.loadingView.layer.opacity = 0.4
-        }
-        
-        viewModel.findButtonPressed { searchVC in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.loadingView.layer.opacity = 0
-                self.show(searchVC, sender: nil)
-            }
-        }
+        searchButtonTapped()
     }
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
@@ -144,6 +134,7 @@ final class SearchScreenViewController: UIViewController, UITextFieldDelegate {
         textField.keyboardType = .default
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        textField.returnKeyType = .search
         
         return textField
     }()
@@ -197,6 +188,25 @@ final class SearchScreenViewController: UIViewController, UITextFieldDelegate {
         platformButton.addAction(actionForPlatform, for: .touchUpInside)
         startSearchButton.addAction(actionForSearchButton, for: .touchUpInside)
         
+    }
+    
+    private func searchButtonTapped() {
+        loadingIndicator.startAnimating()
+        UIView.animate(withDuration: 0.17) {
+            self.loadingView.layer.opacity = 0.4
+        }
+        
+        viewModel.findButtonPressed { searchVC in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.loadingView.layer.opacity = 0
+                self.show(searchVC, sender: nil)
+            }
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        searchButtonTapped()
+        return true
     }
     
     @objc private func dismissTalbeViews(_ sender: UITapGestureRecognizer) {
