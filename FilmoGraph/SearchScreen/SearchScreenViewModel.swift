@@ -10,6 +10,8 @@ import UIKit
 
 final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     
+    var textFieldText: String?
+    
     var currentGanre: Genre?
     var isGanreContainerOpened = false
     var ganreHeight: NSLayoutConstraint?
@@ -108,7 +110,7 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
     }
     
     func findButtonPressed(completion: @escaping (MainTableViewController) -> Void) {
-        let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, ganre: currentGanre?.id, platform: currentPlatform?.id) { [unowned self] result in
+        let _ = FetchSomeFilm.shared.searchFetch(onPage: 1, with: textFieldText, ganre: currentGanre?.id, platform: currentPlatform?.id) { [unowned self] result in
             let searchVCVM = MainTableViewModel()
             searchVCVM.games.value = result.results
             
@@ -118,6 +120,7 @@ final class SearchScreenViewModel: SearchScreenViewModelProtocol {
             searchVC.viewModel.currentPage = 2
             searchVC.viewModel.currentGengre = currentGanre
             searchVC.viewModel.currentPlatform = currentPlatform
+            searchVC.viewModel.textForSearchFetch = textFieldText
             searchVC.viewModel.nextPage = result.next       //Needs to locate is fetch available in search VC
             
             DispatchQueue.global().async {

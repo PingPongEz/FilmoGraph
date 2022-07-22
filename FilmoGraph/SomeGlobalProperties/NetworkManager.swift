@@ -166,12 +166,24 @@ final class FetchSomeFilm {
     func searchFetch(onPage page: Int, with text: String? = nil, ganre: Int? = nil, platform: Int? = nil, completion: @escaping(Welcome) -> Void) -> UUID? {
         
         let uuid = UUID()
-        var urlConstructor = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)"
+        var urlConstructor = "https://api.rawg.io/api/games?key=7f01c67ed4d2433bb82f3dd38282088c&page_size=20&page=\(page)&search_exact=true"
         let queue = DispatchQueue(label: "Search fetch", qos: .userInteractive, attributes: .concurrent)
         
-        if let text = text { urlConstructor += "&search=\(text)" }
+        if let text = text {
+            var searchText = ""
+            text.forEach {
+                if $0 != " " {
+                    searchText += String($0)
+                } else {searchText += "-"
+                    
+                }
+            }
+            urlConstructor += "&search=\(searchText)"
+        }
         if let ganre = ganre { urlConstructor += "&genres=\(ganre)" }
         if let platform = platform { urlConstructor += "&platforms=\(platform)" }
+        
+        print(urlConstructor)
         
         let task = AF.request(urlConstructor, headers: header)
             .validate()

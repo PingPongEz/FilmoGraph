@@ -7,19 +7,20 @@
 
 import UIKit
 
-final class SearchScreenViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+final class SearchScreenViewController: UIViewController, UITextFieldDelegate {
     
     var viewModel: SearchScreenViewModelProtocol!
     
     var screenHeight: CGFloat {
-        return view.frame.height
+        return UIScreen.main.bounds.size.height
     }
     
     var screenWidth: CGFloat {
-        return view.frame.width
+        return UIScreen.main.bounds.size.width
     }
     
     private lazy var actionForGanre = UIAction(title: "Action", attributes: .disabled, state: .on) { [unowned self] _ in
+        print(platformButton.constraints)
         UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseIn) { [unowned self] in
             viewModel.ganreSelectedButtonPressed()
             view.layoutIfNeeded()
@@ -55,11 +56,6 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         indicator.color = .white
         loadingView.addSubview(indicator)
         
-        NSLayoutConstraint.activate([
-            indicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            indicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-        
         return indicator
     }()
     
@@ -74,7 +70,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     }()
     
     private lazy var ganreButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(frame: .zero)
         var config: UIButton.Configuration = .bordered()
         
         config.title = viewModel.ganreButtonText
@@ -91,7 +87,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     }()
     
     private lazy var platformButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(frame: .zero)
         var config: UIButton.Configuration = .bordered()
         
         config.title = viewModel.platformButtonText
@@ -107,7 +103,7 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
     }()
     
     private let startSearchButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(frame: .zero)
         var config: UIButton.Configuration = .bordered()
         
         config.title = "Find"
@@ -140,31 +136,50 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         return tableView
     }()
     
+    private var searchTextField: UITextField = {
+        let textField = UITextField()
+        
+        textField.borderStyle = .roundedRect
+        textField.placeholder = "Enter game..."
+        textField.keyboardType = .default
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
+        
+        return textField
+    }()
+    
     //MARK: View Did Load
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         view.backgroundColor = .white
         
-        addSubviewsToSuperView(views: [ganreButton, ganreTableView, platformButton, platformTableView, startSearchButton])
+        addSubviewsToSuperView(views: [ganreButton, platformButton, startSearchButton, searchTextField, loadingView])
         
-        
+        searchTextField.delegate = self
         view.insertSubview(ganreTableView, aboveSubview: platformButton)
         view.insertSubview(ganreTableView, aboveSubview: platformTableView)
+        view.insertSubview(platformTableView, aboveSubview: startSearchButton)
+        view.insertSubview(ganreTableView, aboveSubview: startSearchButton)
         
         tableViewSettings(&ganreTableView)
         tableViewSettings(&platformTableView)
-        
+
         setButtonActions()
         setTableViewHeights()
-        setConstraints()
+        setButtonAndTableView()
         
         hideTableViewsWhenTappedAround()
         
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        GlobalProperties.shared.setNavBarShadow(navigationController ?? UINavigationController(), tabBarController ?? UITabBarController())
+        setButtonAndTableView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     //MARK: Dismiss TableViewes when view tapped
@@ -173,18 +188,8 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissTalbeViews(_:)))
         view.addGestureRecognizer(tap)
         tap.delegate = self
-        
     }
     
-    @objc private func dismissTalbeViews(_ sender: UITapGestureRecognizer) {
-        
-        if sender.state == .ended {
-            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
-                viewModel.dismissTableViews()
-                view.layoutIfNeeded()
-            }
-        }
-    }
     
     private func setButtonActions() {
         
@@ -194,9 +199,19 @@ final class SearchScreenViewController: UIViewController, UITableViewDelegate, U
         
     }
     
-    override func updateViewConstraints() {
-        super.updateViewConstraints()
+    @objc private func dismissTalbeViews(_ sender: UITapGestureRecognizer) {
         
+        view.endEditing(true)
+        if sender.state == .ended {
+            UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [unowned self] in
+                viewModel.dismissTableViews()
+                view.layoutIfNeeded()
+            }
+        }
+    }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        viewModel.textFieldText = searchTextField.text
     }
 }
 
@@ -207,83 +222,53 @@ extension SearchScreenViewController {
         views.forEach { view.addSubview($0) }
     }
     
-    private func setButtonAndTableView(withButton button: UIButton, andTable table: UITableView, fromView: UIView? = nil, on constant: CGFloat) {
+    private func setButtonAndTableView() {
+        
+        view.removeConstraints(view.constraints)
         
         NSLayoutConstraint.activate([
-            ganreButton.topAnchor.constraint(equalTo: view.topAnchor, constant: screenHeight * 0.2),
+            
+            searchTextField.topAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: screenHeight * 0.2),
+            searchTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            searchTextField.heightAnchor.constraint(equalToConstant: 40),
+            searchTextField.widthAnchor.constraint(equalToConstant: screenWidth * 0.7),
+            
+            ganreButton.topAnchor.constraint(lessThanOrEqualTo: searchTextField.bottomAnchor, constant: screenHeight * 0.05),
             ganreButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            ganreButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: screenWidth * 0.1),
-            ganreButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: screenWidth * 0.1)
-        ])
-        
-        NSLayoutConstraint.activate([
-            platformButton.topAnchor.constraint(equalTo: ganreButton.bottomAnchor, constant: screenHeight * 0.2),
+            ganreButton.heightAnchor.constraint(equalToConstant: 40),
+            ganreButton.widthAnchor.constraint(equalToConstant: screenWidth * 0.7),
+            
+            ganreTableView.topAnchor.constraint(equalTo: ganreButton.bottomAnchor),
+            ganreTableView.leadingAnchor.constraint(equalTo: ganreButton.leadingAnchor),
+            ganreTableView.trailingAnchor.constraint(equalTo: ganreButton.trailingAnchor),
+            
+            platformButton.topAnchor.constraint(lessThanOrEqualTo: ganreButton.bottomAnchor, constant: screenHeight * 0.05),
             platformButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            platformButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: screenWidth * 0.1),
-            platformButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: screenWidth * 0.1)
+            platformButton.heightAnchor.constraint(equalToConstant: 40),
+            platformButton.widthAnchor.constraint(equalToConstant: screenWidth * 0.7),
+            
+            platformTableView.topAnchor.constraint(equalTo: platformButton.bottomAnchor),
+            platformTableView.leadingAnchor.constraint(equalTo: platformButton.leadingAnchor),
+            platformTableView.trailingAnchor.constraint(equalTo: platformButton.trailingAnchor),
+            
+            startSearchButton.topAnchor.constraint(lessThanOrEqualTo: platformButton.bottomAnchor, constant: screenHeight * 0.05),
+            startSearchButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            startSearchButton.heightAnchor.constraint(equalToConstant: 40),
+            startSearchButton.widthAnchor.constraint(equalToConstant: screenWidth * 0.7),
+            
+            loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
-        
-        guard var parentView = self.view else { return }
-        
-        if let nilView = fromView {
-            parentView = nilView
-        }
-        
-        let width = UIScreen.main.bounds.width
-        print(width)
-        
-        NSLayoutConstraint.activate([
-            button.topAnchor.constraint(equalTo: parentView.topAnchor, constant: constant),
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.widthAnchor.constraint(equalToConstant: width),
-            button.heightAnchor.constraint(equalToConstant: 40)
-        ])
-        
-        NSLayoutConstraint.activate([
-            table.topAnchor.constraint(equalTo: button.bottomAnchor),
-            table.leadingAnchor.constraint(equalTo: button.leadingAnchor),
-            table.trailingAnchor.constraint(equalTo: button.trailingAnchor),
-            table.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor)
-        ])
-        
     }
     
-    private func setConstraints() {
-        
-        setButtonAndTableView(
-            withButton: ganreButton,
-            andTable: ganreTableView,
-            on: UIScreen.main.bounds.height * 0.25
-        )
-        
-        setButtonAndTableView(
-            withButton: platformButton,
-            andTable: platformTableView,
-            fromView: ganreButton,
-            on: 80 + screenHeight * 0.05
-        )
-        
-        setSearchButton()
-    }
     
     private func setTableViewHeights() {
+        
         viewModel.ganreHeight = ganreTableView.heightAnchor.constraint(equalToConstant: 0)
         viewModel.ganreHeight?.isActive = true
         
         viewModel.platformHeight = platformTableView.heightAnchor.constraint(equalToConstant: 0)
         viewModel.platformHeight?.isActive = true
-        
-    }
-    
-    private func setSearchButton() {
-        print(screenWidth)
-        NSLayoutConstraint.activate([
-            startSearchButton.topAnchor.constraint(equalTo: view.topAnchor, constant: screenHeight * 0.8),
-            //Почему-то от нижнего анкора не ставится вьюха
-            startSearchButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            startSearchButton.widthAnchor.constraint(equalToConstant: screenWidth * 0.8),
-            startSearchButton.heightAnchor.constraint(equalToConstant: screenHeight * 0.05)
-        ])
     }
     
     private func tableViewSettings(_ tableView: inout UITableView) {
@@ -299,7 +284,7 @@ extension SearchScreenViewController {
 }
 
 //MARK: TableView methods
-extension SearchScreenViewController {
+extension SearchScreenViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let type = setTableViewType(tableView: tableView)
         
@@ -340,6 +325,7 @@ extension SearchScreenViewController {
         return type
     }
 }
+
 
 //MARK: Gesture delegate
 extension SearchScreenViewController: UIGestureRecognizerDelegate {

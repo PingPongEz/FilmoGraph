@@ -38,7 +38,7 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
         return collectionView
     }()
     
-    private var isRotateEnabaled = false
+    private var isRotateEnabaled = true                         //Lock on scroll
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -52,13 +52,14 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         createTableView()
+        collectionView.reloadData()
         
         switch viewModel.mainViewControllerState {              //Setting buttons for NavBar only for All games
         case .games:
             setNavBarButtons()
         default: break
         }
-        
+        blickCollectionViewAnimation()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -69,23 +70,30 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         resetLayout()
+        isRotateEnabaled = true                                 //That needs to update only one with viewWillTransition()
         DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
             calculateShadowsOfBars()
             collectionView.reloadData()
-            blickCollectionViewAnimation()
-            isRotateEnabaled = true                                 //That needs to update only one with viewWillTransition()
+        }
+        UIView.animate(withDuration: 0.12, delay: 0.12, options: .curveEaseIn) { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.layer.opacity = 1
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        isRotateEnabaled = false                                //That needs to update only one with viewWillTransition()
-        //If the view invisible it's not updating
+        isRotateEnabaled = false                                    //That needs to update only one with viewWillTransition()
+        
+        UIView.animate(withDuration: 0.12, delay: 0, options: .curveEaseOut) { [weak self] in
+            guard let self = self else { return }
+            self.collectionView.layer.opacity = 0
+        }
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         
-        if isRotateEnabaled {                                   //Lock another views here
+        if isRotateEnabaled {                                        //Lock another views here
             DispatchQueue.main.asyncAfter(deadline: .now()) { [unowned self] in
                 resetLayout()
                 collectionView.reloadData()
@@ -98,11 +106,11 @@ final class MainTableViewController: UIViewController, UICollectionViewDelegate,
 //MARK: Additional methods
 extension MainTableViewController {
     private func blickCollectionViewAnimation() {                                   //Blick animation for not to see reloadData() :D
-        UIView.animate(withDuration: 0.15, delay: 0, options: .curveEaseOut) { [weak self] in
+        UIView.animate(withDuration: 0.12, delay: 0, options: .curveEaseOut) { [weak self] in
             guard let self = self else { return }
             self.collectionView.layer.opacity = 0
         }
-        UIView.animate(withDuration: 0.15, delay: 0.15, options: .curveEaseIn) { [weak self] in
+        UIView.animate(withDuration: 0.12, delay: 0.12, options: .curveEaseIn) { [weak self] in
             guard let self = self else { return }
             self.collectionView.layer.opacity = 1
         }
@@ -141,11 +149,11 @@ extension MainTableViewController {
             if viewModel.nextPage != nil {
                 switch viewModel.mainViewControllerState {
                 case .games:
-                    viewModel.searchFetch { items in
+                    viewModel.fetchGamesWith { items in
                         collectionView.insertItems(at: items)
                     }
                 case .search:
-                    viewModel.fetchGamesWith { items in
+                    viewModel.searchFetch { items in
                         collectionView.insertItems(at: items)
                     }
                 case .publishers:
